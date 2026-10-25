@@ -1,0 +1,17 @@
+# Dart / Flutter
+.dart_tool/
+build/
+
+# Tarefas que o `figma2dart resolve` escreve em cada pacote
+.figma2dart/
+
+# Plugin do Figma
+node_modules/
+dist/
+
+# Configurações pessoais de ferramentas (cada pessoa tem as suas)
+.claude/
+.codex/
+.caveman.json
+
+.DS_Store

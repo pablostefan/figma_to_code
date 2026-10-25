@@ -1,0 +1,476 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      :root {
+        color-scheme: dark;
+        --surface: #121212;
+        --surface-card: #222222;
+        --surface-raised: #2b2b2b;
+        --surface-container: rgba(255, 255, 255, 0.08);
+        --content: #ffffff;
+        --content-one: #cacaca;
+        --content-two: #a1a1a1;
+        --content-three: #8e8e8e;
+        --brand: #fbc105;
+        --brand-hover: #ffd33d;
+        --on-brand: #121212;
+        --brand-container: rgba(251, 193, 5, 0.14);
+        --info: #9cb2ff;
+        --success: #3eea9b;
+        --success-container: rgba(62, 234, 155, 0.12);
+        --error: #f28080;
+        --border: rgba(255, 255, 255, 0.1);
+        --focus: #9cb2ff;
+        --radius: 12px;
+      }
+
+      * { box-sizing: border-box; }
+      html { background: var(--surface); }
+      body {
+        min-height: 100vh;
+        margin: 0;
+        color: var(--content);
+        background:
+          radial-gradient(circle at 100% 0%, rgba(251, 193, 5, 0.09), transparent 34%),
+          var(--surface);
+        font: 12px/1.45 Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+
+      button, select, textarea, input { font: inherit; }
+      button, select, textarea { outline: none; }
+      button:focus-visible, select:focus-visible, textarea:focus-visible, .lint li:focus-visible {
+        box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--focus);
+      }
+
+      .shell {
+        display: flex;
+        min-height: 100vh;
+        padding: 16px;
+        flex-direction: column;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 16px;
+      }
+      .brand-mark {
+        width: 40px;
+        height: 40px;
+        flex: 0 0 40px;
+        filter: drop-shadow(0 8px 18px rgba(251, 193, 5, 0.18));
+      }
+      .brand-copy { min-width: 0; }
+      .brand-name {
+        margin: 0;
+        font-size: 17px;
+        font-weight: 750;
+        line-height: 20px;
+        letter-spacing: -0.35px;
+      }
+      .brand-name span { color: var(--brand); }
+      .brand-tagline { margin: 2px 0 0; color: var(--content-two); }
+
+      .card {
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 10px;
+        padding: 14px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        background: rgba(34, 34, 34, 0.92);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16);
+      }
+      .card:last-of-type { margin-bottom: 0; }
+      .card-accent::before {
+        position: absolute;
+        inset: 0 auto 0 0;
+        width: 3px;
+        background: var(--brand);
+        content: "";
+      }
+
+      .eyebrow {
+        margin: 0 0 3px;
+        color: var(--content-two);
+        font-size: 10px;
+        font-weight: 650;
+        letter-spacing: 0.85px;
+        text-transform: uppercase;
+      }
+      h2 {
+        margin: 0;
+        font-size: 13px;
+        font-weight: 650;
+        line-height: 18px;
+      }
+      .section-head {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 12px;
+      }
+      .muted { color: var(--content-two); }
+      .page { margin: 2px 0 0; }
+      .kind {
+        display: inline-flex;
+        align-items: center;
+        min-height: 24px;
+        padding: 3px 9px;
+        border: 1px solid rgba(251, 193, 5, 0.25);
+        border-radius: 999px;
+        color: var(--brand);
+        background: var(--brand-container);
+        font-size: 11px;
+        font-weight: 650;
+        white-space: nowrap;
+      }
+      .kind::before {
+        width: 5px;
+        height: 5px;
+        margin-right: 6px;
+        border-radius: 50%;
+        background: currentColor;
+        content: "";
+        box-shadow: 0 0 0 3px rgba(251, 193, 5, 0.1);
+      }
+
+      .roots {
+        display: flex;
+        gap: 6px;
+        margin: 10px 0 0;
+        padding: 0;
+        overflow-x: auto;
+        list-style: none;
+        scrollbar-width: thin;
+      }
+      .roots:empty::after {
+        color: var(--content-two);
+        content: "Nenhuma camada selecionada";
+      }
+      .roots li {
+        max-width: 230px;
+        padding: 5px 8px;
+        overflow: hidden;
+        border: 1px solid var(--border);
+        border-radius: 7px;
+        color: var(--content-one);
+        background: var(--surface-container);
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .warning {
+        margin: 10px 0 0;
+        padding: 8px 10px;
+        border-radius: 8px;
+        color: var(--brand);
+        background: var(--brand-container);
+      }
+
+      .field { margin-top: 12px; }
+      label.field-label {
+        display: block;
+        margin-bottom: 6px;
+        color: var(--content-one);
+        font-weight: 550;
+      }
+      select, textarea {
+        width: 100%;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        color: var(--content);
+        background: var(--surface);
+        transition: border-color 140ms ease, background 140ms ease;
+      }
+      select:hover, textarea:hover { border-color: rgba(255, 255, 255, 0.22); }
+      .select-wrap { position: relative; }
+      .select-wrap::after {
+        position: absolute;
+        top: 50%;
+        right: 13px;
+        width: 6px;
+        height: 6px;
+        border-right: 1.5px solid var(--content-one);
+        border-bottom: 1.5px solid var(--content-one);
+        content: "";
+        pointer-events: none;
+        transform: translateY(-70%) rotate(45deg);
+      }
+      select {
+        display: block;
+        height: 36px;
+        padding: 0 38px 0 10px;
+        appearance: none;
+        -webkit-appearance: none;
+      }
+      textarea {
+        min-height: 58px;
+        padding: 9px 10px;
+        resize: vertical;
+      }
+      textarea::placeholder { color: var(--content-three); }
+
+      .check {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        min-height: 38px;
+        margin-top: 8px;
+        padding: 0 2px;
+        color: var(--content-one);
+        cursor: pointer;
+      }
+      .check input {
+        width: 16px;
+        height: 16px;
+        margin: 0;
+        accent-color: var(--brand);
+      }
+      .check-copy { display: grid; }
+      .check small { color: var(--content-two); }
+
+      .actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        margin-top: 12px;
+      }
+      button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        min-height: 38px;
+        padding: 8px 10px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        color: var(--content);
+        background: var(--surface-raised);
+        font-weight: 650;
+        cursor: pointer;
+        transition: transform 120ms ease, border-color 120ms ease, background 120ms ease;
+      }
+      button:hover { border-color: rgba(255, 255, 255, 0.22); background: #343434; }
+      button:active { transform: translateY(1px); }
+      button.primary {
+        grid-column: 1 / -1;
+        min-height: 42px;
+        border-color: var(--brand);
+        color: var(--on-brand);
+        background: var(--brand);
+      }
+      button.primary:hover { background: var(--brand-hover); }
+      button:disabled { opacity: 0.48; cursor: wait; transform: none; }
+      button svg { width: 15px; height: 15px; }
+
+      .status {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        min-height: 18px;
+        margin: 10px 0 0;
+        color: var(--content-two);
+      }
+      .status:not(:empty)::before {
+        width: 7px;
+        height: 7px;
+        flex: 0 0 7px;
+        border-radius: 50%;
+        background: var(--info);
+        content: "";
+      }
+      .status.busy::before { animation: pulse 900ms ease-in-out infinite alternate; }
+      .status.success { color: var(--success); }
+      .status.success::before { background: var(--success); }
+      .status.error { color: var(--error); }
+      .status.error::before { background: var(--error); }
+
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 7px;
+        margin-top: 10px;
+      }
+      .stat {
+        min-width: 0;
+        padding: 9px;
+        border-radius: 8px;
+        background: var(--surface-container);
+      }
+      .stat b {
+        display: block;
+        margin-bottom: 1px;
+        color: var(--content);
+        font-size: 16px;
+        line-height: 19px;
+      }
+      .stat span {
+        display: block;
+        overflow: hidden;
+        font-size: 10px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .lint {
+        margin: 10px 0 0;
+        padding: 0;
+        list-style: none;
+      }
+      .lint:empty::after {
+        display: block;
+        padding: 10px;
+        border-radius: 8px;
+        color: var(--success);
+        background: var(--success-container);
+        content: "Tudo certo para exportar.";
+      }
+      .lint li {
+        position: relative;
+        margin-top: 6px;
+        padding: 9px 30px 9px 10px;
+        border: 1px solid transparent;
+        border-radius: 8px;
+        background: var(--brand-container);
+        cursor: pointer;
+      }
+      .lint li:first-child { margin-top: 0; }
+      .lint li::after {
+        position: absolute;
+        top: 50%;
+        right: 11px;
+        color: var(--brand);
+        content: "›";
+        font-size: 18px;
+        transform: translateY(-52%);
+      }
+      .lint li:hover { border-color: rgba(251, 193, 5, 0.28); }
+      .lint li.static { padding-right: 10px; cursor: default; }
+      .lint li.static::after { display: none; }
+      .lint li.static:hover { border-color: transparent; }
+      .rule { color: var(--brand); font-weight: 650; }
+      .lint .muted { margin-top: 2px; color: var(--content-one); }
+
+      .footer {
+        display: flex;
+        justify-content: space-between;
+        margin-top: auto;
+        padding: 10px 2px 0;
+        color: var(--content-three);
+        font-size: 10px;
+      }
+      [hidden] { display: none !important; }
+
+      @keyframes pulse {
+        from { opacity: 0.35; transform: scale(0.85); }
+        to { opacity: 1; transform: scale(1.15); }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; animation: none !important; }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="shell" id="app">
+      <header class="brand" aria-label="figma2dart Export">
+        <svg class="brand-mark" viewBox="0 0 40 40" role="img" aria-label="Logo figma2dart">
+          <rect width="40" height="40" rx="11" fill="#FBC105" />
+          <path d="M15.5 12.5 9.5 20l6 7.5M24.5 12.5l6 7.5-6 7.5" fill="none" stroke="#121212" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+          <rect x="17.5" y="17.5" width="5" height="5" rx="1.4" fill="#121212" transform="rotate(45 20 20)" />
+        </svg>
+        <div class="brand-copy">
+          <h1 class="brand-name">figma<span>2</span>dart</h1>
+          <p class="brand-tagline">Design pronto para virar Flutter.</p>
+        </div>
+      </header>
+
+      <section class="card card-accent" aria-labelledby="selection-title">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Seleção atual</p>
+            <h2 id="selection-title">O que será exportado</h2>
+            <p class="page muted" id="page"></p>
+          </div>
+          <span id="kind" class="kind">—</span>
+        </div>
+        <ul class="roots" id="roots" aria-label="Camadas selecionadas"></ul>
+        <p class="warning" id="warning" role="alert" hidden></p>
+      </section>
+
+      <section class="card" aria-labelledby="config-title">
+        <p class="eyebrow">Configuração</p>
+        <h2 id="config-title">Preparar export</h2>
+
+        <div class="field">
+          <label class="field-label" for="force">Tipo de conteúdo</label>
+          <div class="select-wrap">
+            <select id="force">
+              <option value="">Detectar pela seleção</option>
+              <option value="component">Componente</option>
+              <option value="screen">Tela</option>
+              <option value="flow">Fluxo</option>
+              <option value="library">Biblioteca da página</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="notes">Orientação para quem vai implementar <span class="muted">· opcional</span></label>
+          <textarea id="notes" placeholder="Ex.: o botão Continuar habilita após selecionar um contato."></textarea>
+        </div>
+
+        <label class="check" for="images">
+          <input type="checkbox" id="images" checked />
+          <span class="check-copy">
+            <span>Incluir referências visuais</span>
+            <small>Imagens PNG em 2x dentro do arquivo</small>
+          </span>
+        </label>
+
+        <div class="actions">
+          <button id="check" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M9 11.5 11 14l4-5"/><path d="M12 3 5 6v5c0 4.6 2.8 8 7 10 4.2-2 7-5.4 7-10V6l-7-3Z"/></svg>
+            Verificar
+          </button>
+          <button id="copy" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="8" y="8" width="11" height="11" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>
+            Copiar JSON
+          </button>
+          <button id="export" class="primary" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 3v12m0 0 4-4m-4 4-4-4"/><path d="M5 19h14"/></svg>
+            Exportar arquivo .zip
+          </button>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite"></p>
+      </section>
+
+      <section class="card" id="result" aria-labelledby="result-title" hidden>
+        <p class="eyebrow">Resumo</p>
+        <h2 id="result-title">Conteúdo encontrado</h2>
+        <div class="stats" id="stats"></div>
+      </section>
+
+      <section class="card" id="lintCard" aria-labelledby="lintTitle" hidden>
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Qualidade do design</p>
+            <h2 id="lintTitle">Verificação</h2>
+          </div>
+        </div>
+        <p class="muted page" id="lintHint">Selecione um aviso para localizar a camada.</p>
+        <ul class="lint" id="lint"></ul>
+      </section>
+
+      <footer class="footer" aria-hidden="true">
+        <span>IR v1</span>
+        <span>Figma → Flutter</span>
+      </footer>
+    </main>
+
+    <!-- SCRIPT -->
+  </body>
+</html>

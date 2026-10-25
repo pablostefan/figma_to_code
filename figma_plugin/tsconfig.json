@@ -1,0 +1,19 @@
+{
+  // Code that runs in Figma's plugin sandbox (extractor, plugin main, MCP entry): no DOM there.
+  // The UI runs in an iframe and has its own config in src/ui/tsconfig.json.
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "lib": ["ES2020"],
+    "types": ["@figma/plugin-typings"],
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "skipLibCheck": true,
+    "noEmit": true
+  },
+  "include": ["src/**/*.ts", "tests/**/*.ts"],
+  "exclude": ["src/ui"]
+}

@@ -1,0 +1,25 @@
+#!/bin/sh
+# Roda a CLI figma2dart. `figma2dart setup` copia este arquivo para o PATH.
+#
+# Sem caminho fixo: usa a CLI do repositório git de onde foi chamado (achada pelo índice do git, onde quer que
+# esteja no monorepo); fora de um repositório com a CLI, usa a de `fallback`.
+# `dart run` de dentro do pacote usa o executável em cache (~1 s; recompila sozinho depois de um git pull) e
+# escreve o "Building…" no stderr, então o stdout fica só com o JSON.
+fallback="$(cd "$(dirname "$0")/.." && pwd)" # o setup troca pela pasta da CLI
+
+cli=
+if root=$(git rev-parse --show-toplevel 2>/dev/null); then
+  found=$(git -C "$root" ls-files ':(glob)**/bin/figma2dart.dart' | head -n 1)
+  [ -n "$found" ] && cli="$root/${found%/bin/figma2dart.dart}"
+fi
+[ -n "$cli" ] && [ -f "$cli/pubspec.yaml" ] || cli=$fallback
+
+config="$cli/.dart_tool/package_config.json"
+if [ ! -f "$config" ] || [ "$cli/pubspec.yaml" -nt "$config" ]; then
+  (cd "$cli" && dart pub get) >&2 || exit 1
+  touch "$config" # sem mudança de dependência o pub não regrava: sem isso, rodaria em toda chamada
+fi
+
+FIGMA2DART_CWD=$PWD
+export FIGMA2DART_CWD
+cd "$cli" && exec dart run figma2dart:figma2dart "$@"

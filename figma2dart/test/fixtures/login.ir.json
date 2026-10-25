@@ -1,0 +1,832 @@
+{
+  "irVersion": "1.1.0",
+  "kind": "screen",
+  "source": {
+    "via": "plugin",
+    "extractor": "0.2.0",
+    "fileName": "Carteira App — Fluxo de Transferência",
+    "pageName": "Flow",
+    "exportedAt": "2026-10-25T02:50:57.626Z"
+  },
+  "tokens": {
+    "Spacing/2xl": {
+      "name": "2xl",
+      "collection": "Spacing",
+      "type": "FLOAT",
+      "value": 32,
+      "codeSyntax": {
+        "WEB": "var(--spacing-2xl)"
+      },
+      "id": "VariableID:152376691c4b36a21bd4bf5cfe21a83e9d63b8a5/1:112",
+      "key": "152376691c4b36a21bd4bf5cfe21a83e9d63b8a5",
+      "remote": true
+    },
+    "Spacing/xl": {
+      "name": "xl",
+      "collection": "Spacing",
+      "type": "FLOAT",
+      "value": 24,
+      "codeSyntax": {
+        "WEB": "var(--spacing-xl)"
+      },
+      "id": "VariableID:0009348576d3e5dd7a392fae74a80fbef754810c/1:108",
+      "key": "0009348576d3e5dd7a392fae74a80fbef754810c",
+      "remote": true
+    },
+    "Primitives/gray/50": {
+      "name": "gray/50",
+      "collection": "Primitives",
+      "type": "COLOR",
+      "value": "#F8FAFC",
+      "codeSyntax": {
+        "WEB": "var(--gray-50)"
+      },
+      "id": "VariableID:6d8d55eda023ce1fc06d85f1ffa9e2c6ad1bfebe/1:16",
+      "key": "6d8d55eda023ce1fc06d85f1ffa9e2c6ad1bfebe",
+      "remote": true
+    },
+    "Color/bg": {
+      "name": "bg",
+      "collection": "Color",
+      "type": "COLOR",
+      "value": "#F8FAFC",
+      "aliasOf": "Primitives/gray/50",
+      "codeSyntax": {
+        "WEB": "var(--color-bg)"
+      },
+      "id": "VariableID:65d47c5218dfbb887ef0e54d4c25e33fcd3048d0/1:46",
+      "key": "65d47c5218dfbb887ef0e54d4c25e33fcd3048d0",
+      "remote": true
+    },
+    "Spacing/sm": {
+      "name": "sm",
+      "collection": "Spacing",
+      "type": "FLOAT",
+      "value": 8,
+      "codeSyntax": {
+        "WEB": "var(--spacing-sm)"
+      },
+      "id": "VariableID:c706e4b4e2e24d0c001ce40ea0879ceed3011af6/1:96",
+      "key": "c706e4b4e2e24d0c001ce40ea0879ceed3011af6",
+      "remote": true
+    },
+    "Primitives/gray/900": {
+      "name": "gray/900",
+      "collection": "Primitives",
+      "type": "COLOR",
+      "value": "#0F172A",
+      "codeSyntax": {
+        "WEB": "var(--gray-900)"
+      },
+      "id": "VariableID:31a14f2413132cf865d7b4b637570bae2c6550b5/1:28",
+      "key": "31a14f2413132cf865d7b4b637570bae2c6550b5",
+      "remote": true
+    },
+    "Color/text/primary": {
+      "name": "text/primary",
+      "collection": "Color",
+      "type": "COLOR",
+      "value": "#0F172A",
+      "aliasOf": "Primitives/gray/900",
+      "codeSyntax": {
+        "WEB": "var(--color-text-primary)"
+      },
+      "id": "VariableID:57821f5234d13875833a2fd6896b29fdf1e3bfd5/1:58",
+      "key": "57821f5234d13875833a2fd6896b29fdf1e3bfd5",
+      "remote": true
+    },
+    "Primitives/gray/500": {
+      "name": "gray/500",
+      "collection": "Primitives",
+      "type": "COLOR",
+      "value": "#64748B",
+      "codeSyntax": {
+        "WEB": "var(--gray-500)"
+      },
+      "id": "VariableID:6ff00148d4352090ab5e3694ef9c77d6fb78d7dc/1:24",
+      "key": "6ff00148d4352090ab5e3694ef9c77d6fb78d7dc",
+      "remote": true
+    },
+    "Color/text/secondary": {
+      "name": "text/secondary",
+      "collection": "Color",
+      "type": "COLOR",
+      "value": "#64748B",
+      "aliasOf": "Primitives/gray/500",
+      "codeSyntax": {
+        "WEB": "var(--color-text-secondary)"
+      },
+      "id": "VariableID:015a8a916d03ae25b323035d581578b11b57af2b/1:62",
+      "key": "015a8a916d03ae25b323035d581578b11b57af2b",
+      "remote": true
+    },
+    "Spacing/lg": {
+      "name": "lg",
+      "collection": "Spacing",
+      "type": "FLOAT",
+      "value": 16,
+      "codeSyntax": {
+        "WEB": "var(--spacing-lg)"
+      },
+      "id": "VariableID:30efc1d9416fc9f35313d66f52dd15ef20ffa278/1:104",
+      "key": "30efc1d9416fc9f35313d66f52dd15ef20ffa278",
+      "remote": true
+    }
+  },
+  "textStyles": {
+    "heading/lg": {
+      "name": "heading/lg",
+      "fontFamily": "Inter",
+      "fontStyle": "Bold",
+      "fontSize": 24,
+      "lineHeight": 32,
+      "letterSpacing": {
+        "percent": 0
+      },
+      "id": "S:71b0715016cde9f527c7e1af2811f0c66091b469,1:133",
+      "key": "71b0715016cde9f527c7e1af2811f0c66091b469",
+      "remote": true
+    },
+    "body/md": {
+      "name": "body/md",
+      "fontFamily": "Inter",
+      "fontStyle": "Regular",
+      "fontSize": 16,
+      "lineHeight": 24,
+      "letterSpacing": {
+        "percent": 0
+      },
+      "id": "S:a10a528fd97ddec29d56c01c1ce14c9147a0d438,1:144",
+      "key": "a10a528fd97ddec29d56c01c1ce14c9147a0d438",
+      "remote": true
+    }
+  },
+  "componentRefs": {
+    "a7ec596b4a12636af643be4f14ae523a2dde58ea": {
+      "key": "a7ec596b4a12636af643be4f14ae523a2dde58ea",
+      "name": "Input",
+      "remote": true,
+      "description": "Text field with label and helper. state default/focus/error. Props: label, placeholder, helper, showLeadingIcon + leadingIcon (Icon swap), showTrailingAction (exposed IconButton ghost, e.g. eye for password).",
+      "props": {
+        "label": {
+          "type": "TEXT",
+          "default": "Label"
+        },
+        "placeholder": {
+          "type": "TEXT",
+          "default": "Placeholder"
+        },
+        "helper": {
+          "type": "TEXT",
+          "default": "Helper text"
+        },
+        "showLeadingIcon": {
+          "type": "BOOLEAN",
+          "default": true
+        },
+        "leadingIcon": {
+          "type": "INSTANCE_SWAP",
+          "default": "6:18"
+        },
+        "showTrailingAction": {
+          "type": "BOOLEAN",
+          "default": false
+        },
+        "state": {
+          "type": "VARIANT",
+          "default": "default",
+          "options": [
+            "default",
+            "focus",
+            "error"
+          ]
+        }
+      }
+    },
+    "087dbe9c98e6051c256534179685020be15d04ba": {
+      "key": "087dbe9c98e6051c256534179685020be15d04ba",
+      "name": "Icon",
+      "remote": true,
+      "description": "Outline icon set, 24px, stroke 2. Color comes from the vector stroke bound to a Color variable (default text/primary). Use as INSTANCE_SWAP in other components.",
+      "props": {
+        "name": {
+          "type": "VARIANT",
+          "default": "home",
+          "options": [
+            "home",
+            "search",
+            "bell",
+            "plus",
+            "arrow-up-right",
+            "arrow-down-left",
+            "eye",
+            "eye-off",
+            "check",
+            "chevron-right",
+            "mail",
+            "lock"
+          ]
+        }
+      }
+    },
+    "98e95c197e644becbbdd17f97d4b958215ea32a9": {
+      "key": "98e95c197e644becbbdd17f97d4b958215ea32a9",
+      "name": "IconButton",
+      "remote": true,
+      "description": "40px round icon button. variant filled/ghost. Props: icon (Icon swap), showDot (notification dot).",
+      "props": {
+        "icon": {
+          "type": "INSTANCE_SWAP",
+          "default": "6:10"
+        },
+        "showDot": {
+          "type": "BOOLEAN",
+          "default": false
+        },
+        "variant": {
+          "type": "VARIANT",
+          "default": "filled",
+          "options": [
+            "filled",
+            "ghost"
+          ]
+        }
+      }
+    },
+    "457dd62defacfa4a3c82475582930b62216b4f16": {
+      "key": "457dd62defacfa4a3c82475582930b62216b4f16",
+      "name": "Checkbox",
+      "remote": true,
+      "description": "Checkbox with label. checked true/false. Prop: label.",
+      "props": {
+        "label": {
+          "type": "TEXT",
+          "default": "Checkbox"
+        },
+        "checked": {
+          "type": "VARIANT",
+          "default": "false",
+          "options": [
+            "false",
+            "true"
+          ]
+        }
+      }
+    },
+    "cc4d255d4c889786852f8ba4b57a714a4efd07ca": {
+      "key": "cc4d255d4c889786852f8ba4b57a714a4efd07ca",
+      "name": "Button",
+      "remote": true,
+      "description": "Action button. variant primary/secondary/ghost, size md(48)/sm(36), state default/disabled. Props: label, showLeftIcon, leftIcon (Icon swap).",
+      "props": {
+        "label": {
+          "type": "TEXT",
+          "default": "Button"
+        },
+        "showLeftIcon": {
+          "type": "BOOLEAN",
+          "default": false
+        },
+        "leftIcon": {
+          "type": "INSTANCE_SWAP",
+          "default": "6:11"
+        },
+        "variant": {
+          "type": "VARIANT",
+          "default": "primary",
+          "options": [
+            "primary",
+            "secondary",
+            "ghost"
+          ]
+        },
+        "size": {
+          "type": "VARIANT",
+          "default": "md",
+          "options": [
+            "md",
+            "sm"
+          ]
+        },
+        "state": {
+          "type": "VARIANT",
+          "default": "default",
+          "options": [
+            "default",
+            "disabled"
+          ]
+        }
+      }
+    }
+  },
+  "components": [],
+  "screens": [
+    {
+      "name": "01 · Login — senha incorreta",
+      "states": [
+        {
+          "state": "default",
+          "id": "7:135",
+          "frameName": "01 · Login — senha incorreta",
+          "tree": {
+            "id": "7:135",
+            "type": "FRAME",
+            "name": "01 · Login — senha incorreta",
+            "fidelity": "exact",
+            "size": {
+              "width": 390,
+              "height": 844
+            },
+            "sizing": {
+              "horizontal": "FIXED",
+              "vertical": "FIXED"
+            },
+            "layout": {
+              "direction": "VERTICAL",
+              "gap": {
+                "value": 24,
+                "token": "Spacing/xl"
+              },
+              "padding": {
+                "top": {
+                  "value": 32,
+                  "token": "Spacing/2xl"
+                },
+                "right": {
+                  "value": 24,
+                  "token": "Spacing/xl"
+                },
+                "bottom": {
+                  "value": 32,
+                  "token": "Spacing/2xl"
+                },
+                "left": {
+                  "value": 24,
+                  "token": "Spacing/xl"
+                }
+              },
+              "align": {
+                "main": "CENTER",
+                "cross": "MIN"
+              },
+              "wrap": false
+            },
+            "style": {
+              "fills": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "value": "#F8FAFC",
+                    "token": "Color/bg"
+                  }
+                }
+              ],
+              "clipsContent": true
+            },
+            "children": [
+              {
+                "id": "7:136",
+                "type": "FRAME",
+                "name": "title",
+                "fidelity": "exact",
+                "size": {
+                  "width": 342,
+                  "height": 64
+                },
+                "sizing": {
+                  "horizontal": "FILL",
+                  "vertical": "HUG"
+                },
+                "layout": {
+                  "direction": "VERTICAL",
+                  "gap": {
+                    "value": 8,
+                    "token": "Spacing/sm"
+                  },
+                  "padding": {
+                    "top": {
+                      "value": 0
+                    },
+                    "right": {
+                      "value": 0
+                    },
+                    "bottom": {
+                      "value": 0
+                    },
+                    "left": {
+                      "value": 0
+                    }
+                  },
+                  "align": {
+                    "main": "MIN",
+                    "cross": "MIN"
+                  },
+                  "wrap": false
+                },
+                "style": {
+                  "clipsContent": true
+                },
+                "children": [
+                  {
+                    "id": "7:137",
+                    "type": "TEXT",
+                    "name": "Carteira",
+                    "fidelity": "exact",
+                    "size": {
+                      "width": 96,
+                      "height": 32
+                    },
+                    "sizing": {
+                      "horizontal": "HUG",
+                      "vertical": "HUG"
+                    },
+                    "text": {
+                      "characters": "Carteira",
+                      "style": "heading/lg",
+                      "color": {
+                        "value": "#0F172A",
+                        "token": "Color/text/primary"
+                      }
+                    }
+                  },
+                  {
+                    "id": "7:138",
+                    "type": "TEXT",
+                    "name": "Entre para acompanhar suas finanças.",
+                    "fidelity": "exact",
+                    "size": {
+                      "width": 289,
+                      "height": 24
+                    },
+                    "sizing": {
+                      "horizontal": "HUG",
+                      "vertical": "HUG"
+                    },
+                    "text": {
+                      "characters": "Entre para acompanhar suas finanças.",
+                      "style": "body/md",
+                      "color": {
+                        "value": "#64748B",
+                        "token": "Color/text/secondary"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "7:139",
+                "type": "FRAME",
+                "name": "form",
+                "fidelity": "exact",
+                "size": {
+                  "width": 342,
+                  "height": 244
+                },
+                "sizing": {
+                  "horizontal": "FILL",
+                  "vertical": "HUG"
+                },
+                "layout": {
+                  "direction": "VERTICAL",
+                  "gap": {
+                    "value": 16,
+                    "token": "Spacing/lg"
+                  },
+                  "padding": {
+                    "top": {
+                      "value": 0
+                    },
+                    "right": {
+                      "value": 0
+                    },
+                    "bottom": {
+                      "value": 0
+                    },
+                    "left": {
+                      "value": 0
+                    }
+                  },
+                  "align": {
+                    "main": "MIN",
+                    "cross": "MIN"
+                  },
+                  "wrap": false
+                },
+                "style": {
+                  "clipsContent": true
+                },
+                "children": [
+                  {
+                    "id": "7:140",
+                    "type": "INSTANCE",
+                    "name": "Input",
+                    "fidelity": "exact",
+                    "size": {
+                      "width": 342,
+                      "height": 96
+                    },
+                    "sizing": {
+                      "horizontal": "FILL",
+                      "vertical": "HUG"
+                    },
+                    "instance": {
+                      "componentKey": "a7ec596b4a12636af643be4f14ae523a2dde58ea",
+                      "mainComponentKey": "81dcef3d7d2831341b5873debfa35b7a2f8f7acb",
+                      "componentName": "Input",
+                      "remote": true,
+                      "props": {
+                        "leadingIcon": {
+                          "componentKey": "087dbe9c98e6051c256534179685020be15d04ba",
+                          "mainComponentKey": "c9838cf5e567d4d45af3270f6ecd5cdc00d013f7",
+                          "componentName": "Icon",
+                          "variant": {
+                            "name": "mail"
+                          }
+                        },
+                        "showTrailingAction": false,
+                        "placeholder": "ana.souza@email.com",
+                        "showLeadingIcon": true,
+                        "helper": "Use o e-mail cadastrado.",
+                        "label": "E-mail",
+                        "state": "default"
+                      },
+                      "exposed": [],
+                      "overrides": []
+                    }
+                  },
+                  {
+                    "id": "7:159",
+                    "type": "INSTANCE",
+                    "name": "Input",
+                    "fidelity": "exact",
+                    "size": {
+                      "width": 342,
+                      "height": 96
+                    },
+                    "sizing": {
+                      "horizontal": "FILL",
+                      "vertical": "HUG"
+                    },
+                    "instance": {
+                      "componentKey": "a7ec596b4a12636af643be4f14ae523a2dde58ea",
+                      "mainComponentKey": "73fd130e1ce9d140d5267e81d0e77179de1d56aa",
+                      "componentName": "Input",
+                      "remote": true,
+                      "props": {
+                        "showTrailingAction": true,
+                        "showLeadingIcon": true,
+                        "label": "Senha",
+                        "helper": "Senha incorreta. Tente novamente.",
+                        "placeholder": "••••••",
+                        "leadingIcon": {
+                          "componentKey": "087dbe9c98e6051c256534179685020be15d04ba",
+                          "mainComponentKey": "fc634d6ad4208a5770dc06fd93ada9e79b868a2a",
+                          "componentName": "Icon",
+                          "variant": {
+                            "name": "lock"
+                          }
+                        },
+                        "state": "error"
+                      },
+                      "exposed": [
+                        {
+                          "path": "field/trailingAction",
+                          "componentKey": "98e95c197e644becbbdd17f97d4b958215ea32a9",
+                          "mainComponentKey": "3598de70c08923b508d54df0959a26906a50dd4c",
+                          "componentName": "IconButton",
+                          "props": {
+                            "showDot": false,
+                            "icon": {
+                              "componentKey": "087dbe9c98e6051c256534179685020be15d04ba",
+                              "mainComponentKey": "d14b606d5f97c5a9f150bdcafbe6cdf13a3b03b7",
+                              "componentName": "Icon",
+                              "variant": {
+                                "name": "eye"
+                              }
+                            },
+                            "variant": "ghost"
+                          }
+                        }
+                      ],
+                      "overrides": [
+                        {
+                          "node": "field/leadingIcon/Vector",
+                          "fields": [
+                            "strokes"
+                          ],
+                          "values": {
+                            "strokes": [
+                              {
+                                "type": "SOLID",
+                                "color": {
+                                  "value": "#64748B",
+                                  "token": "Color/text/secondary"
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "id": "7:180",
+                    "type": "INSTANCE",
+                    "name": "Checkbox",
+                    "fidelity": "exact",
+                    "size": {
+                      "width": 136,
+                      "height": 20
+                    },
+                    "sizing": {
+                      "horizontal": "HUG",
+                      "vertical": "HUG"
+                    },
+                    "instance": {
+                      "componentKey": "457dd62defacfa4a3c82475582930b62216b4f16",
+                      "mainComponentKey": "5bbeec1fcc9afe2cc04895f3ac0d3b18b8ac122a",
+                      "componentName": "Checkbox",
+                      "remote": true,
+                      "props": {
+                        "label": "Lembrar de mim",
+                        "checked": "true"
+                      },
+                      "exposed": [],
+                      "overrides": [
+                        {
+                          "node": ".",
+                          "fields": [
+                            "height",
+                            "width"
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "7:186",
+                "type": "FRAME",
+                "name": "actions",
+                "fidelity": "exact",
+                "size": {
+                  "width": 342,
+                  "height": 104
+                },
+                "sizing": {
+                  "horizontal": "FILL",
+                  "vertical": "HUG"
+                },
+                "layout": {
+                  "direction": "VERTICAL",
+                  "gap": {
+                    "value": 8,
+                    "token": "Spacing/sm"
+                  },
+                  "padding": {
+                    "top": {
+                      "value": 0
+                    },
+                    "right": {
+                      "value": 0
+                    },
+                    "bottom": {
+                      "value": 0
+                    },
+                    "left": {
+                      "value": 0
+                    }
+                  },
+                  "align": {
+                    "main": "MIN",
+                    "cross": "MIN"
+                  },
+                  "wrap": false
+                },
+                "style": {
+                  "clipsContent": true
+                },
+                "children": [
+                  {
+                    "id": "7:187",
+                    "type": "INSTANCE",
+                    "name": "Button/Entrar",
+                    "fidelity": "exact",
+                    "size": {
+                      "width": 342,
+                      "height": 48
+                    },
+                    "sizing": {
+                      "horizontal": "FILL",
+                      "vertical": "FIXED"
+                    },
+                    "instance": {
+                      "componentKey": "cc4d255d4c889786852f8ba4b57a714a4efd07ca",
+                      "mainComponentKey": "06d16f5e231c2133b5f15830df51dd16439abe72",
+                      "componentName": "Button",
+                      "remote": true,
+                      "props": {
+                        "leftIcon": {
+                          "componentKey": "087dbe9c98e6051c256534179685020be15d04ba",
+                          "mainComponentKey": "918e51fc70f1b6d40c0b3b301460a8818eb1b392",
+                          "componentName": "Icon",
+                          "variant": {
+                            "name": "plus"
+                          }
+                        },
+                        "showLeftIcon": false,
+                        "label": "Entrar",
+                        "variant": "primary",
+                        "size": "md",
+                        "state": "default"
+                      },
+                      "exposed": [],
+                      "overrides": [
+                        {
+                          "node": ".",
+                          "fields": [
+                            "height",
+                            "primaryAxisSizingMode",
+                            "width"
+                          ]
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "id": "7:192",
+                    "type": "INSTANCE",
+                    "name": "Button/Esqueci minha senha",
+                    "fidelity": "exact",
+                    "size": {
+                      "width": 342,
+                      "height": 48
+                    },
+                    "sizing": {
+                      "horizontal": "FILL",
+                      "vertical": "FIXED"
+                    },
+                    "instance": {
+                      "componentKey": "cc4d255d4c889786852f8ba4b57a714a4efd07ca",
+                      "mainComponentKey": "6b1bde94f213971a9bddc53b6673ca8e3b939b6e",
+                      "componentName": "Button",
+                      "remote": true,
+                      "props": {
+                        "leftIcon": {
+                          "componentKey": "087dbe9c98e6051c256534179685020be15d04ba",
+                          "mainComponentKey": "918e51fc70f1b6d40c0b3b301460a8818eb1b392",
+                          "componentName": "Icon",
+                          "variant": {
+                            "name": "plus"
+                          }
+                        },
+                        "showLeftIcon": false,
+                        "label": "Esqueci minha senha",
+                        "variant": "ghost",
+                        "size": "md",
+                        "state": "default"
+                      },
+                      "exposed": [],
+                      "overrides": [
+                        {
+                          "node": ".",
+                          "fields": [
+                            "height",
+                            "primaryAxisSizingMode",
+                            "width"
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "image": "images/screens/01_Login_senha_incorreta--7-135.png"
+        }
+      ]
+    }
+  ],
+  "lint": [
+    {
+      "node": "7:159",
+      "name": "Input",
+      "rule": "style-override",
+      "detail": "estilo sobrescrito fora das props do componente em \"field/leadingIcon/Vector\" (strokes)"
+    },
+    {
+      "node": "7:187",
+      "name": "Button/Entrar",
+      "rule": "renamed-instance",
+      "detail": "instância renomeada; componente \"Button\""
+    },
+    {
+      "node": "7:192",
+      "name": "Button/Esqueci minha senha",
+      "rule": "renamed-instance",
+      "detail": "instância renomeada; componente \"Button\""
+    }
+  ]
+}

@@ -1,0 +1,1451 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": false,
+  "definitions": {
+    "ComponentDef": {
+      "additionalProperties": false,
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "key": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "props": {
+          "additionalProperties": {
+            "$ref": "#/definitions/PropDef"
+          },
+          "type": "object"
+        },
+        "role": {
+          "description": "`exported`: part of the selection. `dependency`: local component referenced below an exported root.",
+          "enum": [
+            "exported",
+            "dependency"
+          ],
+          "type": "string"
+        },
+        "variants": {
+          "items": {
+            "$ref": "#/definitions/VariantDef"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "key",
+        "name",
+        "role",
+        "props",
+        "variants"
+      ],
+      "type": "object"
+    },
+    "ComponentRef": {
+      "additionalProperties": false,
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "key": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "props": {
+          "additionalProperties": {
+            "$ref": "#/definitions/PropDef"
+          },
+          "type": "object"
+        },
+        "remote": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "key",
+        "name",
+        "remote",
+        "props"
+      ],
+      "type": "object"
+    },
+    "Effect": {
+      "additionalProperties": false,
+      "properties": {
+        "color": {
+          "type": "string"
+        },
+        "offset": {
+          "additionalProperties": false,
+          "properties": {
+            "x": {
+              "type": "number"
+            },
+            "y": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "x",
+            "y"
+          ],
+          "type": "object"
+        },
+        "radius": {
+          "type": "number"
+        },
+        "spread": {
+          "type": "number"
+        },
+        "style": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "type"
+      ],
+      "type": "object"
+    },
+    "ExposedInstance": {
+      "additionalProperties": false,
+      "properties": {
+        "componentKey": {
+          "type": "string"
+        },
+        "componentName": {
+          "type": "string"
+        },
+        "mainComponentKey": {
+          "description": "Key of the exact main component: the variant inside a set, or the component itself when it has no variants. Finds a mapping that targets one variant (e.g. each icon of an `Icon` set). Absent in IR 1.0.",
+          "type": "string"
+        },
+        "path": {
+          "description": "Layer name path inside the instance, e.g. `trailing/Badge` or `.Nested / Global Switcher/1. Flag`.",
+          "type": "string"
+        },
+        "props": {
+          "additionalProperties": {
+            "$ref": "#/definitions/PropValue"
+          },
+          "type": "object"
+        }
+      },
+      "required": [
+        "path",
+        "componentKey",
+        "componentName",
+        "props"
+      ],
+      "type": "object"
+    },
+    "Fidelity": {
+      "enum": [
+        "exact",
+        "inferred",
+        "unresolved"
+      ],
+      "type": "string"
+    },
+    "FlowDef": {
+      "additionalProperties": false,
+      "properties": {
+        "edges": {
+          "items": {
+            "$ref": "#/definitions/FlowEdge"
+          },
+          "type": "array"
+        },
+        "start": {
+          "description": "Frame id of the starting screen state.",
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "start",
+        "edges"
+      ],
+      "type": "object"
+    },
+    "FlowEdge": {
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "type": "string"
+        },
+        "from": {
+          "description": "Frame id of the screen state where the trigger lives.",
+          "type": "string"
+        },
+        "navigation": {
+          "type": "string"
+        },
+        "to": {
+          "description": "Destination frame id, `back`, `close`, a URL, or null when the destination was removed.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "transition": {
+          "type": "string"
+        },
+        "trigger": {
+          "additionalProperties": false,
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "node": {
+              "type": "string"
+            },
+            "type": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "node",
+            "name",
+            "type"
+          ],
+          "type": "object"
+        }
+      },
+      "required": [
+        "from",
+        "trigger",
+        "to",
+        "action"
+      ],
+      "type": "object"
+    },
+    "IRNode": {
+      "additionalProperties": false,
+      "properties": {
+        "bindings": {
+          "additionalProperties": false,
+          "description": "Inside component trees: which component property drives this node.",
+          "properties": {
+            "characters": {
+              "type": "string"
+            },
+            "mainComponent": {
+              "type": "string"
+            },
+            "visible": {
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "children": {
+          "items": {
+            "$ref": "#/definitions/IRNode"
+          },
+          "type": "array"
+        },
+        "fidelity": {
+          "$ref": "#/definitions/Fidelity"
+        },
+        "id": {
+          "type": "string"
+        },
+        "instance": {
+          "$ref": "#/definitions/InstanceInfo"
+        },
+        "layout": {
+          "$ref": "#/definitions/Layout"
+        },
+        "limits": {
+          "additionalProperties": false,
+          "properties": {
+            "maxHeight": {
+              "$ref": "#/definitions/Value%3Cnumber%3E"
+            },
+            "maxWidth": {
+              "$ref": "#/definitions/Value%3Cnumber%3E"
+            },
+            "minHeight": {
+              "$ref": "#/definitions/Value%3Cnumber%3E"
+            },
+            "minWidth": {
+              "$ref": "#/definitions/Value%3Cnumber%3E"
+            }
+          },
+          "type": "object"
+        },
+        "modes": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Variable modes set explicitly on this node, collection name → mode name (e.g. `{ \"Theme\": \"Dark\" }`).",
+          "type": "object"
+        },
+        "name": {
+          "type": "string"
+        },
+        "position": {
+          "additionalProperties": false,
+          "description": "Present when the node is not placed by auto layout (free positioning or absolute).",
+          "properties": {
+            "x": {
+              "type": "number"
+            },
+            "y": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "x",
+            "y"
+          ],
+          "type": "object"
+        },
+        "size": {
+          "additionalProperties": false,
+          "properties": {
+            "height": {
+              "type": "number"
+            },
+            "width": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "width",
+            "height"
+          ],
+          "type": "object"
+        },
+        "sizeTokens": {
+          "additionalProperties": false,
+          "description": "Variables bound to the node's width/height (e.g. icon sizes), keys into `IR.tokens`.",
+          "properties": {
+            "height": {
+              "type": "string"
+            },
+            "width": {
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "sizing": {
+          "additionalProperties": false,
+          "properties": {
+            "horizontal": {
+              "$ref": "#/definitions/Sizing"
+            },
+            "vertical": {
+              "$ref": "#/definitions/Sizing"
+            }
+          },
+          "required": [
+            "horizontal",
+            "vertical"
+          ],
+          "type": "object"
+        },
+        "style": {
+          "$ref": "#/definitions/Style"
+        },
+        "text": {
+          "$ref": "#/definitions/TextInfo"
+        },
+        "type": {
+          "type": "string"
+        },
+        "visible": {
+          "const": false,
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "id",
+        "type",
+        "name",
+        "fidelity",
+        "size"
+      ],
+      "type": "object"
+    },
+    "IRVersion": {
+      "description": "IR v1 — the contract between Figma exporters (plugin, MCP) and figma2dart. schema/ir.v1.schema.json is generated from these types (`npm run schema`); edit here, not there.",
+      "enum": [
+        "1.0.0",
+        "1.1.0",
+        "1.2.0"
+      ],
+      "type": "string"
+    },
+    "InstanceInfo": {
+      "additionalProperties": false,
+      "properties": {
+        "componentKey": {
+          "description": "Key of the component set (or of the component, when it has no variants). Key into `IR.componentRefs`.",
+          "type": "string"
+        },
+        "componentName": {
+          "type": "string"
+        },
+        "exposed": {
+          "description": "Nested instances exposed through this instance (\"expose nested instances\"), at any depth.",
+          "items": {
+            "$ref": "#/definitions/ExposedInstance"
+          },
+          "type": "array"
+        },
+        "mainComponentKey": {
+          "description": "Key of the exact main component: the variant inside a set, or the component itself when it has no variants. Finds a mapping that targets one variant (e.g. each icon of an `Icon` set). Absent in IR 1.0.",
+          "type": "string"
+        },
+        "overrides": {
+          "description": "Customizations beyond what this IR already records as props: style changes, and text, visibility or nested instances changed directly on a layer that is not driven by a recorded component property.",
+          "items": {
+            "$ref": "#/definitions/Override"
+          },
+          "type": "array"
+        },
+        "props": {
+          "additionalProperties": {
+            "$ref": "#/definitions/PropValue"
+          },
+          "description": "Component property values on this instance, names without the `#id` suffix.",
+          "type": "object"
+        },
+        "remote": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "componentKey",
+        "componentName",
+        "remote",
+        "props",
+        "exposed",
+        "overrides"
+      ],
+      "type": "object"
+    },
+    "Kind": {
+      "enum": [
+        "component",
+        "screen",
+        "flow",
+        "library"
+      ],
+      "type": "string"
+    },
+    "Layout": {
+      "additionalProperties": false,
+      "properties": {
+        "align": {
+          "additionalProperties": false,
+          "properties": {
+            "cross": {
+              "type": "string"
+            },
+            "main": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "main",
+            "cross"
+          ],
+          "type": "object"
+        },
+        "counterGap": {
+          "$ref": "#/definitions/Value%3Cnumber%3E"
+        },
+        "direction": {
+          "enum": [
+            "HORIZONTAL",
+            "VERTICAL",
+            "GRID"
+          ],
+          "type": "string"
+        },
+        "gap": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Value%3Cnumber%3E"
+            },
+            {
+              "const": "auto",
+              "type": "string"
+            }
+          ]
+        },
+        "grid": {
+          "additionalProperties": false,
+          "description": "direction=GRID only.",
+          "properties": {
+            "columnGap": {
+              "$ref": "#/definitions/Value%3Cnumber%3E"
+            },
+            "columns": {
+              "type": "number"
+            },
+            "rowGap": {
+              "$ref": "#/definitions/Value%3Cnumber%3E"
+            },
+            "rows": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "rows",
+            "columns",
+            "rowGap",
+            "columnGap"
+          ],
+          "type": "object"
+        },
+        "padding": {
+          "additionalProperties": false,
+          "properties": {
+            "bottom": {
+              "$ref": "#/definitions/Value%3Cnumber%3E"
+            },
+            "left": {
+              "$ref": "#/definitions/Value%3Cnumber%3E"
+            },
+            "right": {
+              "$ref": "#/definitions/Value%3Cnumber%3E"
+            },
+            "top": {
+              "$ref": "#/definitions/Value%3Cnumber%3E"
+            }
+          },
+          "required": [
+            "top",
+            "right",
+            "bottom",
+            "left"
+          ],
+          "type": "object"
+        },
+        "wrap": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "direction",
+        "gap",
+        "padding",
+        "align",
+        "wrap"
+      ],
+      "type": "object"
+    },
+    "LintIssue": {
+      "additionalProperties": false,
+      "properties": {
+        "detail": {
+          "type": "string"
+        },
+        "locatable": {
+          "description": "False for variables and styles, which cannot be focused on the canvas. Added in IR 1.2.",
+          "type": "boolean"
+        },
+        "name": {
+          "type": "string"
+        },
+        "node": {
+          "type": "string"
+        },
+        "rule": {
+          "$ref": "#/definitions/LintRule"
+        }
+      },
+      "required": [
+        "node",
+        "name",
+        "rule",
+        "detail"
+      ],
+      "type": "object"
+    },
+    "LintRule": {
+      "enum": [
+        "raw-color",
+        "raw-spacing",
+        "raw-radius",
+        "text-without-style",
+        "renamed-instance",
+        "detached-instance",
+        "style-override",
+        "missing-code-syntax",
+        "absolute-layout",
+        "duplicate-name"
+      ],
+      "type": "string"
+    },
+    "Override": {
+      "additionalProperties": false,
+      "properties": {
+        "fields": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "id": {
+          "description": "Stable Figma layer id. Added in IR 1.2; old exports only contain `node`.",
+          "type": "string"
+        },
+        "node": {
+          "description": "Layer path inside the instance; `.` is the instance itself.",
+          "type": "string"
+        },
+        "values": {
+          "additionalProperties": false,
+          "description": "New values of the overridden fields, so the generator can reproduce the customization.",
+          "properties": {
+            "characters": {
+              "type": "string"
+            },
+            "component": {
+              "$ref": "#/definitions/SwapValue",
+              "description": "Nested instance: the component it shows (after a swap) and its props."
+            },
+            "fills": {
+              "items": {
+                "$ref": "#/definitions/Paint"
+              },
+              "type": "array"
+            },
+            "opacity": {
+              "type": "number"
+            },
+            "props": {
+              "additionalProperties": {
+                "$ref": "#/definitions/PropValue"
+              },
+              "type": "object"
+            },
+            "strokes": {
+              "items": {
+                "$ref": "#/definitions/Paint"
+              },
+              "type": "array"
+            },
+            "visible": {
+              "type": "boolean"
+            }
+          },
+          "type": "object"
+        }
+      },
+      "required": [
+        "node",
+        "fields"
+      ],
+      "type": "object"
+    },
+    "Paint": {
+      "anyOf": [
+        {
+          "additionalProperties": false,
+          "properties": {
+            "color": {
+              "$ref": "#/definitions/Value%3Cstring%3E"
+            },
+            "opacity": {
+              "type": "number"
+            },
+            "type": {
+              "const": "SOLID",
+              "type": "string"
+            }
+          },
+          "required": [
+            "type",
+            "color"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "scaleMode": {
+              "type": "string"
+            },
+            "type": {
+              "const": "IMAGE",
+              "type": "string"
+            }
+          },
+          "required": [
+            "type",
+            "scaleMode"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "type": "string"
+            },
+            "stops": {
+              "items": {
+                "additionalProperties": false,
+                "properties": {
+                  "color": {
+                    "$ref": "#/definitions/Value%3Cstring%3E"
+                  },
+                  "position": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "position",
+                  "color"
+                ],
+                "type": "object"
+              },
+              "type": "array"
+            },
+            "type": {
+              "const": "GRADIENT",
+              "type": "string"
+            }
+          },
+          "required": [
+            "type",
+            "kind",
+            "stops"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "type": "string"
+            },
+            "type": {
+              "const": "OTHER",
+              "type": "string"
+            }
+          },
+          "required": [
+            "type",
+            "kind"
+          ],
+          "type": "object"
+        }
+      ]
+    },
+    "PaintStyleDef": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "key": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "paints": {
+          "items": {
+            "$ref": "#/definitions/Paint"
+          },
+          "type": "array"
+        },
+        "remote": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "name",
+        "paints",
+        "id",
+        "key",
+        "remote"
+      ],
+      "type": "object"
+    },
+    "PropDef": {
+      "additionalProperties": false,
+      "properties": {
+        "default": {
+          "type": [
+            "string",
+            "boolean"
+          ]
+        },
+        "options": {
+          "description": "VARIANT only.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "type": {
+          "$ref": "#/definitions/PropType"
+        }
+      },
+      "required": [
+        "type",
+        "default"
+      ],
+      "type": "object"
+    },
+    "PropType": {
+      "enum": [
+        "VARIANT",
+        "TEXT",
+        "BOOLEAN",
+        "INSTANCE_SWAP",
+        "SLOT"
+      ],
+      "type": "string"
+    },
+    "PropValue": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "boolean"
+        },
+        {
+          "$ref": "#/definitions/SwapValue"
+        }
+      ]
+    },
+    "ScreenDef": {
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "description": "Base name: the part before ` / ` in the frame name.",
+          "type": "string"
+        },
+        "states": {
+          "items": {
+            "$ref": "#/definitions/ScreenState"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "name",
+        "states"
+      ],
+      "type": "object"
+    },
+    "ScreenState": {
+      "additionalProperties": false,
+      "properties": {
+        "frameName": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "image": {
+          "type": "string"
+        },
+        "state": {
+          "description": "Part after ` / ` in the frame name, or `default`.",
+          "type": "string"
+        },
+        "tree": {
+          "$ref": "#/definitions/IRNode"
+        }
+      },
+      "required": [
+        "state",
+        "id",
+        "frameName",
+        "tree"
+      ],
+      "type": "object"
+    },
+    "Sizing": {
+      "enum": [
+        "FIXED",
+        "HUG",
+        "FILL"
+      ],
+      "type": "string"
+    },
+    "Source": {
+      "additionalProperties": false,
+      "properties": {
+        "exportedAt": {
+          "type": "string"
+        },
+        "extractor": {
+          "type": "string"
+        },
+        "fileKey": {
+          "description": "Present via MCP. The plugin only gets it as a private organization plugin; imported as a development plugin it is absent.",
+          "type": "string"
+        },
+        "fileName": {
+          "description": "`figma.root.name`. The MCP `use_figma` runtime reports `Document` here; rely on `fileKey` instead.",
+          "type": "string"
+        },
+        "pageName": {
+          "type": "string"
+        },
+        "via": {
+          "$ref": "#/definitions/Via"
+        }
+      },
+      "required": [
+        "via",
+        "extractor",
+        "fileName",
+        "pageName",
+        "exportedAt"
+      ],
+      "type": "object"
+    },
+    "Style": {
+      "additionalProperties": false,
+      "properties": {
+        "clipsContent": {
+          "type": "boolean"
+        },
+        "effects": {
+          "items": {
+            "$ref": "#/definitions/Effect"
+          },
+          "type": "array"
+        },
+        "fillStyle": {
+          "description": "Color style applied to the fills (key into `IR.paintStyles`).",
+          "type": "string"
+        },
+        "fills": {
+          "items": {
+            "$ref": "#/definitions/Paint"
+          },
+          "type": "array"
+        },
+        "opacity": {
+          "type": "number"
+        },
+        "radius": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Value%3Cnumber%3E"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "bottomLeft": {
+                  "$ref": "#/definitions/Value%3Cnumber%3E"
+                },
+                "bottomRight": {
+                  "$ref": "#/definitions/Value%3Cnumber%3E"
+                },
+                "topLeft": {
+                  "$ref": "#/definitions/Value%3Cnumber%3E"
+                },
+                "topRight": {
+                  "$ref": "#/definitions/Value%3Cnumber%3E"
+                }
+              },
+              "required": [
+                "topLeft",
+                "topRight",
+                "bottomRight",
+                "bottomLeft"
+              ],
+              "type": "object"
+            }
+          ]
+        },
+        "strokeAlign": {
+          "type": "string"
+        },
+        "strokeStyle": {
+          "type": "string"
+        },
+        "strokeWeight": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Value%3Cnumber%3E"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "bottom": {
+                  "$ref": "#/definitions/Value%3Cnumber%3E"
+                },
+                "left": {
+                  "$ref": "#/definitions/Value%3Cnumber%3E"
+                },
+                "right": {
+                  "$ref": "#/definitions/Value%3Cnumber%3E"
+                },
+                "top": {
+                  "$ref": "#/definitions/Value%3Cnumber%3E"
+                }
+              },
+              "required": [
+                "top",
+                "right",
+                "bottom",
+                "left"
+              ],
+              "type": "object"
+            }
+          ]
+        },
+        "strokes": {
+          "items": {
+            "$ref": "#/definitions/Paint"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "SwapValue": {
+      "additionalProperties": false,
+      "description": "INSTANCE_SWAP value: the swapped-in component.",
+      "properties": {
+        "componentKey": {
+          "type": "string"
+        },
+        "componentName": {
+          "type": "string"
+        },
+        "mainComponentKey": {
+          "description": "Key of the exact main component: the variant inside a set, or the component itself when it has no variants. Finds a mapping that targets one variant (e.g. each icon of an `Icon` set). Absent in IR 1.0.",
+          "type": "string"
+        },
+        "variant": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Variant values of the swapped-in component, e.g. `{ \"name\": \"lock\" }` for an Icon.",
+          "type": "object"
+        }
+      },
+      "required": [
+        "componentKey",
+        "componentName"
+      ],
+      "type": "object"
+    },
+    "TextInfo": {
+      "additionalProperties": false,
+      "properties": {
+        "align": {
+          "type": "string"
+        },
+        "characters": {
+          "type": "string"
+        },
+        "color": {
+          "$ref": "#/definitions/Value%3Cstring%3E"
+        },
+        "colorStyle": {
+          "description": "Color style of the text (key into `IR.paintStyles`).",
+          "type": "string"
+        },
+        "font": {
+          "additionalProperties": false,
+          "description": "Raw font, when there is no text style.",
+          "properties": {
+            "family": {
+              "type": "string"
+            },
+            "size": {
+              "type": "number"
+            },
+            "style": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "family",
+            "style",
+            "size"
+          ],
+          "type": "object"
+        },
+        "segments": {
+          "description": "Present when the text mixes styles or colors.",
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "characters": {
+                "type": "string"
+              },
+              "color": {
+                "$ref": "#/definitions/Value%3Cstring%3E"
+              },
+              "colorStyle": {
+                "type": "string"
+              },
+              "style": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "characters"
+            ],
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "style": {
+          "description": "Text style name (key into `IR.textStyles`), when the whole text uses one style.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "characters"
+      ],
+      "type": "object"
+    },
+    "TextStyleDef": {
+      "additionalProperties": false,
+      "properties": {
+        "fontFamily": {
+          "type": "string"
+        },
+        "fontSize": {
+          "type": "number"
+        },
+        "fontStyle": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "key": {
+          "type": "string"
+        },
+        "letterSpacing": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "percent": {
+                  "type": "number"
+                }
+              },
+              "required": [
+                "percent"
+              ],
+              "type": "object"
+            }
+          ]
+        },
+        "lineHeight": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "const": "auto",
+              "type": "string"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "percent": {
+                  "type": "number"
+                }
+              },
+              "required": [
+                "percent"
+              ],
+              "type": "object"
+            }
+          ]
+        },
+        "name": {
+          "type": "string"
+        },
+        "remote": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "name",
+        "fontFamily",
+        "fontStyle",
+        "fontSize",
+        "lineHeight",
+        "letterSpacing",
+        "id",
+        "key",
+        "remote"
+      ],
+      "type": "object"
+    },
+    "Token": {
+      "additionalProperties": false,
+      "properties": {
+        "aliasOf": {
+          "description": "Qualified name of the token this one aliases, when it is an alias.",
+          "type": "string"
+        },
+        "codeSyntax": {
+          "additionalProperties": false,
+          "properties": {
+            "ANDROID": {
+              "type": "string"
+            },
+            "WEB": {
+              "type": "string"
+            },
+            "iOS": {
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "collection": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "key": {
+          "type": "string"
+        },
+        "modes": {
+          "additionalProperties": {
+            "additionalProperties": false,
+            "properties": {
+              "aliasOf": {
+                "type": "string"
+              },
+              "value": {
+                "type": [
+                  "string",
+                  "number",
+                  "boolean"
+                ]
+              }
+            },
+            "required": [
+              "value"
+            ],
+            "type": "object"
+          },
+          "description": "Value per mode name (e.g. `Light`, `Dark`), when the collection has more than one mode.",
+          "type": "object"
+        },
+        "name": {
+          "description": "Variable name inside its collection, e.g. `text/primary`.",
+          "type": "string"
+        },
+        "remote": {
+          "type": "boolean"
+        },
+        "type": {
+          "description": "Figma resolved type: COLOR, FLOAT, STRING, BOOLEAN (newer Figma versions add more).",
+          "type": "string"
+        },
+        "value": {
+          "description": "Resolved value in the collection's default mode. Colors are `#RRGGBB` or `#RRGGBBAA`.",
+          "type": [
+            "string",
+            "number",
+            "boolean"
+          ]
+        }
+      },
+      "required": [
+        "name",
+        "collection",
+        "type",
+        "value",
+        "id",
+        "key",
+        "remote"
+      ],
+      "type": "object"
+    },
+    "Value<number>": {
+      "additionalProperties": false,
+      "description": "A value that may come from a variable. `token` is the key into `IR.tokens`.",
+      "properties": {
+        "token": {
+          "type": "string"
+        },
+        "value": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "value"
+      ],
+      "type": "object"
+    },
+    "Value<string>": {
+      "additionalProperties": false,
+      "description": "A value that may come from a variable. `token` is the key into `IR.tokens`.",
+      "properties": {
+        "token": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "value"
+      ],
+      "type": "object"
+    },
+    "VariantDef": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "image": {
+          "description": "Path inside the export zip (plugin only).",
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "props": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Variant values, e.g. `{ \"size\": \"md\" }`. Empty for components without variants.",
+          "type": "object"
+        },
+        "svg": {
+          "description": "SVG markup, for vector-only components such as icons (when the environment can export it).",
+          "type": "string"
+        },
+        "tree": {
+          "$ref": "#/definitions/IRNode"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "props",
+        "tree"
+      ],
+      "type": "object"
+    },
+    "Via": {
+      "enum": [
+        "plugin",
+        "mcp-extractor",
+        "mcp-native"
+      ],
+      "type": "string"
+    }
+  },
+  "properties": {
+    "componentRefs": {
+      "additionalProperties": {
+        "$ref": "#/definitions/ComponentRef"
+      },
+      "description": "Every component referenced by an instance or instance swap, keyed by component (set) key.",
+      "type": "object"
+    },
+    "components": {
+      "description": "Components exported in depth: selected/library components and local dependencies found below any exported root.",
+      "items": {
+        "$ref": "#/definitions/ComponentDef"
+      },
+      "type": "array"
+    },
+    "flow": {
+      "$ref": "#/definitions/FlowDef"
+    },
+    "intent": {
+      "additionalProperties": false,
+      "properties": {
+        "notes": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "irVersion": {
+      "$ref": "#/definitions/IRVersion"
+    },
+    "kind": {
+      "$ref": "#/definitions/Kind"
+    },
+    "lint": {
+      "items": {
+        "$ref": "#/definitions/LintIssue"
+      },
+      "type": "array"
+    },
+    "paintStyles": {
+      "additionalProperties": {
+        "$ref": "#/definitions/PaintStyleDef"
+      },
+      "description": "Color styles used by the export (files that use styles instead of, or besides, variables), keyed by name.",
+      "type": "object"
+    },
+    "screens": {
+      "items": {
+        "$ref": "#/definitions/ScreenDef"
+      },
+      "type": "array"
+    },
+    "source": {
+      "$ref": "#/definitions/Source"
+    },
+    "textStyles": {
+      "additionalProperties": {
+        "$ref": "#/definitions/TextStyleDef"
+      },
+      "description": "Text styles used by the export, keyed by style name (e.g. `heading/md`).",
+      "type": "object"
+    },
+    "tokens": {
+      "additionalProperties": {
+        "$ref": "#/definitions/Token"
+      },
+      "description": "Tokens used by the export, keyed by `Collection/name` (e.g. `Spacing/lg`).",
+      "type": "object"
+    }
+  },
+  "required": [
+    "irVersion",
+    "kind",
+    "source",
+    "tokens",
+    "textStyles",
+    "componentRefs",
+    "components",
+    "screens",
+    "lint"
+  ],
+  "type": "object"
+}

@@ -1,0 +1,10 @@
+{
+  // Plugin UI: runs in an iframe with DOM, without access to the `figma` global.
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "lib": ["ES2020", "DOM"],
+    "types": []
+  },
+  "include": ["./**/*.ts", "../plugin/messages.ts", "../extractor/ir.ts"],
+  "exclude": []
+}

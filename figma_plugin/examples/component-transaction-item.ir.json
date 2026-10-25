@@ -1,0 +1,1039 @@
+{
+  "irVersion": "1.0.0",
+  "kind": "component",
+  "source": {
+    "via": "mcp-extractor",
+    "extractor": "0.1.0",
+    "fileKey": "sgwwQGDTn2rhRA1PMaqL5f",
+    "fileName": "Document",
+    "pageName": "Components",
+    "exportedAt": "2026-10-25T02:09:53.365Z"
+  },
+  "tokens": {
+    "Spacing/md": {
+      "name": "md",
+      "collection": "Spacing",
+      "type": "FLOAT",
+      "value": 12,
+      "codeSyntax": {
+        "WEB": "var(--spacing-md)"
+      },
+      "id": "VariableID:1:30",
+      "key": "8acb93300e6e2c9946f13d9cbafcdc31790c93eb",
+      "remote": false
+    },
+    "Spacing/xs": {
+      "name": "xs",
+      "collection": "Spacing",
+      "type": "FLOAT",
+      "value": 4,
+      "codeSyntax": {
+        "WEB": "var(--spacing-xs)"
+      },
+      "id": "VariableID:1:28",
+      "key": "77e427ec2057daaed9469f2f46b813c704424af5",
+      "remote": false
+    },
+    "Primitives/gray/900": {
+      "name": "gray/900",
+      "collection": "Primitives",
+      "type": "COLOR",
+      "value": "#0F172A",
+      "codeSyntax": {
+        "WEB": "var(--gray-900)"
+      },
+      "id": "VariableID:1:11",
+      "key": "31a14f2413132cf865d7b4b637570bae2c6550b5",
+      "remote": false
+    },
+    "Color/text/primary": {
+      "name": "text/primary",
+      "collection": "Color",
+      "type": "COLOR",
+      "value": "#0F172A",
+      "aliasOf": "Primitives/gray/900",
+      "codeSyntax": {
+        "WEB": "var(--color-text-primary)"
+      },
+      "id": "VariableID:1:19",
+      "key": "57821f5234d13875833a2fd6896b29fdf1e3bfd5",
+      "remote": false
+    },
+    "Primitives/gray/500": {
+      "name": "gray/500",
+      "collection": "Primitives",
+      "type": "COLOR",
+      "value": "#64748B",
+      "codeSyntax": {
+        "WEB": "var(--gray-500)"
+      },
+      "id": "VariableID:1:10",
+      "key": "6ff00148d4352090ab5e3694ef9c77d6fb78d7dc",
+      "remote": false
+    },
+    "Color/text/secondary": {
+      "name": "text/secondary",
+      "collection": "Color",
+      "type": "COLOR",
+      "value": "#64748B",
+      "aliasOf": "Primitives/gray/500",
+      "codeSyntax": {
+        "WEB": "var(--color-text-secondary)"
+      },
+      "id": "VariableID:1:20",
+      "key": "015a8a916d03ae25b323035d581578b11b57af2b",
+      "remote": false
+    },
+    "Primitives/green/500": {
+      "name": "green/500",
+      "collection": "Primitives",
+      "type": "COLOR",
+      "value": "#16A34A",
+      "codeSyntax": {
+        "WEB": "var(--green-500)"
+      },
+      "id": "VariableID:1:12",
+      "key": "7e807192a18d879c9525c6bd2b73755b0caae61d",
+      "remote": false
+    },
+    "Color/success": {
+      "name": "success",
+      "collection": "Color",
+      "type": "COLOR",
+      "value": "#16A34A",
+      "aliasOf": "Primitives/green/500",
+      "codeSyntax": {
+        "WEB": "var(--color-success)"
+      },
+      "id": "VariableID:1:24",
+      "key": "df0dded1a9acc85d0b27f572e986abd375ea39e0",
+      "remote": false
+    }
+  },
+  "textStyles": {
+    "label": {
+      "name": "label",
+      "fontFamily": "Inter",
+      "fontStyle": "Medium",
+      "fontSize": 14,
+      "lineHeight": 20,
+      "letterSpacing": {
+        "percent": 0
+      },
+      "id": "S:22bdad2cb496ea5ac10e19155fdd06d381bba857,",
+      "key": "22bdad2cb496ea5ac10e19155fdd06d381bba857",
+      "remote": false
+    },
+    "body/sm": {
+      "name": "body/sm",
+      "fontFamily": "Inter",
+      "fontStyle": "Regular",
+      "fontSize": 14,
+      "lineHeight": 20,
+      "letterSpacing": {
+        "percent": 0
+      },
+      "id": "S:cc29a992faf9d6bd93c35d717c400a54ec3ecaeb,",
+      "key": "cc29a992faf9d6bd93c35d717c400a54ec3ecaeb",
+      "remote": false
+    }
+  },
+  "componentRefs": {
+    "d80c1ef919ba7685ba72eeac61c7ec49cfba48a1": {
+      "key": "d80c1ef919ba7685ba72eeac61c7ec49cfba48a1",
+      "name": "TransactionItem",
+      "remote": false,
+      "description": "Transaction row. direction in/out. Props: title, subtitle, amount, showBadge (+ exposed Badge). Built from Avatar, Badge, Icon instances.",
+      "props": {
+        "title": {
+          "type": "TEXT",
+          "default": "Salário"
+        },
+        "subtitle": {
+          "type": "TEXT",
+          "default": "Hoje, 09:24"
+        },
+        "amount": {
+          "type": "TEXT",
+          "default": "+ R$ 5.200,00"
+        },
+        "showBadge": {
+          "type": "BOOLEAN",
+          "default": true
+        },
+        "direction": {
+          "type": "VARIANT",
+          "default": "in",
+          "options": [
+            "in",
+            "out"
+          ]
+        }
+      }
+    },
+    "4a1bb73f19680e77a1be870a2630949e0033bddc": {
+      "key": "4a1bb73f19680e77a1be870a2630949e0033bddc",
+      "name": "Avatar",
+      "remote": false,
+      "description": "Round avatar. type initials/icon, size sm(32)/md(40). Props: initials (text) or icon (Icon swap).",
+      "props": {
+        "initials": {
+          "type": "TEXT",
+          "default": "PS"
+        },
+        "icon": {
+          "type": "INSTANCE_SWAP",
+          "default": "2:21"
+        },
+        "type": {
+          "type": "VARIANT",
+          "default": "initials",
+          "options": [
+            "initials",
+            "icon"
+          ]
+        },
+        "size": {
+          "type": "VARIANT",
+          "default": "sm",
+          "options": [
+            "sm",
+            "md"
+          ]
+        }
+      }
+    },
+    "087dbe9c98e6051c256534179685020be15d04ba": {
+      "key": "087dbe9c98e6051c256534179685020be15d04ba",
+      "name": "Icon",
+      "remote": false,
+      "description": "Outline icon set, 24px, stroke 2. Color comes from the vector stroke bound to a Color variable (default text/primary). Use as INSTANCE_SWAP in other components.",
+      "props": {
+        "name": {
+          "type": "VARIANT",
+          "default": "home",
+          "options": [
+            "home",
+            "search",
+            "bell",
+            "plus",
+            "arrow-up-right",
+            "arrow-down-left",
+            "eye",
+            "eye-off",
+            "check",
+            "chevron-right",
+            "mail",
+            "lock"
+          ]
+        }
+      }
+    },
+    "f5c999bbdd2c2b543fd66177465fe4a300b30e9a": {
+      "key": "f5c999bbdd2c2b543fd66177465fe4a300b30e9a",
+      "name": "Badge",
+      "remote": false,
+      "description": "Status pill. tone success/danger/warning/neutral (tinted bg at 12%). Prop: label.",
+      "props": {
+        "label": {
+          "type": "TEXT",
+          "default": "Badge"
+        },
+        "tone": {
+          "type": "VARIANT",
+          "default": "success",
+          "options": [
+            "success",
+            "danger",
+            "warning",
+            "neutral"
+          ]
+        }
+      }
+    }
+  },
+  "components": [
+    {
+      "id": "6:42",
+      "key": "d80c1ef919ba7685ba72eeac61c7ec49cfba48a1",
+      "name": "TransactionItem",
+      "role": "exported",
+      "description": "Transaction row. direction in/out. Props: title, subtitle, amount, showBadge (+ exposed Badge). Built from Avatar, Badge, Icon instances.",
+      "props": {
+        "title": {
+          "type": "TEXT",
+          "default": "Salário"
+        },
+        "subtitle": {
+          "type": "TEXT",
+          "default": "Hoje, 09:24"
+        },
+        "amount": {
+          "type": "TEXT",
+          "default": "+ R$ 5.200,00"
+        },
+        "showBadge": {
+          "type": "BOOLEAN",
+          "default": true
+        },
+        "direction": {
+          "type": "VARIANT",
+          "default": "in",
+          "options": [
+            "in",
+            "out"
+          ]
+        }
+      },
+      "variants": [
+        {
+          "id": "6:15",
+          "name": "direction=in",
+          "props": {
+            "direction": "in"
+          },
+          "tree": {
+            "id": "6:15",
+            "type": "COMPONENT",
+            "name": "direction=in",
+            "fidelity": "exact",
+            "size": {
+              "width": 342,
+              "height": 72
+            },
+            "sizing": {
+              "horizontal": "FIXED",
+              "vertical": "HUG"
+            },
+            "layout": {
+              "direction": "HORIZONTAL",
+              "gap": {
+                "value": 12,
+                "token": "Spacing/md"
+              },
+              "padding": {
+                "top": {
+                  "value": 12,
+                  "token": "Spacing/md"
+                },
+                "right": {
+                  "value": 0
+                },
+                "bottom": {
+                  "value": 12,
+                  "token": "Spacing/md"
+                },
+                "left": {
+                  "value": 0
+                }
+              },
+              "align": {
+                "main": "MIN",
+                "cross": "CENTER"
+              },
+              "wrap": false
+            },
+            "children": [
+              {
+                "id": "6:16",
+                "type": "INSTANCE",
+                "name": "Avatar",
+                "fidelity": "exact",
+                "size": {
+                  "width": 40,
+                  "height": 40
+                },
+                "sizing": {
+                  "horizontal": "FIXED",
+                  "vertical": "FIXED"
+                },
+                "instance": {
+                  "componentKey": "4a1bb73f19680e77a1be870a2630949e0033bddc",
+                  "componentName": "Avatar",
+                  "remote": false,
+                  "props": {
+                    "initials": "PS",
+                    "icon": {
+                      "componentKey": "087dbe9c98e6051c256534179685020be15d04ba",
+                      "componentName": "Icon",
+                      "variant": {
+                        "name": "arrow-down-left"
+                      }
+                    },
+                    "type": "icon",
+                    "size": "md"
+                  },
+                  "exposed": [],
+                  "overrides": [
+                    {
+                      "node": ".",
+                      "fields": [
+                        "fills"
+                      ]
+                    },
+                    {
+                      "node": "icon/Vector",
+                      "fields": [
+                        "strokes"
+                      ]
+                    },
+                    {
+                      "node": "bg",
+                      "fields": [
+                        "fills"
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "6:19",
+                "type": "FRAME",
+                "name": "texts",
+                "fidelity": "exact",
+                "size": {
+                  "width": 150,
+                  "height": 44
+                },
+                "sizing": {
+                  "horizontal": "FILL",
+                  "vertical": "HUG"
+                },
+                "layout": {
+                  "direction": "VERTICAL",
+                  "gap": {
+                    "value": 4,
+                    "token": "Spacing/xs"
+                  },
+                  "padding": {
+                    "top": {
+                      "value": 0
+                    },
+                    "right": {
+                      "value": 0
+                    },
+                    "bottom": {
+                      "value": 0
+                    },
+                    "left": {
+                      "value": 0
+                    }
+                  },
+                  "align": {
+                    "main": "MIN",
+                    "cross": "MIN"
+                  },
+                  "wrap": false
+                },
+                "style": {
+                  "clipsContent": true
+                },
+                "children": [
+                  {
+                    "id": "6:20",
+                    "type": "TEXT",
+                    "name": "title",
+                    "fidelity": "exact",
+                    "size": {
+                      "width": 46,
+                      "height": 20
+                    },
+                    "sizing": {
+                      "horizontal": "HUG",
+                      "vertical": "HUG"
+                    },
+                    "bindings": {
+                      "characters": "title"
+                    },
+                    "text": {
+                      "characters": "Salário",
+                      "style": "label",
+                      "color": {
+                        "value": "#0F172A",
+                        "token": "Color/text/primary"
+                      }
+                    }
+                  },
+                  {
+                    "id": "6:21",
+                    "type": "TEXT",
+                    "name": "subtitle",
+                    "fidelity": "exact",
+                    "size": {
+                      "width": 77,
+                      "height": 20
+                    },
+                    "sizing": {
+                      "horizontal": "HUG",
+                      "vertical": "HUG"
+                    },
+                    "bindings": {
+                      "characters": "subtitle"
+                    },
+                    "text": {
+                      "characters": "Hoje, 09:24",
+                      "style": "body/sm",
+                      "color": {
+                        "value": "#64748B",
+                        "token": "Color/text/secondary"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "6:22",
+                "type": "FRAME",
+                "name": "trailing",
+                "fidelity": "exact",
+                "size": {
+                  "width": 96,
+                  "height": 48
+                },
+                "sizing": {
+                  "horizontal": "HUG",
+                  "vertical": "HUG"
+                },
+                "layout": {
+                  "direction": "VERTICAL",
+                  "gap": {
+                    "value": 4,
+                    "token": "Spacing/xs"
+                  },
+                  "padding": {
+                    "top": {
+                      "value": 0
+                    },
+                    "right": {
+                      "value": 0
+                    },
+                    "bottom": {
+                      "value": 0
+                    },
+                    "left": {
+                      "value": 0
+                    }
+                  },
+                  "align": {
+                    "main": "MIN",
+                    "cross": "MAX"
+                  },
+                  "wrap": false
+                },
+                "style": {
+                  "clipsContent": true
+                },
+                "children": [
+                  {
+                    "id": "6:23",
+                    "type": "TEXT",
+                    "name": "amount",
+                    "fidelity": "exact",
+                    "size": {
+                      "width": 96,
+                      "height": 20
+                    },
+                    "sizing": {
+                      "horizontal": "HUG",
+                      "vertical": "HUG"
+                    },
+                    "bindings": {
+                      "characters": "amount"
+                    },
+                    "text": {
+                      "characters": "+ R$ 5.200,00",
+                      "style": "label",
+                      "color": {
+                        "value": "#16A34A",
+                        "token": "Color/success"
+                      }
+                    }
+                  },
+                  {
+                    "id": "6:24",
+                    "type": "INSTANCE",
+                    "name": "Badge",
+                    "fidelity": "exact",
+                    "size": {
+                      "width": 79,
+                      "height": 24
+                    },
+                    "sizing": {
+                      "horizontal": "HUG",
+                      "vertical": "HUG"
+                    },
+                    "bindings": {
+                      "visible": "showBadge"
+                    },
+                    "instance": {
+                      "componentKey": "f5c999bbdd2c2b543fd66177465fe4a300b30e9a",
+                      "componentName": "Badge",
+                      "remote": false,
+                      "props": {
+                        "label": "Recebido",
+                        "tone": "success"
+                      },
+                      "exposed": [],
+                      "overrides": [
+                        {
+                          "node": ".",
+                          "fields": [
+                            "height",
+                            "width"
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "6:26",
+                "type": "INSTANCE",
+                "name": "chevron",
+                "fidelity": "exact",
+                "size": {
+                  "width": 20,
+                  "height": 20
+                },
+                "sizing": {
+                  "horizontal": "FIXED",
+                  "vertical": "FIXED"
+                },
+                "instance": {
+                  "componentKey": "087dbe9c98e6051c256534179685020be15d04ba",
+                  "componentName": "Icon",
+                  "remote": false,
+                  "props": {
+                    "name": "chevron-right"
+                  },
+                  "exposed": [],
+                  "overrides": [
+                    {
+                      "node": ".",
+                      "fields": [
+                        "height",
+                        "width"
+                      ]
+                    },
+                    {
+                      "node": "Vector",
+                      "fields": [
+                        "strokes"
+                      ]
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "6:28",
+          "name": "direction=out",
+          "props": {
+            "direction": "out"
+          },
+          "tree": {
+            "id": "6:28",
+            "type": "COMPONENT",
+            "name": "direction=out",
+            "fidelity": "exact",
+            "size": {
+              "width": 342,
+              "height": 72
+            },
+            "sizing": {
+              "horizontal": "FIXED",
+              "vertical": "HUG"
+            },
+            "layout": {
+              "direction": "HORIZONTAL",
+              "gap": {
+                "value": 12,
+                "token": "Spacing/md"
+              },
+              "padding": {
+                "top": {
+                  "value": 12,
+                  "token": "Spacing/md"
+                },
+                "right": {
+                  "value": 0
+                },
+                "bottom": {
+                  "value": 12,
+                  "token": "Spacing/md"
+                },
+                "left": {
+                  "value": 0
+                }
+              },
+              "align": {
+                "main": "MIN",
+                "cross": "CENTER"
+              },
+              "wrap": false
+            },
+            "children": [
+              {
+                "id": "6:29",
+                "type": "INSTANCE",
+                "name": "Avatar",
+                "fidelity": "exact",
+                "size": {
+                  "width": 40,
+                  "height": 40
+                },
+                "sizing": {
+                  "horizontal": "FIXED",
+                  "vertical": "FIXED"
+                },
+                "instance": {
+                  "componentKey": "4a1bb73f19680e77a1be870a2630949e0033bddc",
+                  "componentName": "Avatar",
+                  "remote": false,
+                  "props": {
+                    "initials": "PS",
+                    "icon": {
+                      "componentKey": "087dbe9c98e6051c256534179685020be15d04ba",
+                      "componentName": "Icon",
+                      "variant": {
+                        "name": "arrow-up-right"
+                      }
+                    },
+                    "type": "icon",
+                    "size": "md"
+                  },
+                  "exposed": [],
+                  "overrides": [
+                    {
+                      "node": ".",
+                      "fields": [
+                        "fills"
+                      ]
+                    },
+                    {
+                      "node": "icon/Vector",
+                      "fields": [
+                        "strokes"
+                      ]
+                    },
+                    {
+                      "node": "bg",
+                      "fields": [
+                        "fills"
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "6:33",
+                "type": "FRAME",
+                "name": "texts",
+                "fidelity": "exact",
+                "size": {
+                  "width": 174,
+                  "height": 44
+                },
+                "sizing": {
+                  "horizontal": "FILL",
+                  "vertical": "HUG"
+                },
+                "layout": {
+                  "direction": "VERTICAL",
+                  "gap": {
+                    "value": 4,
+                    "token": "Spacing/xs"
+                  },
+                  "padding": {
+                    "top": {
+                      "value": 0
+                    },
+                    "right": {
+                      "value": 0
+                    },
+                    "bottom": {
+                      "value": 0
+                    },
+                    "left": {
+                      "value": 0
+                    }
+                  },
+                  "align": {
+                    "main": "MIN",
+                    "cross": "MIN"
+                  },
+                  "wrap": false
+                },
+                "style": {
+                  "clipsContent": true
+                },
+                "children": [
+                  {
+                    "id": "6:34",
+                    "type": "TEXT",
+                    "name": "title",
+                    "fidelity": "exact",
+                    "size": {
+                      "width": 59,
+                      "height": 20
+                    },
+                    "sizing": {
+                      "horizontal": "HUG",
+                      "vertical": "HUG"
+                    },
+                    "bindings": {
+                      "characters": "title"
+                    },
+                    "text": {
+                      "characters": "Mercado",
+                      "style": "label",
+                      "color": {
+                        "value": "#0F172A",
+                        "token": "Color/text/primary"
+                      }
+                    }
+                  },
+                  {
+                    "id": "6:35",
+                    "type": "TEXT",
+                    "name": "subtitle",
+                    "fidelity": "exact",
+                    "size": {
+                      "width": 87,
+                      "height": 20
+                    },
+                    "sizing": {
+                      "horizontal": "HUG",
+                      "vertical": "HUG"
+                    },
+                    "bindings": {
+                      "characters": "subtitle"
+                    },
+                    "text": {
+                      "characters": "Ontem, 18:10",
+                      "style": "body/sm",
+                      "color": {
+                        "value": "#64748B",
+                        "token": "Color/text/secondary"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "6:36",
+                "type": "FRAME",
+                "name": "trailing",
+                "fidelity": "exact",
+                "size": {
+                  "width": 72,
+                  "height": 48
+                },
+                "sizing": {
+                  "horizontal": "HUG",
+                  "vertical": "HUG"
+                },
+                "layout": {
+                  "direction": "VERTICAL",
+                  "gap": {
+                    "value": 4,
+                    "token": "Spacing/xs"
+                  },
+                  "padding": {
+                    "top": {
+                      "value": 0
+                    },
+                    "right": {
+                      "value": 0
+                    },
+                    "bottom": {
+                      "value": 0
+                    },
+                    "left": {
+                      "value": 0
+                    }
+                  },
+                  "align": {
+                    "main": "MIN",
+                    "cross": "MAX"
+                  },
+                  "wrap": false
+                },
+                "style": {
+                  "clipsContent": true
+                },
+                "children": [
+                  {
+                    "id": "6:37",
+                    "type": "TEXT",
+                    "name": "amount",
+                    "fidelity": "exact",
+                    "size": {
+                      "width": 72,
+                      "height": 20
+                    },
+                    "sizing": {
+                      "horizontal": "HUG",
+                      "vertical": "HUG"
+                    },
+                    "bindings": {
+                      "characters": "amount"
+                    },
+                    "text": {
+                      "characters": "- R$ 89,90",
+                      "style": "label",
+                      "color": {
+                        "value": "#0F172A",
+                        "token": "Color/text/primary"
+                      }
+                    }
+                  },
+                  {
+                    "id": "6:38",
+                    "type": "INSTANCE",
+                    "name": "Badge",
+                    "fidelity": "exact",
+                    "size": {
+                      "width": 50,
+                      "height": 24
+                    },
+                    "sizing": {
+                      "horizontal": "HUG",
+                      "vertical": "HUG"
+                    },
+                    "bindings": {
+                      "visible": "showBadge"
+                    },
+                    "instance": {
+                      "componentKey": "f5c999bbdd2c2b543fd66177465fe4a300b30e9a",
+                      "componentName": "Badge",
+                      "remote": false,
+                      "props": {
+                        "label": "Pago",
+                        "tone": "neutral"
+                      },
+                      "exposed": [],
+                      "overrides": [
+                        {
+                          "node": ".",
+                          "fields": [
+                            "height",
+                            "width"
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "6:40",
+                "type": "INSTANCE",
+                "name": "chevron",
+                "fidelity": "exact",
+                "size": {
+                  "width": 20,
+                  "height": 20
+                },
+                "sizing": {
+                  "horizontal": "FIXED",
+                  "vertical": "FIXED"
+                },
+                "instance": {
+                  "componentKey": "087dbe9c98e6051c256534179685020be15d04ba",
+                  "componentName": "Icon",
+                  "remote": false,
+                  "props": {
+                    "name": "chevron-right"
+                  },
+                  "exposed": [],
+                  "overrides": [
+                    {
+                      "node": ".",
+                      "fields": [
+                        "height",
+                        "width"
+                      ]
+                    },
+                    {
+                      "node": "Vector",
+                      "fields": [
+                        "strokes"
+                      ]
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "screens": [],
+  "lint": [
+    {
+      "node": "6:16",
+      "name": "Avatar",
+      "rule": "style-override",
+      "detail": "estilo sobrescrito fora das props do componente em \".\" (fills)"
+    },
+    {
+      "node": "6:16",
+      "name": "Avatar",
+      "rule": "style-override",
+      "detail": "estilo sobrescrito fora das props do componente em \"icon/Vector\" (strokes)"
+    },
+    {
+      "node": "6:16",
+      "name": "Avatar",
+      "rule": "style-override",
+      "detail": "estilo sobrescrito fora das props do componente em \"bg\" (fills)"
+    },
+    {
+      "node": "6:26",
+      "name": "chevron",
+      "rule": "renamed-instance",
+      "detail": "instância renomeada; componente \"Icon\""
+    },
+    {
+      "node": "6:26",
+      "name": "chevron",
+      "rule": "style-override",
+      "detail": "estilo sobrescrito fora das props do componente em \"Vector\" (strokes)"
+    },
+    {
+      "node": "6:29",
+      "name": "Avatar",
+      "rule": "style-override",
+      "detail": "estilo sobrescrito fora das props do componente em \".\" (fills)"
+    },
+    {
+      "node": "6:29",
+      "name": "Avatar",
+      "rule": "style-override",
+      "detail": "estilo sobrescrito fora das props do componente em \"icon/Vector\" (strokes)"
+    },
+    {
+      "node": "6:29",
+      "name": "Avatar",
+      "rule": "style-override",
+      "detail": "estilo sobrescrito fora das props do componente em \"bg\" (fills)"
+    },
+    {
+      "node": "6:40",
+      "name": "chevron",
+      "rule": "renamed-instance",
+      "detail": "instância renomeada; componente \"Icon\""
+    },
+    {
+      "node": "6:40",
+      "name": "chevron",
+      "rule": "style-override",
+      "detail": "estilo sobrescrito fora das props do componente em \"Vector\" (strokes)"
+    }
+  ]
+}

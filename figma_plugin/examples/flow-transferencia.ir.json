@@ -1,0 +1,3778 @@
+{
+  "irVersion": "1.0.0",
+  "kind": "flow",
+  "source": {
+    "via": "mcp-extractor",
+    "extractor": "0.1.0",
+    "fileKey": "1meYjTskBd3JSKuHxeQ9A2",
+    "fileName": "Document",
+    "pageName": "Flow",
+    "exportedAt": "2026-10-25T00:00:00.000Z"
+  },
+  "tokens": {
+    "Spacing/2xl": {
+      "name": "2xl",
+      "collection": "Spacing",
+      "type": "FLOAT",
+      "value": 32,
+      "codeSyntax": {
+        "WEB": "var(--spacing-2xl)"
+      },
+      "id": "VariableID:152376691c4b36a21bd4bf5cfe21a83e9d63b8a5/1:112",
+      "key": "152376691c4b36a21bd4bf5cfe21a83e9d63b8a5",
+      "remote": true
+    },
+    "Spacing/xl": {
+      "name": "xl",
+      "collection": "Spacing",
+      "type": "FLOAT",
+      "value": 24,
+      "codeSyntax": {
+        "WEB": "var(--spacing-xl)"
+      },
+      "id": "VariableID:0009348576d3e5dd7a392fae74a80fbef754810c/1:108",
+      "key": "0009348576d3e5dd7a392fae74a80fbef754810c",
+      "remote": true
+    },
+    "Primitives/gray/50": {
+      "name": "gray/50",
+      "collection": "Primitives",
+      "type": "COLOR",
+      "value": "#F8FAFC",
+      "codeSyntax": {
+        "WEB": "var(--gray-50)"
+      },
+      "id": "VariableID:6d8d55eda023ce1fc06d85f1ffa9e2c6ad1bfebe/1:16",
+      "key": "6d8d55eda023ce1fc06d85f1ffa9e2c6ad1bfebe",
+      "remote": true
+    },
+    "Color/bg": {
+      "name": "bg",
+      "collection": "Color",
+      "type": "COLOR",
+      "value": "#F8FAFC",
+      "aliasOf": "Primitives/gray/50",
+      "codeSyntax": {
+        "WEB": "var(--color-bg)"
+      },
+      "id": "VariableID:65d47c5218dfbb887ef0e54d4c25e33fcd3048d0/1:46",
+      "key": "65d47c5218dfbb887ef0e54d4c25e33fcd3048d0",
+      "remote": true
+    },
+    "Spacing/sm": {
+      "name": "sm",
+      "collection": "Spacing",
+      "type": "FLOAT",
+      "value": 8,
+      "codeSyntax": {
+        "WEB": "var(--spacing-sm)"
+      },
+      "id": "VariableID:c706e4b4e2e24d0c001ce40ea0879ceed3011af6/1:96",
+      "key": "c706e4b4e2e24d0c001ce40ea0879ceed3011af6",
+      "remote": true
+    },
+    "Primitives/gray/900": {
+      "name": "gray/900",
+      "collection": "Primitives",
+      "type": "COLOR",
+      "value": "#0F172A",
+      "codeSyntax": {
+        "WEB": "var(--gray-900)"
+      },
+      "id": "VariableID:31a14f2413132cf865d7b4b637570bae2c6550b5/1:28",
+      "key": "31a14f2413132cf865d7b4b637570bae2c6550b5",
+      "remote": true
+    },
+    "Color/text/primary": {
+      "name": "text/primary",
+      "collection": "Color",
+      "type": "COLOR",
+      "value": "#0F172A",
+      "aliasOf": "Primitives/gray/900",
+      "codeSyntax": {
+        "WEB": "var(--color-text-primary)"
+      },
+      "id": "VariableID:57821f5234d13875833a2fd6896b29fdf1e3bfd5/1:58",
+      "key": "57821f5234d13875833a2fd6896b29fdf1e3bfd5",
+      "remote": true
+    },
+    "Primitives/gray/500": {
+      "name": "gray/500",
+      "collection": "Primitives",
+      "type": "COLOR",
+      "value": "#64748B",
+      "codeSyntax": {
+        "WEB": "var(--gray-500)"
+      },
+      "id": "VariableID:6ff00148d4352090ab5e3694ef9c77d6fb78d7dc/1:24",
+      "key": "6ff00148d4352090ab5e3694ef9c77d6fb78d7dc",
+      "remote": true
+    },
+    "Color/text/secondary": {
+      "name": "text/secondary",
+      "collection": "Color",
+      "type": "COLOR",
+      "value": "#64748B",
+      "aliasOf": "Primitives/gray/500",
+      "codeSyntax": {
+        "WEB": "var(--color-text-secondary)"
+      },
+      "id": "VariableID:015a8a916d03ae25b323035d581578b11b57af2b/1:62",
+      "key": "015a8a916d03ae25b323035d581578b11b57af2b",
+      "remote": true
+    },
+    "Spacing/lg": {
+      "name": "lg",
+      "collection": "Spacing",
+      "type": "FLOAT",
+      "value": 16,
+      "codeSyntax": {
+        "WEB": "var(--spacing-lg)"
+      },
+      "id": "VariableID:30efc1d9416fc9f35313d66f52dd15ef20ffa278/1:104",
+      "key": "30efc1d9416fc9f35313d66f52dd15ef20ffa278",
+      "remote": true
+    },
+    "Primitives/gray/0": {
+      "name": "gray/0",
+      "collection": "Primitives",
+      "type": "COLOR",
+      "value": "#FFFFFF",
+      "codeSyntax": {
+        "WEB": "var(--gray-0)"
+      },
+      "id": "VariableID:0579271a1e0bfb84acc811e5791924d92c99cbd2/1:12",
+      "key": "0579271a1e0bfb84acc811e5791924d92c99cbd2",
+      "remote": true
+    },
+    "Color/surface": {
+      "name": "surface",
+      "collection": "Color",
+      "type": "COLOR",
+      "value": "#FFFFFF",
+      "aliasOf": "Primitives/gray/0",
+      "codeSyntax": {
+        "WEB": "var(--color-surface)"
+      },
+      "id": "VariableID:7c67e7a32683c02b956bb0ceada83743de931d54/1:50",
+      "key": "7c67e7a32683c02b956bb0ceada83743de931d54",
+      "remote": true
+    },
+    "Primitives/gray/200": {
+      "name": "gray/200",
+      "collection": "Primitives",
+      "type": "COLOR",
+      "value": "#E2E8F0",
+      "codeSyntax": {
+        "WEB": "var(--gray-200)"
+      },
+      "id": "VariableID:8508753fac19b8b72e5dfdfbf2ce2267dfe534fb/1:20",
+      "key": "8508753fac19b8b72e5dfdfbf2ce2267dfe534fb",
+      "remote": true
+    },
+    "Color/border": {
+      "name": "border",
+      "collection": "Color",
+      "type": "COLOR",
+      "value": "#E2E8F0",
+      "aliasOf": "Primitives/gray/200",
+      "codeSyntax": {
+        "WEB": "var(--color-border)"
+      },
+      "id": "VariableID:dff4b32d914e15c268d1a6e8ec83c16b4bfbf611/1:54",
+      "key": "dff4b32d914e15c268d1a6e8ec83c16b4bfbf611",
+      "remote": true
+    },
+    "Radius/md": {
+      "name": "md",
+      "collection": "Radius",
+      "type": "FLOAT",
+      "value": 12,
+      "codeSyntax": {
+        "WEB": "var(--radius-md)"
+      },
+      "id": "VariableID:f646ecd06836f8cfac2ed6c6210bcac53d4b396f/1:122",
+      "key": "f646ecd06836f8cfac2ed6c6210bcac53d4b396f",
+      "remote": true
+    },
+    "Color/text/on-primary": {
+      "name": "text/on-primary",
+      "collection": "Color",
+      "type": "COLOR",
+      "value": "#FFFFFF",
+      "aliasOf": "Primitives/gray/0",
+      "codeSyntax": {
+        "WEB": "var(--color-text-on-primary)"
+      },
+      "id": "VariableID:0466c8297ce08344c905c6cb24f54011fe67e8c0/1:66",
+      "key": "0466c8297ce08344c905c6cb24f54011fe67e8c0",
+      "remote": true
+    },
+    "Spacing/md": {
+      "name": "md",
+      "collection": "Spacing",
+      "type": "FLOAT",
+      "value": 12,
+      "codeSyntax": {
+        "WEB": "var(--spacing-md)"
+      },
+      "id": "VariableID:8acb93300e6e2c9946f13d9cbafcdc31790c93eb/1:100",
+      "key": "8acb93300e6e2c9946f13d9cbafcdc31790c93eb",
+      "remote": true
+    },
+    "Spacing/2xs": {
+      "name": "2xs",
+      "collection": "Spacing",
+      "type": "FLOAT",
+      "value": 2,
+      "codeSyntax": {
+        "WEB": "var(--spacing-2xs)"
+      },
+      "id": "VariableID:65b640208329d821c93d4e2aa0e03d95ea726190/10:3",
+      "key": "65b640208329d821c93d4e2aa0e03d95ea726190",
+      "remote": true
+    },
+    "Primitives/green/500": {
+      "name": "green/500",
+      "collection": "Primitives",
+      "type": "COLOR",
+      "value": "#16A34A",
+      "codeSyntax": {
+        "WEB": "var(--green-500)"
+      },
+      "id": "VariableID:7e807192a18d879c9525c6bd2b73755b0caae61d/1:32",
+      "key": "7e807192a18d879c9525c6bd2b73755b0caae61d",
+      "remote": true
+    },
+    "Color/success": {
+      "name": "success",
+      "collection": "Color",
+      "type": "COLOR",
+      "value": "#16A34A",
+      "aliasOf": "Primitives/green/500",
+      "codeSyntax": {
+        "WEB": "var(--color-success)"
+      },
+      "id": "VariableID:df0dded1a9acc85d0b27f572e986abd375ea39e0/1:78",
+      "key": "df0dded1a9acc85d0b27f572e986abd375ea39e0",
+      "remote": true
+    }
+  },
+  "textStyles": {
+    "heading/lg": {
+      "name": "heading/lg",
+      "fontFamily": "Inter",
+      "fontStyle": "Bold",
+      "fontSize": 24,
+      "lineHeight": 32,
+      "letterSpacing": {
+        "percent": 0
+      },
+      "id": "S:71b0715016cde9f527c7e1af2811f0c66091b469,1:133",
+      "key": "71b0715016cde9f527c7e1af2811f0c66091b469",
+      "remote": true
+    },
+    "body/md": {
+      "name": "body/md",
+      "fontFamily": "Inter",
+      "fontStyle": "Regular",
+      "fontSize": 16,
+      "lineHeight": 24,
+      "letterSpacing": {
+        "percent": 0
+      },
+      "id": "S:a10a528fd97ddec29d56c01c1ce14c9147a0d438,1:144",
+      "key": "a10a528fd97ddec29d56c01c1ce14c9147a0d438",
+      "remote": true
+    },
+    "heading/md": {
+      "name": "heading/md",
+      "fontFamily": "Inter",
+      "fontStyle": "Semi Bold",
+      "fontSize": 18,
+      "lineHeight": 24,
+      "letterSpacing": {
+        "percent": 0
+      },
+      "id": "S:569c7a6ddf9f62488641610c6cdb2e1a7816efae,1:139",
+      "key": "569c7a6ddf9f62488641610c6cdb2e1a7816efae",
+      "remote": true
+    },
+    "label": {
+      "name": "label",
+      "fontFamily": "Inter",
+      "fontStyle": "Medium",
+      "fontSize": 14,
+      "lineHeight": 20,
+      "letterSpacing": {
+        "percent": 0
+      },
+      "id": "S:22bdad2cb496ea5ac10e19155fdd06d381bba857,1:154",
+      "key": "22bdad2cb496ea5ac10e19155fdd06d381bba857",
+      "remote": true
+    },
+    "body/sm": {
+      "name": "body/sm",
+      "fontFamily": "Inter",
+      "fontStyle": "Regular",
+      "fontSize": 14,
+      "lineHeight": 20,
+      "letterSpacing": {
+        "percent": 0
+      },
+      "id": "S:cc29a992faf9d6bd93c35d717c400a54ec3ecaeb,1:149",
+      "key": "cc29a992faf9d6bd93c35d717c400a54ec3ecaeb",
+      "remote": true
+    }
+  },
+  "componentRefs": {
+    "a7ec596b4a12636af643be4f14ae523a2dde58ea": {
+      "key": "a7ec596b4a12636af643be4f14ae523a2dde58ea",
+      "name": "Input",
+      "remote": true,
+      "description": "Text field with label and helper. state default/focus/error. Props: label, placeholder, helper, showLeadingIcon + leadingIcon (Icon swap), showTrailingAction (exposed IconButton ghost, e.g. eye for password).",
+      "props": {
+        "label": {
+          "type": "TEXT",
+          "default": "Label"
+        },
+        "placeholder": {
+          "type": "TEXT",
+          "default": "Placeholder"
+        },
+        "helper": {
+          "type": "TEXT",
+          "default": "Helper text"
+        },
+        "showLeadingIcon": {
+          "type": "BOOLEAN",
+          "default": true
+        },
+        "leadingIcon": {
+          "type": "INSTANCE_SWAP",
+          "default": "6:18"
+        },
+        "showTrailingAction": {
+          "type": "BOOLEAN",
+          "default": false
+        },
+        "state": {
+          "type": "VARIANT",
+          "default": "default",
+          "options": [
+            "default",
+            "focus",
+            "error"
+          ]
+        }
+      }
+    },
+    "087dbe9c98e6051c256534179685020be15d04ba": {
+      "key": "087dbe9c98e6051c256534179685020be15d04ba",
+      "name": "Icon",
+      "remote": true,
+      "description": "Outline icon set, 24px, stroke 2. Color comes from the vector stroke bound to a Color variable (default text/primary). Use as INSTANCE_SWAP in other components.",
+      "props": {
+        "name": {
+          "type": "VARIANT",
+          "default": "home",
+          "options": [
+            "home",
+            "search",
+            "bell",
+            "plus",
+            "arrow-up-right",
+            "arrow-down-left",
+            "eye",
+            "eye-off",
+            "check",
+            "chevron-right",
+            "mail",
+            "lock"
+          ]
+        }
+      }
+    },
+    "98e95c197e644becbbdd17f97d4b958215ea32a9": {
+      "key": "98e95c197e644becbbdd17f97d4b958215ea32a9",
+      "name": "IconButton",
+      "remote": true,
+      "description": "40px round icon button. variant filled/ghost. Props: icon (Icon swap), showDot (notification dot).",
+      "props": {
+        "icon": {
+          "type": "INSTANCE_SWAP",
+          "default": "6:10"
+        },
+        "showDot": {
+          "type": "BOOLEAN",
+          "default": false
+        },
+        "variant": {
+          "type": "VARIANT",
+          "default": "filled",
+          "options": [
+            "filled",
+            "ghost"
+          ]
+        }
+      }
+    },
+    "457dd62defacfa4a3c82475582930b62216b4f16": {
+      "key": "457dd62defacfa4a3c82475582930b62216b4f16",
+      "name": "Checkbox",
+      "remote": true,
+      "description": "Checkbox with label. checked true/false. Prop: label.",
+      "props": {
+        "label": {
+          "type": "TEXT",
+          "default": "Checkbox"
+        },
+        "checked": {
+          "type": "VARIANT",
+          "default": "false",
+          "options": [
+            "false",
+            "true"
+          ]
+        }
+      }
+    },
+    "cc4d255d4c889786852f8ba4b57a714a4efd07ca": {
+      "key": "cc4d255d4c889786852f8ba4b57a714a4efd07ca",
+      "name": "Button",
+      "remote": true,
+      "description": "Action button. variant primary/secondary/ghost, size md(48)/sm(36), state default/disabled. Props: label, showLeftIcon, leftIcon (Icon swap).",
+      "props": {
+        "label": {
+          "type": "TEXT",
+          "default": "Button"
+        },
+        "showLeftIcon": {
+          "type": "BOOLEAN",
+          "default": false
+        },
+        "leftIcon": {
+          "type": "INSTANCE_SWAP",
+          "default": "6:11"
+        },
+        "variant": {
+          "type": "VARIANT",
+          "default": "primary",
+          "options": [
+            "primary",
+            "secondary",
+            "ghost"
+          ]
+        },
+        "size": {
+          "type": "VARIANT",
+          "default": "md",
+          "options": [
+            "md",
+            "sm"
+          ]
+        },
+        "state": {
+          "type": "VARIANT",
+          "default": "default",
+          "options": [
+            "default",
+            "disabled"
+          ]
+        }
+      }
+    },
+    "3c931b7b273a3a8e75065689edf278d2249677e9": {
+      "key": "3c931b7b273a3a8e75065689edf278d2249677e9",
+      "name": "AppHeader",
+      "remote": true,
+      "description": "Dashboard header. Props: greeting, name (+ exposed Avatar). Uses Avatar and IconButton (bell with dot).",
+      "props": {
+        "greeting": {
+          "type": "TEXT",
+          "default": "Olá,"
+        },
+        "name": {
+          "type": "TEXT",
+          "default": "Pablo"
+        }
+      }
+    },
+    "4a1bb73f19680e77a1be870a2630949e0033bddc": {
+      "key": "4a1bb73f19680e77a1be870a2630949e0033bddc",
+      "name": "Avatar",
+      "remote": true,
+      "description": "Round avatar. type initials/icon, size sm(32)/md(40). Props: initials (text) or icon (Icon swap).",
+      "props": {
+        "initials": {
+          "type": "TEXT",
+          "default": "PS"
+        },
+        "icon": {
+          "type": "INSTANCE_SWAP",
+          "default": "6:13"
+        },
+        "type": {
+          "type": "VARIANT",
+          "default": "initials",
+          "options": [
+            "initials",
+            "icon"
+          ]
+        },
+        "size": {
+          "type": "VARIANT",
+          "default": "sm",
+          "options": [
+            "sm",
+            "md"
+          ]
+        }
+      }
+    },
+    "f9807e6653767aaf03a63bfef913830ee18d6d4e": {
+      "key": "f9807e6653767aaf03a63bfef913830ee18d6d4e",
+      "name": "BalanceCard",
+      "remote": true,
+      "description": "Account balance card. hidden true/false masks the value and swaps eye/eye-off. Props: label, value, delta (exposed Badge label). Uses IconButton, Badge, Button x2.",
+      "props": {
+        "label": {
+          "type": "TEXT",
+          "default": "Saldo disponível"
+        },
+        "value": {
+          "type": "TEXT",
+          "default": "R$ 12.480,50"
+        },
+        "hidden": {
+          "type": "VARIANT",
+          "default": "false",
+          "options": [
+            "false",
+            "true"
+          ]
+        }
+      }
+    },
+    "f5c999bbdd2c2b543fd66177465fe4a300b30e9a": {
+      "key": "f5c999bbdd2c2b543fd66177465fe4a300b30e9a",
+      "name": "Badge",
+      "remote": true,
+      "description": "Status pill. tone success/danger/warning/neutral (tinted bg at 12%). Prop: label.",
+      "props": {
+        "label": {
+          "type": "TEXT",
+          "default": "Badge"
+        },
+        "tone": {
+          "type": "VARIANT",
+          "default": "success",
+          "options": [
+            "success",
+            "danger",
+            "warning",
+            "neutral"
+          ]
+        }
+      }
+    },
+    "d80c1ef919ba7685ba72eeac61c7ec49cfba48a1": {
+      "key": "d80c1ef919ba7685ba72eeac61c7ec49cfba48a1",
+      "name": "TransactionItem",
+      "remote": true,
+      "description": "Transaction row. direction in/out. Props: title, subtitle, amount, showBadge (+ exposed Badge). Built from Avatar, Badge, Icon instances.",
+      "props": {
+        "title": {
+          "type": "TEXT",
+          "default": "Salário"
+        },
+        "subtitle": {
+          "type": "TEXT",
+          "default": "Hoje, 09:24"
+        },
+        "amount": {
+          "type": "TEXT",
+          "default": "+ R$ 5.200,00"
+        },
+        "showBadge": {
+          "type": "BOOLEAN",
+          "default": true
+        },
+        "direction": {
+          "type": "VARIANT",
+          "default": "in",
+          "options": [
+            "in",
+            "out"
+          ]
+        }
+      }
+    },
+    "c4580f6586f55c23ce69cec6bce684245d96ebf8": {
+      "key": "c4580f6586f55c23ce69cec6bce684245d96ebf8",
+      "name": "TopBar",
+      "remote": false,
+      "description": "Local (app-specific). Back IconButton (DS, chevron-right rotated) + title. Uses Carteira DS tokens.",
+      "props": {
+        "title": {
+          "type": "TEXT",
+          "default": "Título"
+        }
+      }
+    },
+    "267291286c16eafc32e9a66b9571700954952086": {
+      "key": "267291286c16eafc32e9a66b9571700954952086",
+      "name": "ContactItem",
+      "remote": false,
+      "description": "Local (app-specific). Contact row for transfers: Avatar (exposed) + name/detail + chevron Icon. Uses Carteira DS tokens.",
+      "props": {
+        "name": {
+          "type": "TEXT",
+          "default": "Ana Souza"
+        },
+        "detail": {
+          "type": "TEXT",
+          "default": "Pix · ana@email.com"
+        }
+      }
+    },
+    "0439f1dd517609410ae77e63b077f7984152dc3d": {
+      "key": "0439f1dd517609410ae77e63b077f7984152dc3d",
+      "name": "SummaryRow",
+      "remote": false,
+      "description": "Local (app-specific). Label/value line for summaries with bottom divider (border token).",
+      "props": {
+        "label": {
+          "type": "TEXT",
+          "default": "Label"
+        },
+        "value": {
+          "type": "TEXT",
+          "default": "Valor"
+        }
+      }
+    },
+    "221d405f339fe2f9ae3048df7b9a7df3aa8625f3": {
+      "key": "221d405f339fe2f9ae3048df7b9a7df3aa8625f3",
+      "name": "SuccessState",
+      "remote": false,
+      "description": "Local (app-specific). Success feedback: Avatar (check, success tone) + title + message.",
+      "props": {
+        "title": {
+          "type": "TEXT",
+          "default": "Tudo certo!"
+        },
+        "message": {
+          "type": "TEXT",
+          "default": "Mensagem de sucesso"
+        }
+      }
+    }
+  },
+  "components": [
+    {
+      "id": "6:83",
+      "key": "c4580f6586f55c23ce69cec6bce684245d96ebf8",
+      "name": "TopBar",
+      "role": "dependency",
+      "description": "Local (app-specific). Back IconButton (DS, chevron-right rotated) + title. Uses Carteira DS tokens.",
+      "props": {
+        "title": {
+          "type": "TEXT",
+          "default": "Título"
+        }
+      },
+      "variants": [
+        {
+          "id": "6:83",
+          "name": "TopBar",
+          "props": {},
+          "tree": {
+            "id": "6:83",
+            "type": "COMPONENT",
+            "name": "TopBar",
+            "fidelity": "exact",
+            "size": {
+              "width": 342,
+              "height": 40
+            },
+            "sizing": {
+              "horizontal": "FIXED",
+              "vertical": "HUG"
+            },
+            "layout": {
+              "direction": "HORIZONTAL",
+              "gap": {
+                "value": 8,
+                "token": "Spacing/sm"
+              },
+              "padding": {
+                "top": {
+                  "value": 0
+                },
+                "right": {
+                  "value": 0
+                },
+                "bottom": {
+                  "value": 0
+                },
+                "left": {
+                  "value": 0
+                }
+              },
+              "align": {
+                "main": "MIN",
+                "cross": "CENTER"
+              },
+              "wrap": false
+            },
+            "children": [
+              {
+                "id": "6:84",
+                "type": "INSTANCE",
+                "name": "back",
+                "fidelity": "exact",
+                "size": {
+                  "width": 40,
+                  "height": 40
+                },
+                "sizing": {
+                  "horizontal": "FIXED",
+                  "vertical": "FIXED"
+                },
+                "instance": {
+                  "componentKey": "98e95c197e644becbbdd17f97d4b958215ea32a9",
+                  "componentName": "IconButton",
+                  "remote": true,
+                  "props": {
+                    "showDot": false,
+                    "icon": {
+                      "componentKey": "087dbe9c98e6051c256534179685020be15d04ba",
+                      "componentName": "Icon",
+                      "variant": {
+                        "name": "chevron-right"
+                      }
+                    },
+                    "variant": "ghost"
+                  },
+                  "exposed": [],
+                  "overrides": [
+                    {
+                      "node": "icon/Vector",
+                      "fields": [
+                        "strokes"
+                      ],
+                      "values": {
+                        "strokes": [
+                          {
+                            "type": "SOLID",
+                            "color": {
+                              "value": "#0F172A",
+                              "token": "Color/text/primary"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "6:92",
+                "type": "TEXT",
+                "name": "title",
+                "fidelity": "exact",
+                "size": {
+                  "width": 294,
+                  "height": 24
+                },
+                "sizing": {
+                  "horizontal": "FILL",
+                  "vertical": "HUG"
+                },
+                "bindings": {
+                  "characters": "title"
+                },
+                "text": {
+                  "characters": "Título",
+                  "style": "heading/md",
+                  "color": {
+                    "value": "#0F172A",
+                    "token": "Color/text/primary"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "6:93",
+      "key": "267291286c16eafc32e9a66b9571700954952086",
+      "name": "ContactItem",
+      "role": "dependency",
+      "description": "Local (app-specific). Contact row for transfers: Avatar (exposed) + name/detail + chevron Icon. Uses Carteira DS tokens.",
+      "props": {
+        "name": {
+          "type": "TEXT",
+          "default": "Ana Souza"
+        },
+        "detail": {
+          "type": "TEXT",
+          "default": "Pix · ana@email.com"
+        }
+      },
+      "variants": [
+        {
+          "id": "6:93",
+          "name": "ContactItem",
+          "props": {},
+          "tree": {
+            "id": "6:93",
+            "type": "COMPONENT",
+            "name": "ContactItem",
+            "fidelity": "exact",
+            "size": {
+              "width": 342,
+              "height": 66
+            },
+            "sizing": {
+              "horizontal": "FIXED",
+              "vertical": "HUG"
+            },
+            "layout": {
+              "direction": "HORIZONTAL",
+              "gap": {
+                "value": 12,
+                "token": "Spacing/md"
+              },
+              "padding": {
+                "top": {
+                  "value": 12,
+                  "token": "Spacing/md"
+                },
+                "right": {
+                  "value": 0
+                },
+                "bottom": {
+                  "value": 12,
+                  "token": "Spacing/md"
+                },
+                "left": {
+                  "value": 0
+                }
+              },
+              "align": {
+                "main": "MIN",
+                "cross": "CENTER"
+              },
+              "wrap": false
+            },
+            "children": [
+              {
+                "id": "6:94",
+                "type": "INSTANCE",
+                "name": "Avatar",
+                "fidelity": "exact",
+                "size": {
+                  "width": 40,
+                  "height": 40
+                },
+                "sizing": {
+                  "horizontal": "FIXED",
+                  "vertical": "FIXED"
+                },
+                "instance": {
+                  "componentKey": "4a1bb73f19680e77a1be870a2630949e0033bddc",
+                  "componentName": "Avatar",
+                  "remote": true,
+                  "props": {
+                    "icon": {
+                      "componentKey": "087dbe9c98e6051c256534179685020be15d04ba",
+                      "componentName": "Icon",
+                      "variant": {
+                        "name": "arrow-down-left"
+                      }
+                    },
+                    "initials": "AS",
+                    "type": "initials",
+                    "size": "md"
+                  },
+                  "exposed": [],
+                  "overrides": []
+                }
+              },
+              {
+                "id": "6:97",
+                "type": "FRAME",
+                "name": "texts",
+                "fidelity": "exact",
+                "size": {
+                  "width": 258,
+                  "height": 42
+                },
+                "sizing": {
+                  "horizontal": "FILL",
+                  "vertical": "HUG"
+                },
+                "layout": {
+                  "direction": "VERTICAL",
+                  "gap": {
+                    "value": 2,
+                    "token": "Spacing/2xs"
+                  },
+                  "padding": {
+                    "top": {
+                      "value": 0
+                    },
+                    "right": {
+                      "value": 0
+                    },
+                    "bottom": {
+                      "value": 0
+                    },
+                    "left": {
+                      "value": 0
+                    }
+                  },
+                  "align": {
+                    "main": "MIN",
+                    "cross": "MIN"
+                  },
+                  "wrap": false
+                },
+                "style": {
+                  "clipsContent": true
+                },
+                "children": [
+                  {
+                    "id": "6:98",
+                    "type": "TEXT",
+                    "name": "name",
+                    "fidelity": "exact",
+                    "size": {
+                      "width": 72,
+                      "height": 20
+                    },
+                    "sizing": {
+                      "horizontal": "HUG",
+                      "vertical": "HUG"
+                    },
+                    "bindings": {
+                      "characters": "name"
+                    },
+                    "text": {
+                      "characters": "Ana Souza",
+                      "style": "label",
+                      "color": {
+                        "value": "#0F172A",
+                        "token": "Color/text/primary"
+                      }
+                    }
+                  },
+                  {
+                    "id": "6:99",
+                    "type": "TEXT",
+                    "name": "detail",
+                    "fidelity": "exact",
+                    "size": {
+                      "width": 136,
+                      "height": 20
+                    },
+                    "sizing": {
+                      "horizontal": "HUG",
+                      "vertical": "HUG"
+                    },
+                    "bindings": {
+                      "characters": "detail"
+                    },
+                    "text": {
+                      "characters": "Pix · ana@email.com",
+                      "style": "body/sm",
+                      "color": {
+                        "value": "#64748B",
+                        "token": "Color/text/secondary"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "6:100",
+                "type": "INSTANCE",
+                "name": "chevron",
+                "fidelity": "exact",
+                "size": {
+                  "width": 20,
+                  "height": 20
+                },
+                "sizing": {
+                  "horizontal": "FIXED",
+                  "vertical": "FIXED"
+                },
+                "instance": {
+                  "componentKey": "087dbe9c98e6051c256534179685020be15d04ba",
+                  "componentName": "Icon",
+                  "remote": true,
+                  "props": {
+                    "name": "chevron-right"
+                  },
+                  "exposed": [],
+                  "overrides": [
+                    {
+                      "node": ".",
+                      "fields": [
+                        "height",
+                        "width"
+                      ]
+                    },
+                    {
+                      "node": "Vector",
+                      "fields": [
+                        "strokes"
+                      ],
+                      "values": {
+                        "strokes": [
+                          {
+                            "type": "SOLID",
+                            "color": {
+                              "value": "#64748B",
+                              "token": "Color/text/secondary"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "6:102",
+      "key": "0439f1dd517609410ae77e63b077f7984152dc3d",
+      "name": "SummaryRow",
+      "role": "dependency",
+      "description": "Local (app-specific). Label/value line for summaries with bottom divider (border token).",
+      "props": {
+        "label": {
+          "type": "TEXT",
+          "default": "Label"
+        },
+        "value": {
+          "type": "TEXT",
+          "default": "Valor"
+        }
+      },
+      "variants": [
+        {
+          "id": "6:102",
+          "name": "SummaryRow",
+          "props": {},
+          "tree": {
+            "id": "6:102",
+            "type": "COMPONENT",
+            "name": "SummaryRow",
+            "fidelity": "exact",
+            "size": {
+              "width": 310,
+              "height": 45
+            },
+            "sizing": {
+              "horizontal": "FIXED",
+              "vertical": "HUG"
+            },
+            "layout": {
+              "direction": "HORIZONTAL",
+              "gap": "auto",
+              "padding": {
+                "top": {
+                  "value": 12,
+                  "token": "Spacing/md"
+                },
+                "right": {
+                  "value": 0
+                },
+                "bottom": {
+                  "value": 12,
+                  "token": "Spacing/md"
+                },
+                "left": {
+                  "value": 0
+                }
+              },
+              "align": {
+                "main": "SPACE_BETWEEN",
+                "cross": "CENTER"
+              },
+              "wrap": false
+            },
+            "style": {
+              "strokes": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "value": "#E2E8F0",
+                    "token": "Color/border"
+                  }
+                }
+              ],
+              "strokeAlign": "INSIDE",
+              "strokeWeight": {
+                "top": {
+                  "value": 0
+                },
+                "right": {
+                  "value": 0
+                },
+                "bottom": {
+                  "value": 1
+                },
+                "left": {
+                  "value": 0
+                }
+              }
+            },
+            "children": [
+              {
+                "id": "6:103",
+                "type": "TEXT",
+                "name": "label",
+                "fidelity": "exact",
+                "size": {
+                  "width": 36,
+                  "height": 20
+                },
+                "sizing": {
+                  "horizontal": "HUG",
+                  "vertical": "HUG"
+                },
+                "bindings": {
+                  "characters": "label"
+                },
+                "text": {
+                  "characters": "Label",
+                  "style": "body/sm",
+                  "color": {
+                    "value": "#64748B",
+                    "token": "Color/text/secondary"
+                  }
+                }
+              },
+              {
+                "id": "6:104",
+                "type": "TEXT",
+                "name": "value",
+                "fidelity": "exact",
+                "size": {
+                  "width": 35,
+                  "height": 20
+                },
+                "sizing": {
+                  "horizontal": "HUG",
+                  "vertical": "HUG"
+                },
+                "bindings": {
+                  "characters": "value"
+                },
+                "text": {
+                  "characters": "Valor",
+                  "align": "RIGHT",
+                  "style": "label",
+                  "color": {
+                    "value": "#0F172A",
+                    "token": "Color/text/primary"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "6:105",
+      "key": "221d405f339fe2f9ae3048df7b9a7df3aa8625f3",
+      "name": "SuccessState",
+      "role": "dependency",
+      "description": "Local (app-specific). Success feedback: Avatar (check, success tone) + title + message.",
+      "props": {
+        "title": {
+          "type": "TEXT",
+          "default": "Tudo certo!"
+        },
+        "message": {
+          "type": "TEXT",
+          "default": "Mensagem de sucesso"
+        }
+      },
+      "variants": [
+        {
+          "id": "6:105",
+          "name": "SuccessState",
+          "props": {},
+          "tree": {
+            "id": "6:105",
+            "type": "COMPONENT",
+            "name": "SuccessState",
+            "fidelity": "exact",
+            "size": {
+              "width": 342,
+              "height": 128
+            },
+            "sizing": {
+              "horizontal": "FIXED",
+              "vertical": "HUG"
+            },
+            "layout": {
+              "direction": "VERTICAL",
+              "gap": {
+                "value": 16,
+                "token": "Spacing/lg"
+              },
+              "padding": {
+                "top": {
+                  "value": 0
+                },
+                "right": {
+                  "value": 0
+                },
+                "bottom": {
+                  "value": 0
+                },
+                "left": {
+                  "value": 0
+                }
+              },
+              "align": {
+                "main": "MIN",
+                "cross": "CENTER"
+              },
+              "wrap": false
+            },
+            "children": [
+              {
+                "id": "6:106",
+                "type": "INSTANCE",
+                "name": "icon",
+                "fidelity": "exact",
+                "size": {
+                  "width": 40,
+                  "height": 40
+                },
+                "sizing": {
+                  "horizontal": "FIXED",
+                  "vertical": "FIXED"
+                },
+                "instance": {
+                  "componentKey": "4a1bb73f19680e77a1be870a2630949e0033bddc",
+                  "componentName": "Avatar",
+                  "remote": true,
+                  "props": {
+                    "initials": "PS",
+                    "icon": {
+                      "componentKey": "087dbe9c98e6051c256534179685020be15d04ba",
+                      "componentName": "Icon",
+                      "variant": {
+                        "name": "check"
+                      }
+                    },
+                    "type": "icon",
+                    "size": "md"
+                  },
+                  "exposed": [],
+                  "overrides": [
+                    {
+                      "node": "icon/Vector",
+                      "fields": [
+                        "strokes"
+                      ],
+                      "values": {
+                        "strokes": [
+                          {
+                            "type": "SOLID",
+                            "color": {
+                              "value": "#16A34A",
+                              "token": "Color/success"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "node": "bg",
+                      "fields": [
+                        "fills"
+                      ],
+                      "values": {
+                        "fills": [
+                          {
+                            "type": "SOLID",
+                            "color": {
+                              "value": "#16A34A",
+                              "token": "Color/success"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "6:112",
+                "type": "TEXT",
+                "name": "title",
+                "fidelity": "exact",
+                "size": {
+                  "width": 136,
+                  "height": 32
+                },
+                "sizing": {
+                  "horizontal": "HUG",
+                  "vertical": "HUG"
+                },
+                "bindings": {
+                  "characters": "title"
+                },
+                "text": {
+                  "characters": "Tudo certo!",
+                  "align": "CENTER",
+                  "style": "heading/lg",
+                  "color": {
+                    "value": "#0F172A",
+                    "token": "Color/text/primary"
+                  }
+                }
+              },
+              {
+                "id": "6:113",
+                "type": "TEXT",
+                "name": "message",
+                "fidelity": "exact",
+                "size": {
+                  "width": 342,
+                  "height": 24
+                },
+                "sizing": {
+                  "horizontal": "FILL",
+                  "vertical": "HUG"
+                },
+                "bindings": {
+                  "characters": "message"
+                },
+                "text": {
+                  "characters": "Mensagem de sucesso",
+                  "align": "CENTER",
+                  "style": "body/md",
+                  "color": {
+                    "value": "#64748B",
+                    "token": "Color/text/secondary"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "screens": [
+    {
+      "name": "01 · Login — senha incorreta",
+      "states": [
+        {
+          "state": "default",
+          "id": "7:135",
+          "frameName": "01 · Login — senha incorreta",
+          "tree": {
+            "id": "7:135",
+            "type": "FRAME",
+            "name": "01 · Login — senha incorreta",
+            "fidelity": "exact",
+            "size": {
+              "width": 390,
+              "height": 844
+            },
+            "sizing": {
+              "horizontal": "FIXED",
+              "vertical": "FIXED"
+            },
+            "layout": {
+              "direction": "VERTICAL",
+              "gap": {
+                "value": 24,
+                "token": "Spacing/xl"
+              },
+              "padding": {
+                "top": {
+                  "value": 32,
+                  "token": "Spacing/2xl"
+                },
+                "right": {
+                  "value": 24,
+                  "token": "Spacing/xl"
+                },
+                "bottom": {
+                  "value": 32,
+                  "token": "Spacing/2xl"
+                },
+                "left": {
+                  "value": 24,
+                  "token": "Spacing/xl"
+                }
+              },
+              "align": {
+                "main": "CENTER",
+                "cross": "MIN"
+              },
+              "wrap": false
+            },
+            "style": {
+              "fills": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "value": "#F8FAFC",
+                    "token": "Color/bg"
+                  }
+                }
+              ],
+              "clipsContent": true
+            },
+            "children": [
+              {
+                "id": "7:136",
+                "type": "FRAME",
+                "name": "title",
+                "fidelity": "exact",
+                "size": {
+                  "width": 342,
+                  "height": 64
+                },
+                "sizing": {
+                  "horizontal": "FILL",
+                  "vertical": "HUG"
+                },
+                "layout": {
+                  "direction": "VERTICAL",
+                  "gap": {
+                    "value": 8,
+                    "token": "Spacing/sm"
+                  },
+                  "padding": {
+                    "top": {
+                      "value": 0
+                    },
+                    "right": {
+                      "value": 0
+                    },
+                    "bottom": {
+                      "value": 0
+                    },
+                    "left": {
+                      "value": 0
+                    }
+                  },
+                  "align": {
+                    "main": "MIN",
+                    "cross": "MIN"
+                  },
+                  "wrap": false
+                },
+                "style": {
+                  "clipsContent": true
+                },
+                "children": [
+                  {
+                    "id": "7:137",
+                    "type": "TEXT",
+                    "name": "Carteira",
+                    "fidelity": "exact",
+                    "size": {
+                      "width": 96,
+                      "height": 32
+                    },
+                    "sizing": {
+                      "horizontal": "HUG",
+                      "vertical": "HUG"
+                    },
+                    "text": {
+                      "characters": "Carteira",
+                      "style": "heading/lg",
+                      "color": {
+                        "value": "#0F172A",
+                        "token": "Color/text/primary"
+                      }
+                    }
+                  },
+                  {
+                    "id": "7:138",
+                    "type": "TEXT",
+                    "name": "Entre para acompanhar suas finanças.",
+                    "fidelity": "exact",
+                    "size": {
+                      "width": 289,
+                      "height": 24
+                    },
+                    "sizing": {
+                      "horizontal": "HUG",
+                      "vertical": "HUG"
+                    },
+                    "text": {
+                      "characters": "Entre para acompanhar suas finanças.",
+                      "style": "body/md",
+                      "color": {
+                        "value": "#64748B",
+                        "token": "Color/text/secondary"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "7:139",
+                "type": "FRAME",
+                "name": "form",
+                "fidelity": "exact",
+                "size": {
+                  "width": 342,
+                  "height": 244
+                },
+                "sizing": {
+                  "horizontal": "FILL",
+                  "vertical": "HUG"
+                },
+                "layout": {
+                  "direction": "VERTICAL",
+                  "gap": {
+                    "value": 16,
+                    "token": "Spacing/lg"
+                  },
+                  "padding": {
+                    "top": {
+                      "value": 0
+                    },
+                    "right": {
+                      "value": 0
+                    },
+                    "bottom": {
+                      "value": 0
+                    },
+                    "left": {
+                      "value": 0
+                    }
+                  },
+                  "align": {
+                    "main": "MIN",
+                    "cross": "MIN"
+                  },
+                  "wrap": false
+                },
+                "style": {
+                  "clipsContent": true
+                },
+                "children": [
+                  {
+                    "id": "7:140",
+                    "type": "INSTANCE",
+                    "name": "Input",
+                    "fidelity": "exact",
+                    "size": {
+                      "width": 342,
+                      "height": 96
+                    },
+                    "sizing": {
+                      "horizontal": "FILL",
+                      "vertical": "HUG"
+                    },
+                    "instance": {
+                      "componentKey": "a7ec596b4a12636af643be4f14ae523a2dde58ea",
+                      "componentName": "Input",
+                      "remote": true,
+                      "props": {
+                        "leadingIcon": {
+                          "componentKey": "087dbe9c98e6051c256534179685020be15d04ba",
+                          "componentName": "Icon",
+                          "variant": {
+                            "name": "mail"
+                          }
+                        },
+                        "showTrailingAction": false,
+                        "placeholder": "ana.souza@email.com",
+                        "showLeadingIcon": true,
+                        "helper": "Use o e-mail cadastrado.",
+                        "label": "E-mail",
+                        "state": "default"
+                      },
+                      "exposed": [],
+                      "overrides": []
+                    }
+                  },
+                  {
+                    "id": "7:159",
+                    "type": "INSTANCE",
+                    "name": "Input",
+                    "fidelity": "exact",
+                    "size": {
+                      "width": 342,
+                      "height": 96
+                    },
+                    "sizing": {
+                      "horizontal": "FILL",
+                      "vertical": "HUG"
+                    },
+                    "instance": {
+                      "componentKey": "a7ec596b4a12636af643be4f14ae523a2dde58ea",
+                      "componentName": "Input",
+                      "remote": true,
+                      "props": {
+                        "showTrailingAction": true,
+                        "showLeadingIcon": true,
+                        "label": "Senha",
+                        "helper": "Senha incorreta. Tente novamente.",
+                        "placeholder": "••••••",
+                        "leadingIcon": {
+                          "componentKey": "087dbe9c98e6051c256534179685020be15d04ba",
+                          "componentName": "Icon",
+                          "variant": {
+                            "name": "lock"
+                          }
+                        },
+                        "state": "error"
+                      },
+                      "exposed": [
+                        {
+                          "path": "field/trailingAction",
+                          "componentKey": "98e95c197e644becbbdd17f97d4b958215ea32a9",
+                          "componentName": "IconButton",
+                          "props": {
+                            "showDot": false,
+                            "icon": {
+                              "componentKey": "087dbe9c98e6051c256534179685020be15d04ba",
+                              "componentName": "Icon",
+                              "variant": {
+                                "name": "eye"
+                              }
+                            },
+                            "variant": "ghost"
+                          }
+                        }
+                      ],
+                      "overrides": [
+                        {
+                          "node": "field/leadingIcon/Vector",
+                          "fields": [
+                            "strokes"
+                          ],
+                          "values": {
+                            "strokes": [
+                              {
+                                "type": "SOLID",
+                                "color": {
+                                  "value": "#64748B",
+                                  "token": "Color/text/secondary"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "node": "field/leadingIcon/Vector",
+                          "fields": [
+                            "strokes"
+                          ],
+                          "values": {
+                            "strokes": [
+                              {
+                                "type": "SOLID",
+                                "color": {
+                                  "value": "#64748B",
+                                  "token": "Color/text/secondary"
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "id": "7:180",
+                    "type": "INSTANCE",
+                    "name": "Checkbox",
+                    "fidelity": "exact",
+                    "size": {
+                      "width": 136,
+                      "height": 20
+                    },
+                    "sizing": {
+                      "horizontal": "HUG",
+                      "vertical": "HUG"
+                    },
+                    "instance": {
+                      "componentKey": "457dd62defacfa4a3c82475582930b62216b4f16",
+                      "componentName": "Checkbox",
+                      "remote": true,
+                      "props": {
+                        "label": "Lembrar de mim",
+                        "checked": "true"
+                      },
+                      "exposed": [],
+                      "overrides": [
+                        {
+                          "node": ".",
+                          "fields": [
+                            "height",
+                            "width"
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "7:186",
+                "type": "FRAME",
+                "name": "actions",
+                "fidelity": "exact",
+                "size": {
+                  "width": 342,
+                  "height": 104
+                },
+                "sizing": {
+                  "horizontal": "FILL",
+                  "vertical": "HUG"
+                },
+                "layout": {
+                  "direction": "VERTICAL",
+                  "gap": {
+                    "value": 8,
+                    "token": "Spacing/sm"
+                  },
+                  "padding": {
+                    "top": {
+                      "value": 0
+                    },
+                    "right": {
+                      "value": 0
+                    },
+                    "bottom": {
+                      "value": 0
+                    },
+                    "left": {
+                      "value": 0
+                    }
+                  },
+                  "align": {
+                    "main": "MIN",
+                    "cross": "MIN"
+                  },
+                  "wrap": false
+                },
+                "style": {
+                  "clipsContent": true
+                },
+                "children": [
+                  {
+                    "id": "7:187",
+                    "type": "INSTANCE",
+                    "name": "Button/Entrar",
+                    "fidelity": "exact",
+                    "size": {
+                      "width": 342,
+                      "height": 48
+                    },
+                    "sizing": {
+                      "horizontal": "FILL",
+                      "vertical": "FIXED"
+                    },
+                    "instance": {
+                      "componentKey": "cc4d255d4c889786852f8ba4b57a714a4efd07ca",
+                      "componentName": "Button",
+                      "remote": true,
+                      "props": {
+                        "leftIcon": {
+                          "componentKey": "087dbe9c98e6051c256534179685020be15d04ba",
+                          "componentName": "Icon",
+                          "variant": {
+                            "name": "plus"
+                          }
+                        },
+                        "showLeftIcon": false,
+                        "label": "Entrar",
+                        "variant": "primary",
+                        "size": "md",
+                        "state": "default"
+                      },
+                      "exposed": [],
+                      "overrides": [
+                        {
+                          "node": ".",
+                          "fields": [
+                            "height",
+                            "primaryAxisSizingMode",
+                            "reactions",
+                            "width"
+                          ]
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "id": "7:192",
+                    "type": "INSTANCE",
+                    "name": "Button/Esqueci minha senha",
+                    "fidelity": "exact",
+                    "size": {
+                      "width": 342,
+                      "height": 48
+                    },
+                    "sizing": {
+                      "horizontal": "FILL",
+                      "vertical": "FIXED"
+                    },
+                    "instance": {
+                      "componentKey": "cc4d255d4c889786852f8ba4b57a714a4efd07ca",
+                      "componentName": "Button",
+                      "remote": true,
+                      "props": {
+                        "leftIcon": {
+                          "componentKey": "087dbe9c98e6051c256534179685020be15d04ba",
+                          "componentName": "Icon",
+                          "variant": {
+                            "name": "plus"
+                          }
+                        },
+                        "showLeftIcon": false,
+                        "label": "Esqueci minha senha",
+                        "variant": "ghost",
+                        "size": "md",
+                        "state": "default"
+                      },
+                      "exposed": [],
+                      "overrides": [
+                        {
+                          "node": ".",
+                          "fields": [
+                            "height",
+                            "primaryAxisSizingMode",
+                            "width"
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "02 · Dashboard",
+      "states": [
+        {
+          "state": "default",
+          "id": "7:197",
+          "frameName": "02 · Dashboard",
+          "tree": {
+            "id": "7:197",
+            "type": "FRAME",
+            "name": "02 · Dashboard",
+            "fidelity": "exact",
+            "size": {
+              "width": 390,
+              "height": 844
+            },
+            "sizing": {
+              "horizontal": "FIXED",
+              "vertical": "FIXED"
+            },
+            "layout": {
+              "direction": "VERTICAL",
+              "gap": {
+                "value": 24,
+                "token": "Spacing/xl"
+              },
+              "padding": {
+                "top": {
+                  "value": 32,
+                  "token": "Spacing/2xl"
+                },
+                "right": {
+                  "value": 24,
+                  "token": "Spacing/xl"
+                },
+                "bottom": {
+                  "value": 32,
+                  "token": "Spacing/2xl"
+                },
+                "left": {
+                  "value": 24,
+                  "token": "Spacing/xl"
+                }
+              },
+              "align": {
+                "main": "MIN",
+                "cross": "MIN"
+              },
+              "wrap": false
+            },
+            "style": {
+              "fills": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "value": "#F8FAFC",
+                    "token": "Color/bg"
+                  }
+                }
+              ],
+              "clipsContent": true
+            },
+            "children": [
+              {
+                "id": "7:198",
+                "type": "INSTANCE",
+                "name": "AppHeader",
+                "fidelity": "exact",
+                "size": {
+                  "width": 342,
+                  "height": 44
+                },
+                "sizing": {
+                  "horizontal": "FILL",
+                  "vertical": "HUG"
+                },
+                "instance": {
+                  "componentKey": "3c931b7b273a3a8e75065689edf278d2249677e9",
+                  "componentName": "AppHeader",
+                  "remote": true,
+                  "props": {
+                    "name": "Ana Souza",
+                    "greeting": "Bom dia,"
+                  },
+                  "exposed": [
+                    {
+                      "path": "Avatar",
+                      "componentKey": "4a1bb73f19680e77a1be870a2630949e0033bddc",
+                      "componentName": "Avatar",
+                      "props": {
+                        "icon": {
+                          "componentKey": "087dbe9c98e6051c256534179685020be15d04ba",
+                          "componentName": "Icon",
+                          "variant": {
+                            "name": "arrow-down-left"
+                          }
+                        },
+                        "initials": "AS",
+                        "type": "initials",
+                        "size": "md"
+                      }
+                    }
+                  ],
+                  "overrides": []
+                }
+              },
+              {
+                "id": "7:218",
+                "type": "INSTANCE",
+                "name": "BalanceCard",
+                "fidelity": "exact",
+                "size": {
+                  "width": 342,
+                  "height": 242
+                },
+                "sizing": {
+                  "horizontal": "FILL",
+                  "vertical": "HUG"
+                },
+                "instance": {
+                  "componentKey": "f9807e6653767aaf03a63bfef913830ee18d6d4e",
+                  "componentName": "BalanceCard",
+                  "remote": true,
+                  "props": {
+                    "value": "R$ ••••••",
+                    "label": "Saldo disponível",
+                    "hidden": "true"
+                  },
+                  "exposed": [
+                    {
+                      "path": "delta",
+                      "componentKey": "f5c999bbdd2c2b543fd66177465fe4a300b30e9a",
+                      "componentName": "Badge",
+                      "props": {
+                        "label": "+2,4% este mês",
+                        "tone": "success"
+                      }
+                    }
+                  ],
+                  "overrides": [
+                    {
+                      "node": ".",
+                      "fields": [
+                        "reactions"
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "7:249",
+                "type": "FRAME",
+                "name": "transactions",
+                "fidelity": "exact",
+                "size": {
+                  "width": 342,
+                  "height": 256
+                },
+                "sizing": {
+                  "horizontal": "FILL",
+                  "vertical": "HUG"
+                },
+                "layout": {
+                  "direction": "VERTICAL",
+                  "gap": {
+                    "value": 8,
+                    "token": "Spacing/sm"
+                  },
+                  "padding": {
+                    "top": {
+                      "value": 0
+                    },
+                    "right": {
+                      "value": 0
+                    },
+                    "bottom": {
+                      "value": 0
+                    },
+                    "left": {
+                      "value": 0
+                    }
+                  },
+                  "align": {
+                    "main": "MIN",
+                    "cross": "MIN"
+                  },
+                  "wrap": false
+                },
+                "style": {
+                  "clipsContent": true
+                },
+                "children": [
+                  {
+                    "id": "7:250",
+                    "type": "FRAME",
+                    "name": "sectionHeader",
+                    "fidelity": "exact",
+                    "size": {
+                      "width": 342,
+                      "height": 36
+                    },
+                    "sizing": {
+                      "horizontal": "FILL",
+                      "vertical": "HUG"
+                    },
+                    "layout": {
+                      "direction": "HORIZONTAL",
+                      "gap": "auto",
+                      "padding": {
+                        "top": {
+                          "value": 0
+                        },
+                        "right": {
+                          "value": 0
+                        },
+                        "bottom": {
+                          "value": 0
+                        },
+                        "left": {
+                          "value": 0
+                        }
+                      },
+                      "align": {
+                        "main": "SPACE_BETWEEN",
+                        "cross": "CENTER"
+                      },
+                      "wrap": false
+                    },
+                    "style": {
+                      "clipsContent": true
+                    },
+                    "children": [
+                      {
+                        "id": "7:251",
+                        "type": "TEXT",
+                        "name": "Últimas transações",
+                        "fidelity": "exact",
+                        "size": {
+                          "width": 168,
+                          "height": 24
+                        },
+                        "sizing": {
+                          "horizontal": "HUG",
+                          "vertical": "HUG"
+                        },
+                        "text": {
+                          "characters": "Últimas transações",
+                          "style": "heading/md",
+                          "color": {
+                            "value": "#0F172A",
+                            "token": "Color/text/primary"
+                          }
+                        }
+                      },
+                      {
+                        "id": "7:252",
+                        "type": "INSTANCE",
+                        "name": "Button/Ver todas",
+                        "fidelity": "exact",
+                        "size": {
+                          "width": 89,
+                          "height": 36
+                        },
+                        "sizing": {
+                          "horizontal": "HUG",
+                          "vertical": "FIXED"
+                        },
+                        "instance": {
+                          "componentKey": "cc4d255d4c889786852f8ba4b57a714a4efd07ca",
+                          "componentName": "Button",
+                          "remote": true,
+                          "props": {
+                            "leftIcon": {
+                              "componentKey": "087dbe9c98e6051c256534179685020be15d04ba",
+                              "componentName": "Icon",
+                              "variant": {
+                                "name": "plus"
+                              }
+                            },
+                            "showLeftIcon": false,
+                            "label": "Ver todas",
+                            "variant": "ghost",
+                            "size": "sm",
+                            "state": "default"
+                          },
+                          "exposed": [],
+                          "overrides": [
+                            {
+                              "node": ".",
+                              "fields": [
+                                "height",
+                                "width"
+                              ]
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "id": "7:257",
+                    "type": "FRAME",
+                    "name": "list",
+                    "fidelity": "exact",
+                    "size": {
+                      "width": 342,
+                      "height": 212
+                    },
+                    "sizing": {
+                      "horizontal": "FILL",
+                      "vertical": "HUG"
+                    },
+                    "layout": {
+                      "direction": "VERTICAL",
+                      "gap": {
+                        "value": 0
+                      },
+                      "padding": {
+                        "top": {
+                          "value": 0
+                        },
+                        "right": {
+                          "value": 0
+                        },
+                        "bottom": {
+                          "value": 0
+                        },
+                        "left": {
+                          "value": 0
+                        }
+                      },
+                      "align": {
+                        "main": "MIN",
+                        "cross": "MIN"
+                      },
+                      "wrap": false
+                    },
+                    "style": {
+                      "clipsContent": true
+                    },
+                    "children": [
+                      {
+                        "id": "7:258",
+                        "type": "INSTANCE",
+                        "name": "TransactionItem",
+                        "fidelity": "exact",
+                        "size": {
+                          "width": 342,
+                          "height": 72
+                        },
+                        "sizing": {
+                          "horizontal": "FILL",
+                          "vertical": "HUG"
+                        },
+                        "instance": {
+                          "componentKey": "d80c1ef919ba7685ba72eeac61c7ec49cfba48a1",
+                          "componentName": "TransactionItem",
+                          "remote": true,
+                          "props": {
+                            "showBadge": true,
+                            "amount": "- R$ 1.800,00",
+                            "subtitle": "Hoje, 07:30",
+                            "title": "Aluguel",
+                            "direction": "out"
+                          },
+                          "exposed": [
+                            {
+                              "path": "trailing/Badge",
+                              "componentKey": "f5c999bbdd2c2b543fd66177465fe4a300b30e9a",
+                              "componentName": "Badge",
+                              "props": {
+                                "label": "Pago",
+                                "tone": "neutral"
+                              }
+                            }
+                          ],
+                          "overrides": []
+                        }
+                      },
+                      {
+                        "id": "7:279",
+                        "type": "INSTANCE",
+                        "name": "TransactionItem",
+                        "fidelity": "exact",
+                        "size": {
+                          "width": 342,
+                          "height": 72
+                        },
+                        "sizing": {
+                          "horizontal": "FILL",
+                          "vertical": "HUG"
+                        },
+                        "instance": {
+                          "componentKey": "d80c1ef919ba7685ba72eeac61c7ec49cfba48a1",
+                          "componentName": "TransactionItem",
+                          "remote": true,
+                          "props": {
+                            "amount": "+ R$ 240,00",
+                            "showBadge": true,
+                            "subtitle": "Ontem, 16:45",
+                            "title": "Reembolso",
+                            "direction": "in"
+                          },
+                          "exposed": [
+                            {
+                              "path": "trailing/Badge",
+                              "componentKey": "f5c999bbdd2c2b543fd66177465fe4a300b30e9a",
+                              "componentName": "Badge",
+                              "props": {
+                                "label": "Recebido",
+                                "tone": "success"
+                              }
+                            }
+                          ],
+                          "overrides": []
+                        }
+                      },
+                      {
+                        "id": "7:301",
+                        "type": "INSTANCE",
+                        "name": "TransactionItem",
+                        "fidelity": "exact",
+                        "size": {
+                          "width": 342,
+                          "height": 68
+                        },
+                        "sizing": {
+                          "horizontal": "FILL",
+                          "vertical": "HUG"
+                        },
+                        "instance": {
+                          "componentKey": "d80c1ef919ba7685ba72eeac61c7ec49cfba48a1",
+                          "componentName": "TransactionItem",
+                          "remote": true,
+                          "props": {
+                            "showBadge": false,
+                            "amount": "- R$ 32,40",
+                            "subtitle": "22 out, 23:10",
+                            "title": "Uber",
+                            "direction": "out"
+                          },
+                          "exposed": [],
+                          "overrides": [
+                            {
+                              "node": ".",
+                              "fields": [
+                                "height",
+                                "width"
+                              ]
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "03 · Transferir",
+      "states": [
+        {
+          "state": "default",
+          "id": "7:316",
+          "frameName": "03 · Transferir",
+          "tree": {
+            "id": "7:316",
+            "type": "FRAME",
+            "name": "03 · Transferir",
+            "fidelity": "exact",
+            "size": {
+              "width": 390,
+              "height": 844
+            },
+            "sizing": {
+              "horizontal": "FIXED",
+              "vertical": "FIXED"
+            },
+            "layout": {
+              "direction": "VERTICAL",
+              "gap": {
+                "value": 24,
+                "token": "Spacing/xl"
+              },
+              "padding": {
+                "top": {
+                  "value": 32,
+                  "token": "Spacing/2xl"
+                },
+                "right": {
+                  "value": 24,
+                  "token": "Spacing/xl"
+                },
+                "bottom": {
+                  "value": 32,
+                  "token": "Spacing/2xl"
+                },
+                "left": {
+                  "value": 24,
+                  "token": "Spacing/xl"
+                }
+              },
+              "align": {
+                "main": "MIN",
+                "cross": "MIN"
+              },
+              "wrap": false
+            },
+            "style": {
+              "fills": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "value": "#F8FAFC",
+                    "token": "Color/bg"
+                  }
+                }
+              ],
+              "clipsContent": true
+            },
+            "children": [
+              {
+                "id": "7:317",
+                "type": "INSTANCE",
+                "name": "TopBar",
+                "fidelity": "exact",
+                "size": {
+                  "width": 342,
+                  "height": 40
+                },
+                "sizing": {
+                  "horizontal": "FILL",
+                  "vertical": "HUG"
+                },
+                "instance": {
+                  "componentKey": "c4580f6586f55c23ce69cec6bce684245d96ebf8",
+                  "componentName": "TopBar",
+                  "remote": false,
+                  "props": {
+                    "title": "Transferir"
+                  },
+                  "exposed": [],
+                  "overrides": [
+                    {
+                      "node": ".",
+                      "fields": [
+                        "reactions"
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "7:326",
+                "type": "INSTANCE",
+                "name": "Input",
+                "fidelity": "exact",
+                "size": {
+                  "width": 342,
+                  "height": 96
+                },
+                "sizing": {
+                  "horizontal": "FILL",
+                  "vertical": "HUG"
+                },
+                "instance": {
+                  "componentKey": "a7ec596b4a12636af643be4f14ae523a2dde58ea",
+                  "componentName": "Input",
+                  "remote": true,
+                  "props": {
+                    "showLeadingIcon": false,
+                    "helper": "Saldo disponível: R$ 12.480,50",
+                    "label": "Valor",
+                    "placeholder": "R$ 150,00",
+                    "leadingIcon": {
+                      "componentKey": "087dbe9c98e6051c256534179685020be15d04ba",
+                      "componentName": "Icon",
+                      "variant": {
+                        "name": "mail"
+                      }
+                    },
+                    "showTrailingAction": false,
+                    "state": "focus"
+                  },
+                  "exposed": [],
+                  "overrides": []
+                }
+              },
+              {
+                "id": "7:345",
+                "type": "FRAME",
+                "name": "contacts",
+                "fidelity": "exact",
+                "size": {
+                  "width": 342,
+                  "height": 246
+                },
+                "sizing": {
+                  "horizontal": "FILL",
+                  "vertical": "HUG"
+                },
+                "layout": {
+                  "direction": "VERTICAL",
+                  "gap": {
+                    "value": 8,
+                    "token": "Spacing/sm"
+                  },
+                  "padding": {
+                    "top": {
+                      "value": 0
+                    },
+                    "right": {
+                      "value": 0
+                    },
+                    "bottom": {
+                      "value": 0
+                    },
+                    "left": {
+                      "value": 0
+                    }
+                  },
+                  "align": {
+                    "main": "MIN",
+                    "cross": "MIN"
+                  },
+                  "wrap": false
+                },
+                "style": {
+                  "clipsContent": true
+                },
+                "children": [
+                  {
+                    "id": "7:346",
+                    "type": "TEXT",
+                    "name": "Contatos recentes",
+                    "fidelity": "exact",
+                    "size": {
+                      "width": 162,
+                      "height": 24
+                    },
+                    "sizing": {
+                      "horizontal": "HUG",
+                      "vertical": "HUG"
+                    },
+                    "text": {
+                      "characters": "Contatos recentes",
+                      "style": "heading/md",
+                      "color": {
+                        "value": "#0F172A",
+                        "token": "Color/text/primary"
+                      }
+                    }
+                  },
+                  {
+                    "id": "7:347",
+                    "type": "INSTANCE",
+                    "name": "ContactItem",
+                    "fidelity": "exact",
+                    "size": {
+                      "width": 342,
+                      "height": 66
+                    },
+                    "sizing": {
+                      "horizontal": "FILL",
+                      "vertical": "HUG"
+                    },
+                    "instance": {
+                      "componentKey": "267291286c16eafc32e9a66b9571700954952086",
+                      "componentName": "ContactItem",
+                      "remote": false,
+                      "props": {
+                        "detail": "Pix · ana@email.com",
+                        "name": "Ana Souza"
+                      },
+                      "exposed": [
+                        {
+                          "path": "Avatar",
+                          "componentKey": "4a1bb73f19680e77a1be870a2630949e0033bddc",
+                          "componentName": "Avatar",
+                          "props": {
+                            "icon": {
+                              "componentKey": "087dbe9c98e6051c256534179685020be15d04ba",
+                              "componentName": "Icon",
+                              "variant": {
+                                "name": "arrow-down-left"
+                              }
+                            },
+                            "initials": "AS",
+                            "type": "initials",
+                            "size": "md"
+                          }
+                        }
+                      ],
+                      "overrides": []
+                    }
+                  },
+                  {
+                    "id": "7:359",
+                    "type": "INSTANCE",
+                    "name": "ContactItem",
+                    "fidelity": "exact",
+                    "size": {
+                      "width": 342,
+                      "height": 66
+                    },
+                    "sizing": {
+                      "horizontal": "FILL",
+                      "vertical": "HUG"
+                    },
+                    "instance": {
+                      "componentKey": "267291286c16eafc32e9a66b9571700954952086",
+                      "componentName": "ContactItem",
+                      "remote": false,
+                      "props": {
+                        "detail": "Pix · (11) 98888-1234",
+                        "name": "Bruno Lima"
+                      },
+                      "exposed": [
+                        {
+                          "path": "Avatar",
+                          "componentKey": "4a1bb73f19680e77a1be870a2630949e0033bddc",
+                          "componentName": "Avatar",
+                          "props": {
+                            "icon": {
+                              "componentKey": "087dbe9c98e6051c256534179685020be15d04ba",
+                              "componentName": "Icon",
+                              "variant": {
+                                "name": "arrow-down-left"
+                              }
+                            },
+                            "initials": "BL",
+                            "type": "initials",
+                            "size": "md"
+                          }
+                        }
+                      ],
+                      "overrides": []
+                    }
+                  },
+                  {
+                    "id": "7:368",
+                    "type": "INSTANCE",
+                    "name": "ContactItem",
+                    "fidelity": "exact",
+                    "size": {
+                      "width": 342,
+                      "height": 66
+                    },
+                    "sizing": {
+                      "horizontal": "FILL",
+                      "vertical": "HUG"
+                    },
+                    "instance": {
+                      "componentKey": "267291286c16eafc32e9a66b9571700954952086",
+                      "componentName": "ContactItem",
+                      "remote": false,
+                      "props": {
+                        "detail": "Banco 260 · Ag 0001",
+                        "name": "Carla Dias"
+                      },
+                      "exposed": [
+                        {
+                          "path": "Avatar",
+                          "componentKey": "4a1bb73f19680e77a1be870a2630949e0033bddc",
+                          "componentName": "Avatar",
+                          "props": {
+                            "icon": {
+                              "componentKey": "087dbe9c98e6051c256534179685020be15d04ba",
+                              "componentName": "Icon",
+                              "variant": {
+                                "name": "arrow-down-left"
+                              }
+                            },
+                            "initials": "CD",
+                            "type": "initials",
+                            "size": "md"
+                          }
+                        }
+                      ],
+                      "overrides": []
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "7:377",
+                "type": "FRAME",
+                "name": "spacer",
+                "fidelity": "exact",
+                "size": {
+                  "width": 342,
+                  "height": 254
+                },
+                "sizing": {
+                  "horizontal": "FILL",
+                  "vertical": "FILL"
+                },
+                "style": {
+                  "clipsContent": true
+                }
+              },
+              {
+                "id": "7:378",
+                "type": "INSTANCE",
+                "name": "Button/Continuar",
+                "fidelity": "exact",
+                "size": {
+                  "width": 342,
+                  "height": 48
+                },
+                "sizing": {
+                  "horizontal": "FILL",
+                  "vertical": "FIXED"
+                },
+                "instance": {
+                  "componentKey": "cc4d255d4c889786852f8ba4b57a714a4efd07ca",
+                  "componentName": "Button",
+                  "remote": true,
+                  "props": {
+                    "leftIcon": {
+                      "componentKey": "087dbe9c98e6051c256534179685020be15d04ba",
+                      "componentName": "Icon",
+                      "variant": {
+                        "name": "plus"
+                      }
+                    },
+                    "showLeftIcon": false,
+                    "label": "Continuar",
+                    "variant": "primary",
+                    "size": "md",
+                    "state": "default"
+                  },
+                  "exposed": [],
+                  "overrides": [
+                    {
+                      "node": ".",
+                      "fields": [
+                        "height",
+                        "primaryAxisSizingMode",
+                        "reactions",
+                        "width"
+                      ]
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "04 · Confirmar",
+      "states": [
+        {
+          "state": "default",
+          "id": "7:382",
+          "frameName": "04 · Confirmar",
+          "tree": {
+            "id": "7:382",
+            "type": "FRAME",
+            "name": "04 · Confirmar",
+            "fidelity": "exact",
+            "size": {
+              "width": 390,
+              "height": 844
+            },
+            "sizing": {
+              "horizontal": "FIXED",
+              "vertical": "FIXED"
+            },
+            "layout": {
+              "direction": "VERTICAL",
+              "gap": {
+                "value": 24,
+                "token": "Spacing/xl"
+              },
+              "padding": {
+                "top": {
+                  "value": 32,
+                  "token": "Spacing/2xl"
+                },
+                "right": {
+                  "value": 24,
+                  "token": "Spacing/xl"
+                },
+                "bottom": {
+                  "value": 32,
+                  "token": "Spacing/2xl"
+                },
+                "left": {
+                  "value": 24,
+                  "token": "Spacing/xl"
+                }
+              },
+              "align": {
+                "main": "MIN",
+                "cross": "MIN"
+              },
+              "wrap": false
+            },
+            "style": {
+              "fills": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "value": "#F8FAFC",
+                    "token": "Color/bg"
+                  }
+                }
+              ],
+              "clipsContent": true
+            },
+            "children": [
+              {
+                "id": "7:383",
+                "type": "INSTANCE",
+                "name": "TopBar",
+                "fidelity": "exact",
+                "size": {
+                  "width": 342,
+                  "height": 40
+                },
+                "sizing": {
+                  "horizontal": "FILL",
+                  "vertical": "HUG"
+                },
+                "instance": {
+                  "componentKey": "c4580f6586f55c23ce69cec6bce684245d96ebf8",
+                  "componentName": "TopBar",
+                  "remote": false,
+                  "props": {
+                    "title": "Confirmar transferência"
+                  },
+                  "exposed": [],
+                  "overrides": [
+                    {
+                      "node": ".",
+                      "fields": [
+                        "reactions"
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "7:389",
+                "type": "FRAME",
+                "name": "summaryCard",
+                "fidelity": "exact",
+                "size": {
+                  "width": 342,
+                  "height": 235
+                },
+                "sizing": {
+                  "horizontal": "FILL",
+                  "vertical": "HUG"
+                },
+                "layout": {
+                  "direction": "VERTICAL",
+                  "gap": {
+                    "value": 0
+                  },
+                  "padding": {
+                    "top": {
+                      "value": 16,
+                      "token": "Spacing/lg"
+                    },
+                    "right": {
+                      "value": 16,
+                      "token": "Spacing/lg"
+                    },
+                    "bottom": {
+                      "value": 16,
+                      "token": "Spacing/lg"
+                    },
+                    "left": {
+                      "value": 16,
+                      "token": "Spacing/lg"
+                    }
+                  },
+                  "align": {
+                    "main": "MIN",
+                    "cross": "MIN"
+                  },
+                  "wrap": false
+                },
+                "style": {
+                  "fills": [
+                    {
+                      "type": "SOLID",
+                      "color": {
+                        "value": "#FFFFFF",
+                        "token": "Color/surface"
+                      }
+                    }
+                  ],
+                  "strokes": [
+                    {
+                      "type": "SOLID",
+                      "color": {
+                        "value": "#E2E8F0",
+                        "token": "Color/border"
+                      }
+                    }
+                  ],
+                  "strokeAlign": "INSIDE",
+                  "strokeWeight": {
+                    "value": 1
+                  },
+                  "radius": {
+                    "value": 12,
+                    "token": "Radius/md"
+                  },
+                  "clipsContent": true
+                },
+                "children": [
+                  {
+                    "id": "7:390",
+                    "type": "INSTANCE",
+                    "name": "ContactItem",
+                    "fidelity": "exact",
+                    "size": {
+                      "width": 308,
+                      "height": 66
+                    },
+                    "sizing": {
+                      "horizontal": "FILL",
+                      "vertical": "HUG"
+                    },
+                    "instance": {
+                      "componentKey": "267291286c16eafc32e9a66b9571700954952086",
+                      "componentName": "ContactItem",
+                      "remote": false,
+                      "props": {
+                        "detail": "Pix · ana@email.com",
+                        "name": "Ana Souza"
+                      },
+                      "exposed": [
+                        {
+                          "path": "Avatar",
+                          "componentKey": "4a1bb73f19680e77a1be870a2630949e0033bddc",
+                          "componentName": "Avatar",
+                          "props": {
+                            "icon": {
+                              "componentKey": "087dbe9c98e6051c256534179685020be15d04ba",
+                              "componentName": "Icon",
+                              "variant": {
+                                "name": "arrow-down-left"
+                              }
+                            },
+                            "initials": "AS",
+                            "type": "initials",
+                            "size": "md"
+                          }
+                        }
+                      ],
+                      "overrides": [
+                        {
+                          "node": ".",
+                          "fields": [
+                            "height",
+                            "width"
+                          ]
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "id": "7:399",
+                    "type": "INSTANCE",
+                    "name": "SummaryRow",
+                    "fidelity": "exact",
+                    "size": {
+                      "width": 308,
+                      "height": 45
+                    },
+                    "sizing": {
+                      "horizontal": "FILL",
+                      "vertical": "HUG"
+                    },
+                    "instance": {
+                      "componentKey": "0439f1dd517609410ae77e63b077f7984152dc3d",
+                      "componentName": "SummaryRow",
+                      "remote": false,
+                      "props": {
+                        "value": "R$ 150,00",
+                        "label": "Valor"
+                      },
+                      "exposed": [],
+                      "overrides": [
+                        {
+                          "node": ".",
+                          "fields": [
+                            "height",
+                            "width"
+                          ]
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "id": "7:402",
+                    "type": "INSTANCE",
+                    "name": "SummaryRow",
+                    "fidelity": "exact",
+                    "size": {
+                      "width": 308,
+                      "height": 45
+                    },
+                    "sizing": {
+                      "horizontal": "FILL",
+                      "vertical": "HUG"
+                    },
+                    "instance": {
+                      "componentKey": "0439f1dd517609410ae77e63b077f7984152dc3d",
+                      "componentName": "SummaryRow",
+                      "remote": false,
+                      "props": {
+                        "value": "Hoje, 24 out",
+                        "label": "Data"
+                      },
+                      "exposed": [],
+                      "overrides": [
+                        {
+                          "node": ".",
+                          "fields": [
+                            "height",
+                            "width"
+                          ]
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "id": "7:405",
+                    "type": "INSTANCE",
+                    "name": "SummaryRow",
+                    "fidelity": "exact",
+                    "size": {
+                      "width": 308,
+                      "height": 45
+                    },
+                    "sizing": {
+                      "horizontal": "FILL",
+                      "vertical": "HUG"
+                    },
+                    "instance": {
+                      "componentKey": "0439f1dd517609410ae77e63b077f7984152dc3d",
+                      "componentName": "SummaryRow",
+                      "remote": false,
+                      "props": {
+                        "value": "Grátis",
+                        "label": "Tarifa"
+                      },
+                      "exposed": [],
+                      "overrides": [
+                        {
+                          "node": ".",
+                          "fields": [
+                            "height",
+                            "width"
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "7:408",
+                "type": "INSTANCE",
+                "name": "Badge",
+                "fidelity": "exact",
+                "size": {
+                  "width": 260,
+                  "height": 24
+                },
+                "sizing": {
+                  "horizontal": "HUG",
+                  "vertical": "HUG"
+                },
+                "instance": {
+                  "componentKey": "f5c999bbdd2c2b543fd66177465fe4a300b30e9a",
+                  "componentName": "Badge",
+                  "remote": true,
+                  "props": {
+                    "label": "Confira os dados antes de confirmar",
+                    "tone": "warning"
+                  },
+                  "exposed": [],
+                  "overrides": [
+                    {
+                      "node": ".",
+                      "fields": [
+                        "height",
+                        "width"
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "7:411",
+                "type": "FRAME",
+                "name": "spacer",
+                "fidelity": "exact",
+                "size": {
+                  "width": 342,
+                  "height": 281
+                },
+                "sizing": {
+                  "horizontal": "FILL",
+                  "vertical": "FILL"
+                },
+                "style": {
+                  "clipsContent": true
+                }
+              },
+              {
+                "id": "7:412",
+                "type": "FRAME",
+                "name": "actions",
+                "fidelity": "exact",
+                "size": {
+                  "width": 342,
+                  "height": 104
+                },
+                "sizing": {
+                  "horizontal": "FILL",
+                  "vertical": "HUG"
+                },
+                "layout": {
+                  "direction": "VERTICAL",
+                  "gap": {
+                    "value": 8,
+                    "token": "Spacing/sm"
+                  },
+                  "padding": {
+                    "top": {
+                      "value": 0
+                    },
+                    "right": {
+                      "value": 0
+                    },
+                    "bottom": {
+                      "value": 0
+                    },
+                    "left": {
+                      "value": 0
+                    }
+                  },
+                  "align": {
+                    "main": "MIN",
+                    "cross": "MIN"
+                  },
+                  "wrap": false
+                },
+                "style": {
+                  "clipsContent": true
+                },
+                "children": [
+                  {
+                    "id": "7:413",
+                    "type": "INSTANCE",
+                    "name": "Button/Confirmar transferência",
+                    "fidelity": "exact",
+                    "size": {
+                      "width": 342,
+                      "height": 48
+                    },
+                    "sizing": {
+                      "horizontal": "FILL",
+                      "vertical": "FIXED"
+                    },
+                    "instance": {
+                      "componentKey": "cc4d255d4c889786852f8ba4b57a714a4efd07ca",
+                      "componentName": "Button",
+                      "remote": true,
+                      "props": {
+                        "leftIcon": {
+                          "componentKey": "087dbe9c98e6051c256534179685020be15d04ba",
+                          "componentName": "Icon",
+                          "variant": {
+                            "name": "check"
+                          }
+                        },
+                        "showLeftIcon": true,
+                        "label": "Confirmar transferência",
+                        "variant": "primary",
+                        "size": "md",
+                        "state": "default"
+                      },
+                      "exposed": [],
+                      "overrides": [
+                        {
+                          "node": ".",
+                          "fields": [
+                            "height",
+                            "primaryAxisSizingMode",
+                            "reactions",
+                            "width"
+                          ]
+                        },
+                        {
+                          "node": "leftIcon/Vector",
+                          "fields": [
+                            "strokes"
+                          ],
+                          "values": {
+                            "strokes": [
+                              {
+                                "type": "SOLID",
+                                "color": {
+                                  "value": "#FFFFFF",
+                                  "token": "Color/text/on-primary"
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "id": "7:418",
+                    "type": "INSTANCE",
+                    "name": "Button/Cancelar",
+                    "fidelity": "exact",
+                    "size": {
+                      "width": 342,
+                      "height": 48
+                    },
+                    "sizing": {
+                      "horizontal": "FILL",
+                      "vertical": "FIXED"
+                    },
+                    "instance": {
+                      "componentKey": "cc4d255d4c889786852f8ba4b57a714a4efd07ca",
+                      "componentName": "Button",
+                      "remote": true,
+                      "props": {
+                        "leftIcon": {
+                          "componentKey": "087dbe9c98e6051c256534179685020be15d04ba",
+                          "componentName": "Icon",
+                          "variant": {
+                            "name": "plus"
+                          }
+                        },
+                        "showLeftIcon": false,
+                        "label": "Cancelar",
+                        "variant": "secondary",
+                        "size": "md",
+                        "state": "default"
+                      },
+                      "exposed": [],
+                      "overrides": [
+                        {
+                          "node": ".",
+                          "fields": [
+                            "height",
+                            "primaryAxisSizingMode",
+                            "width"
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "05 · Sucesso",
+      "states": [
+        {
+          "state": "default",
+          "id": "7:423",
+          "frameName": "05 · Sucesso",
+          "tree": {
+            "id": "7:423",
+            "type": "FRAME",
+            "name": "05 · Sucesso",
+            "fidelity": "exact",
+            "size": {
+              "width": 390,
+              "height": 844
+            },
+            "sizing": {
+              "horizontal": "FIXED",
+              "vertical": "FIXED"
+            },
+            "layout": {
+              "direction": "VERTICAL",
+              "gap": {
+                "value": 24,
+                "token": "Spacing/xl"
+              },
+              "padding": {
+                "top": {
+                  "value": 32,
+                  "token": "Spacing/2xl"
+                },
+                "right": {
+                  "value": 24,
+                  "token": "Spacing/xl"
+                },
+                "bottom": {
+                  "value": 32,
+                  "token": "Spacing/2xl"
+                },
+                "left": {
+                  "value": 24,
+                  "token": "Spacing/xl"
+                }
+              },
+              "align": {
+                "main": "MIN",
+                "cross": "CENTER"
+              },
+              "wrap": false
+            },
+            "style": {
+              "fills": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "value": "#F8FAFC",
+                    "token": "Color/bg"
+                  }
+                }
+              ],
+              "clipsContent": true
+            },
+            "children": [
+              {
+                "id": "7:424",
+                "type": "FRAME",
+                "name": "spacer",
+                "fidelity": "exact",
+                "size": {
+                  "width": 342,
+                  "height": 202
+                },
+                "sizing": {
+                  "horizontal": "FILL",
+                  "vertical": "FILL"
+                },
+                "style": {
+                  "clipsContent": true
+                }
+              },
+              {
+                "id": "7:425",
+                "type": "INSTANCE",
+                "name": "SuccessState",
+                "fidelity": "exact",
+                "size": {
+                  "width": 342,
+                  "height": 152
+                },
+                "sizing": {
+                  "horizontal": "FILL",
+                  "vertical": "HUG"
+                },
+                "instance": {
+                  "componentKey": "221d405f339fe2f9ae3048df7b9a7df3aa8625f3",
+                  "componentName": "SuccessState",
+                  "remote": false,
+                  "props": {
+                    "message": "R$ 150,00 para Ana Souza via Pix. O comprovante foi salvo no seu histórico.",
+                    "title": "Transferência enviada!"
+                  },
+                  "exposed": [],
+                  "overrides": [
+                    {
+                      "node": ".",
+                      "fields": [
+                        "height",
+                        "width"
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "7:435",
+                "type": "INSTANCE",
+                "name": "Badge",
+                "fidelity": "exact",
+                "size": {
+                  "width": 84,
+                  "height": 24
+                },
+                "sizing": {
+                  "horizontal": "HUG",
+                  "vertical": "HUG"
+                },
+                "instance": {
+                  "componentKey": "f5c999bbdd2c2b543fd66177465fe4a300b30e9a",
+                  "componentName": "Badge",
+                  "remote": true,
+                  "props": {
+                    "label": "Concluída",
+                    "tone": "success"
+                  },
+                  "exposed": [],
+                  "overrides": [
+                    {
+                      "node": ".",
+                      "fields": [
+                        "height",
+                        "width"
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "7:438",
+                "type": "FRAME",
+                "name": "spacer",
+                "fidelity": "exact",
+                "size": {
+                  "width": 342,
+                  "height": 202
+                },
+                "sizing": {
+                  "horizontal": "FILL",
+                  "vertical": "FILL"
+                },
+                "style": {
+                  "clipsContent": true
+                }
+              },
+              {
+                "id": "7:439",
+                "type": "FRAME",
+                "name": "actions",
+                "fidelity": "exact",
+                "size": {
+                  "width": 342,
+                  "height": 104
+                },
+                "sizing": {
+                  "horizontal": "FILL",
+                  "vertical": "HUG"
+                },
+                "layout": {
+                  "direction": "VERTICAL",
+                  "gap": {
+                    "value": 8,
+                    "token": "Spacing/sm"
+                  },
+                  "padding": {
+                    "top": {
+                      "value": 0
+                    },
+                    "right": {
+                      "value": 0
+                    },
+                    "bottom": {
+                      "value": 0
+                    },
+                    "left": {
+                      "value": 0
+                    }
+                  },
+                  "align": {
+                    "main": "MIN",
+                    "cross": "MIN"
+                  },
+                  "wrap": false
+                },
+                "style": {
+                  "clipsContent": true
+                },
+                "children": [
+                  {
+                    "id": "7:440",
+                    "type": "INSTANCE",
+                    "name": "Button/Voltar ao início",
+                    "fidelity": "exact",
+                    "size": {
+                      "width": 342,
+                      "height": 48
+                    },
+                    "sizing": {
+                      "horizontal": "FILL",
+                      "vertical": "FIXED"
+                    },
+                    "instance": {
+                      "componentKey": "cc4d255d4c889786852f8ba4b57a714a4efd07ca",
+                      "componentName": "Button",
+                      "remote": true,
+                      "props": {
+                        "leftIcon": {
+                          "componentKey": "087dbe9c98e6051c256534179685020be15d04ba",
+                          "componentName": "Icon",
+                          "variant": {
+                            "name": "home"
+                          }
+                        },
+                        "showLeftIcon": true,
+                        "label": "Voltar ao início",
+                        "variant": "primary",
+                        "size": "md",
+                        "state": "default"
+                      },
+                      "exposed": [],
+                      "overrides": [
+                        {
+                          "node": ".",
+                          "fields": [
+                            "height",
+                            "primaryAxisSizingMode",
+                            "reactions",
+                            "width"
+                          ]
+                        },
+                        {
+                          "node": "leftIcon/Vector",
+                          "fields": [
+                            "strokes"
+                          ],
+                          "values": {
+                            "strokes": [
+                              {
+                                "type": "SOLID",
+                                "color": {
+                                  "value": "#FFFFFF",
+                                  "token": "Color/text/on-primary"
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "id": "7:445",
+                    "type": "INSTANCE",
+                    "name": "Button/Ver comprovante",
+                    "fidelity": "exact",
+                    "size": {
+                      "width": 342,
+                      "height": 48
+                    },
+                    "sizing": {
+                      "horizontal": "FILL",
+                      "vertical": "FIXED"
+                    },
+                    "instance": {
+                      "componentKey": "cc4d255d4c889786852f8ba4b57a714a4efd07ca",
+                      "componentName": "Button",
+                      "remote": true,
+                      "props": {
+                        "leftIcon": {
+                          "componentKey": "087dbe9c98e6051c256534179685020be15d04ba",
+                          "componentName": "Icon",
+                          "variant": {
+                            "name": "plus"
+                          }
+                        },
+                        "showLeftIcon": false,
+                        "label": "Ver comprovante",
+                        "variant": "ghost",
+                        "size": "md",
+                        "state": "default"
+                      },
+                      "exposed": [],
+                      "overrides": [
+                        {
+                          "node": ".",
+                          "fields": [
+                            "height",
+                            "primaryAxisSizingMode",
+                            "width"
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "flow": {
+    "start": "7:135",
+    "edges": [
+      {
+        "from": "7:135",
+        "trigger": {
+          "node": "7:187",
+          "name": "Button/Entrar",
+          "type": "ON_CLICK"
+        },
+        "to": "7:197",
+        "action": "NODE",
+        "navigation": "NAVIGATE",
+        "transition": "SMART_ANIMATE"
+      },
+      {
+        "from": "7:197",
+        "trigger": {
+          "node": "7:218",
+          "name": "BalanceCard",
+          "type": "ON_CLICK"
+        },
+        "to": "7:316",
+        "action": "NODE",
+        "navigation": "NAVIGATE",
+        "transition": "SMART_ANIMATE"
+      },
+      {
+        "from": "7:316",
+        "trigger": {
+          "node": "7:317",
+          "name": "TopBar",
+          "type": "ON_CLICK"
+        },
+        "to": "back",
+        "action": "BACK"
+      },
+      {
+        "from": "7:316",
+        "trigger": {
+          "node": "7:378",
+          "name": "Button/Continuar",
+          "type": "ON_CLICK"
+        },
+        "to": "7:382",
+        "action": "NODE",
+        "navigation": "NAVIGATE",
+        "transition": "SMART_ANIMATE"
+      },
+      {
+        "from": "7:382",
+        "trigger": {
+          "node": "7:383",
+          "name": "TopBar",
+          "type": "ON_CLICK"
+        },
+        "to": "back",
+        "action": "BACK"
+      },
+      {
+        "from": "7:382",
+        "trigger": {
+          "node": "7:413",
+          "name": "Button/Confirmar transferência",
+          "type": "ON_CLICK"
+        },
+        "to": "7:423",
+        "action": "NODE",
+        "navigation": "NAVIGATE",
+        "transition": "SMART_ANIMATE"
+      },
+      {
+        "from": "7:423",
+        "trigger": {
+          "node": "7:440",
+          "name": "Button/Voltar ao início",
+          "type": "ON_CLICK"
+        },
+        "to": "7:197",
+        "action": "NODE",
+        "navigation": "NAVIGATE",
+        "transition": "SMART_ANIMATE"
+      }
+    ]
+  },
+  "lint": [
+    {
+      "node": "7:159",
+      "name": "Input",
+      "rule": "style-override",
+      "detail": "estilo sobrescrito fora das props do componente em \"field/leadingIcon/Vector\" (strokes)"
+    },
+    {
+      "node": "7:159",
+      "name": "Input",
+      "rule": "style-override",
+      "detail": "estilo sobrescrito fora das props do componente em \"field/leadingIcon/Vector\" (strokes)"
+    },
+    {
+      "node": "7:187",
+      "name": "Button/Entrar",
+      "rule": "renamed-instance",
+      "detail": "instância renomeada; componente \"Button\""
+    },
+    {
+      "node": "7:192",
+      "name": "Button/Esqueci minha senha",
+      "rule": "renamed-instance",
+      "detail": "instância renomeada; componente \"Button\""
+    },
+    {
+      "node": "7:252",
+      "name": "Button/Ver todas",
+      "rule": "renamed-instance",
+      "detail": "instância renomeada; componente \"Button\""
+    },
+    {
+      "node": "7:378",
+      "name": "Button/Continuar",
+      "rule": "renamed-instance",
+      "detail": "instância renomeada; componente \"Button\""
+    },
+    {
+      "node": "7:413",
+      "name": "Button/Confirmar transferência",
+      "rule": "renamed-instance",
+      "detail": "instância renomeada; componente \"Button\""
+    },
+    {
+      "node": "7:413",
+      "name": "Button/Confirmar transferência",
+      "rule": "style-override",
+      "detail": "estilo sobrescrito fora das props do componente em \"leftIcon/Vector\" (strokes)"
+    },
+    {
+      "node": "7:418",
+      "name": "Button/Cancelar",
+      "rule": "renamed-instance",
+      "detail": "instância renomeada; componente \"Button\""
+    },
+    {
+      "node": "7:440",
+      "name": "Button/Voltar ao início",
+      "rule": "renamed-instance",
+      "detail": "instância renomeada; componente \"Button\""
+    },
+    {
+      "node": "7:440",
+      "name": "Button/Voltar ao início",
+      "rule": "style-override",
+      "detail": "estilo sobrescrito fora das props do componente em \"leftIcon/Vector\" (strokes)"
+    },
+    {
+      "node": "7:445",
+      "name": "Button/Ver comprovante",
+      "rule": "renamed-instance",
+      "detail": "instância renomeada; componente \"Button\""
+    },
+    {
+      "node": "6:84",
+      "name": "back",
+      "rule": "renamed-instance",
+      "detail": "instância renomeada; componente \"IconButton\""
+    },
+    {
+      "node": "6:84",
+      "name": "back",
+      "rule": "style-override",
+      "detail": "estilo sobrescrito fora das props do componente em \"icon/Vector\" (strokes)"
+    },
+    {
+      "node": "6:100",
+      "name": "chevron",
+      "rule": "renamed-instance",
+      "detail": "instância renomeada; componente \"Icon\""
+    },
+    {
+      "node": "6:100",
+      "name": "chevron",
+      "rule": "style-override",
+      "detail": "estilo sobrescrito fora das props do componente em \"Vector\" (strokes)"
+    },
+    {
+      "node": "6:106",
+      "name": "icon",
+      "rule": "renamed-instance",
+      "detail": "instância renomeada; componente \"Avatar\""
+    },
+    {
+      "node": "6:106",
+      "name": "icon",
+      "rule": "style-override",
+      "detail": "estilo sobrescrito fora das props do componente em \"icon/Vector\" (strokes)"
+    },
+    {
+      "node": "6:106",
+      "name": "icon",
+      "rule": "style-override",
+      "detail": "estilo sobrescrito fora das props do componente em \"bg\" (fills)"
+    }
+  ]
+}
