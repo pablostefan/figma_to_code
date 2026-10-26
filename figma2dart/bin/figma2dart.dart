@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:args/args.dart';
 import 'package:figma2dart/src/commands.dart';
 import 'package:figma2dart/src/mappings.dart';
+import 'package:figma2dart/src/review.dart';
 import 'package:figma2dart/src/workspace.dart';
 
 const _usage = '''
@@ -16,6 +17,7 @@ Uso: figma2dart <comando> [opções] [--json]   (de dentro do pacote, ou --packa
   resolve [<export.zip>]       resolve uma tela e escreve a pasta da tarefa (BRIEF.md + briefs de componentes)
       --screen <nome> (repetível) --state <estado> --out <dir> --mappings <pacote>
   check <arquivo.dart>...      marcadores f2d que sobraram + dart analyze
+  review --screen <tela>       revisão visual: Figma | Flutter (da captura figmaCapture), fatos e critério
   library [<export.zip>...]    grava o retrato do DS (exports do plugin em modo biblioteca) no pacote de mapeamentos
   link <key> <arquivo.dart>[#Classe] [--name <nome no Figma>]
                                liga um componente do Figma a um widget do app que já existe (@FigmaLocal)
@@ -55,6 +57,7 @@ Future<void> main(List<String> argv) async {
         mappings: args.option('mappings'),
       ),
       'check' when rest.isNotEmpty => await check(ws, rest),
+      'review' when args.multiOption('screen').length == 1 => review(ws, args.multiOption('screen').single),
       'library' => library(ws, rest),
       'link' when rest.length == 2 => await link(ws, rest[0], rest[1], name: args.option('name')),
       'init' => await init(ws, force: args.flag('force')),
@@ -90,6 +93,13 @@ String _human(String command, Map<String, Object?> r) => switch (command) {
   'check' =>
     '${r['ok'] == true ? 'ok' : '${r['blocking']} pendência(s)'}; ${r['inferred']} f2d:inferred, '
         '${r['placeholders']} placeholder(s), ${r['todos']} TODO(f2d), ${(r['hints'] as List).length} dica(s)',
+  'review' when r['capture'] == false =>
+    'Falta a captura. Escreva ${r['testFile']} (complete a tela), rode `flutter test ${r['testFile']}` e chame o '
+        'review de novo:\n\n${r['test']}',
+  'review' =>
+    '${r['review']}\n'
+        'fatos: ${(r['facts'] as Map).entries.map((e) => '${e.key} ${e.value}').join(', ')}; '
+        '${(r['sections'] as List).length} seção(ões) recortada(s)',
   _ => const JsonEncoder.withIndent('  ').convert(r),
 };
 

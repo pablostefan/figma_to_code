@@ -150,6 +150,13 @@ anterior.
 
 **Conferir:** o `doctor` mostra as páginas e a data de cada uma em `library`; sem retrato, um aviso em `warnings`.
 
+## 8. Fontes (revisão visual)
+
+A revisão visual renderiza a tela num teste de widget e carrega as fontes pelo `FontManifest.json` do app. Basta o
+Acme declarar as fontes no `pubspec.yaml` dele (`flutter: fonts:`), como já faz para o app usar. Fonte que só existe
+no aparelho (do sistema) não entra no teste: o texto sai em outra fonte, e o critério da revisão manda ignorar
+diferença de renderização de fonte. Nada a configurar além disso.
+
 ---
 
 ## Quando o Acme muda

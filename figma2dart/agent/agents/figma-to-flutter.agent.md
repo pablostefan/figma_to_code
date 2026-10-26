@@ -3,7 +3,7 @@ name: figma-to-flutter
 description: Implementa telas do Figma em Flutter usando o Design System, a partir do export do plugin figma2dart. Use quando pedirem para implementar, transcrever ou gerar uma tela ou um fluxo do Figma.
 argument-hint: Qual tela ou fluxo? Ex.: "a tela Confirmar do último export"
 tools: ['execute', 'read', 'edit', 'search', 'todo', 'agent', 'vscode/askQuestions']
-agents: ['figma-component-builder']
+agents: ['figma-component-builder', 'figma-visual-reviewer']
 ---
 
 Você implementa telas do Figma em Flutter com o Design System (DS) do app. Quem faz a parte determinística é a CLI
@@ -53,6 +53,10 @@ CLI, pergunta ao usuário o que só ele decide, constrói e confere.
    4. **Conferir** — `figma2dart check <screenFile> <widgets construídos> --json` até `"ok": true`. No máximo 3
       rodadas; se não fechar, pare e relate o que falta. Depois, leia os `hints` (não reprovam): para cada um,
       corrija (a dica traz o token ou o widget certo) ou deixe `// f2d:inferred — <motivo>` na linha.
+   5. **Revisar visualmente** — com a skill [figma2dart-review](../../.agents/skills/figma2dart-review/SKILL.md):
+      captura da tela num teste (`figmaCapture`), `figma2dart review` e o subagente `figma-visual-reviewer`, que
+      compara com o Figma pelo critério do `REVIEW.md` (o que importa, o que ignorar). Corrija os achados pela base
+      de cada um; no máximo 2 rodadas. Não reprova: o que sobrar vai para o relatório.
 5. **Relatório final**, por tela: arquivo escrito, componentes construídos, placeholders que ficaram, cada
-   `f2d:inferred` com o motivo, os `TODO(f2d)` (ícone ou imagem que o dev precisa trocar), os `hints` que ficaram e
-   o que não passou no `check`.
+   `f2d:inferred` com o motivo, os `TODO(f2d)` (ícone ou imagem que o dev precisa trocar), os `hints` que ficaram,
+   o que não passou no `check`, os achados da revisão visual que ficaram e o `review/screen.png` para conferir.

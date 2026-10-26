@@ -703,6 +703,29 @@ Componentes `complete` sem `devNotes` não aparecem: já estão resolvidos no ra
 | Prop nova no Figma sem leitura, sem `FigmaNote` | erro (drift) |
 | Mesma key, nome diferente | info (drift) |
 
+### 10.1 Captura para a revisão visual: `figmaCapture`
+
+`package:figma_connect/capture.dart` (só em teste de widget) renderiza a tela no tamanho do frame do Figma, na escala
+do PNG do export, com **todas as fontes do app** (pelo `FontManifest.json`: as do DS entram sem config), e grava em
+`.figma2dart/tasks/<tela>/capture/` o `screen.png` e o `layout.json` (textos visíveis com o retângulo, inclusive o
+valor digitado num campo; erros de layout como overflow, que **não reprovam** o teste).
+
+```dart
+testWidgets('figma: 03 · Transferir', (tester) async {
+  await figmaCapture(
+    tester,
+    MaterialApp(theme: DsTheme.light(), home: TransferPage(wallet: Wallet.sample())),
+    task: 'transferir',
+    // o estado do Figma antes da captura: sem isso, botão desabilitado e campo vazio viram diferença falsa
+    prepare: (tester) => tester.enterText(find.byType(TextField), '15000'),
+  );
+});
+```
+
+O `figma2dart review` lê a captura e monta a revisão (Figma | Flutter, fatos e critério). Quem escreve o teste é a
+LLM (skill `figma2dart-review`): só ela sabe o construtor, o tema e os dados da tela. O `figma_connect` passa a
+depender do `flutter_test` por causa desse arquivo; o resto da API não usa.
+
 ---
 
 ## 11. O que não colocar na anotação

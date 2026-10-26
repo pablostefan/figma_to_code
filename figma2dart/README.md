@@ -18,9 +18,11 @@ fora do DS) e confere com `check`. Agente e skills ficam em [agent/](agent/) e o
 agent/
   agents/figma-to-flutter.agent.md         orquestrador: etapas, quando perguntar, relatório
   agents/figma-component-builder.agent.md  subagente: constrói um componente fora do DS
+  agents/figma-visual-reviewer.agent.md    subagente: revisa a tela contra o Figma (não edita código)
   skills/figma2dart-setup/                 descobrir caminhos e resolver o que o doctor apontar
   skills/figma2dart-screen/                escrever a tela a partir do BRIEF.md
   skills/figma2dart-component/             construir um componente a partir do brief de construção
+  skills/figma2dart-review/                revisão visual depois do check: captura, review, revisor, correções
 ```
 
 ## Instalar
@@ -72,6 +74,7 @@ Todos aceitam `--json` e `--package <pasta>`; erro com `--json` sai como `{"erro
 | `screens [<zip>]` | telas e estados do export, ordem do fluxo, quantas instâncias ficam fora do DS |
 | `resolve [<zip>] --screen <nome>…` | `--screen` repetível: carrega os mapeamentos uma vez e escreve uma pasta de tarefa por tela (a pasta padrão recomeça do zero). Devolve `tasks`, cada uma com `brief`, `image`, `screenFile` e `components` (`kind`: `build` com `widgetFile`, `class`, `dependsOn`; `sketch`/`local` com `widget` e `import`; `build` ganha `existing` quando uma classe de mesmo nome já existe no app) |
 | `check <arquivo.dart>…` | marcadores que sobraram (`guided`, `gap`, `sketch`, `local` reprovam; `placeholder`, `inferred` e `TODO(f2d)` só contam) + `dart analyze`; sai com 1 se reprovar. Mais `hints`, que **não reprovam**: valor solto com o token do mesmo valor (`EdgeInsets.all(12)` → `DsSpacing.md`), widget a montar que sumiu, parâmetro da API proposta ausente, texto do Figma ausente (o `resolve` grava em cada tarefa o `check.json` com o que esperar). `// f2d:inferred` na linha cala a dica de valor solto |
+| `review --screen <tela>` | revisão visual, depois do `check`. Sem captura: põe o `figma_connect` nas dev_dependencies e devolve `capture: false` com `testFile` e o modelo do teste (`figmaCapture`, [FIGMA_CONNECT §10.1](../docs/FIGMA_CONNECT.md#101-captura-para-a-revisão-visual-figmacapture)). Com captura: grava `review/` na tarefa com `screen.png` (Figma \| Flutter), um par por seção (pela caixa do Figma), `facts.json` (texto ausente, fora de ordem, só no Flutter, cortado, overflow; nada em pixel) e o `REVIEW.md` com o critério (importa / talvez / ignorar) e a estrutura de cada seção como base. Não dá veredito: quem revisa é o subagente `figma-visual-reviewer` |
 | `library [<zip>…]` | grava o retrato do DS (`figma_library.json`: key e nome de cada componente) no pacote de mapeamentos, a partir de exports do plugin em modo biblioteca; uma página por export, a mesma página de novo substitui. Sem zip: o `figma2dart-library-*.zip` mais novo |
 | `link <key> <arquivo.dart>[#Classe] [--name <nome>]` | liga um componente do Figma (key inteira, 40 caracteres: a do `components[].key` do `resolve`) a um widget do app que já existe: escreve o `@FigmaLocal` em `figma/connect/` do pacote do widget e põe o `figma_connect` nas dev_dependencies, se faltar. O widget tem que estar no pacote da tela ou numa dependência direta dele (é onde o `resolve` procura) |
 | `init [--force]` | app só: config, `.gitignore`, agente e skills (não sobrescreve sem `--force`) |

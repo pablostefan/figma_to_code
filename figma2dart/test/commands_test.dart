@@ -160,19 +160,21 @@ void main() {
         '.gitignore',
         '.github/agents/figma-to-flutter.agent.md',
         '.github/agents/figma-component-builder.agent.md',
+        '.github/agents/figma-visual-reviewer.agent.md',
         '.agents/skills/figma2dart-setup/SKILL.md',
         '.agents/skills/figma2dart-screen/SKILL.md',
         '.agents/skills/figma2dart-component/SKILL.md',
+        '.agents/skills/figma2dart-review/SKILL.md',
       ]),
     );
     expect(File('${app.path}/.gitignore').readAsStringSync(), 'build/\n.figma2dart/\n');
     final second = await init(ws);
     expect(second['written'], isEmpty);
-    expect(second['skipped'], hasLength(6));
+    expect(second['skipped'], hasLength(8));
 
     File('${app.path}/${Workspace.configName}').writeAsStringSync('screens: lib/telas\n');
     final forced = await init(ws, force: true);
-    expect(forced['written'], hasLength(5)); // agente e skills
+    expect(forced['written'], hasLength(7)); // agentes e skills
     expect(Workspace.find(app.path).screens, 'lib/telas');
   });
 

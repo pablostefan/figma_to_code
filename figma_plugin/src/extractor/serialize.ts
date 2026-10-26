@@ -54,6 +54,11 @@ export async function serializeNode(node: SceneNode, ctx: Ctx, placement: Placem
   if (!node.visible) out.visible = false;
   if ('rotation' in node && Math.abs(node.rotation) >= 0.5) out.rotation = round(node.rotation);
 
+  if (placement.screen && !placement.root) {
+    const bounds = boundsIn(node, placement.screen);
+    if (bounds) out.bounds = bounds;
+  }
+
   const absolute = 'layoutPositioning' in node && node.layoutPositioning === 'ABSOLUTE';
   if (!placement.root && (!placement.inAutoLayout || absolute)) out.position = { x: round(node.x), y: round(node.y) };
 
@@ -84,8 +89,6 @@ export async function serializeNode(node: SceneNode, ctx: Ctx, placement: Placem
     out.instance = info;
     out.fidelity = fidelity;
     if (placement.screen) {
-      const bounds = boundsIn(node, placement.screen);
-      if (bounds) out.bounds = bounds;
       const content = await instanceContent(node, ctx);
       if (content.items.length) info.content = content.items;
       if (content.truncated) info.contentTruncated = true;

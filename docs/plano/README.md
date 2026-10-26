@@ -20,8 +20,8 @@ Uma questão por arquivo. Cada um traz o problema, a proposta, as tarefas, a ver
 | [04](04-tokens-em-dart.md) | Tokens já em Dart no brief | feita |
 | [05](05-check.md) | `check` que confere as regras (dicas, sem bloqueio) | feita |
 | [06](06-skills.md) | Skills de construir e de montar | aberta |
-| [07](07-plugin.md) | Plugin: conteúdo das instâncias e texto (+ recorte do PNG) | feita (falta export real) |
-| [08](08-comparacao-visual.md) | Comparação visual por golden | depois |
+| [07](07-plugin.md) | Plugin: conteúdo das instâncias e texto (+ recorte do PNG) | feita (validada com export real; falta sketch e `maxLines`) |
+| [08](08-comparacao-visual.md) | Revisão visual pela LLM (subagente, critério fixo), depois do `check` | feita (falta rodar o subagente no Copilot/opencode) |
 
 **Ordem:** 01 → 02 → 03 → 04 → 05 → 06 → 07. 01 e 02 primeiro porque sem elas a ferramenta não roda no monorepo;
 03 e 04 são o maior ganho de acerto; 07 depende de um export real do Acme para validar.
@@ -33,4 +33,6 @@ Uma questão por arquivo. Cada um traz o problema, a proposta, as tarefas, a ver
 3. ~~Nome da anotação do app~~ `@FigmaLocal`. ([02](02-acme-e-componentes-do-app.md))
 4. ~~Anotação em arquivo separado ou na classe~~ `typedef` em `figma/connect/`, fora de `lib/`. ([02](02-acme-e-componentes-do-app.md))
 5. ~~Recorte do PNG por instância?~~ Sim, com a dependência `image`. ([07](07-plugin.md))
-6. Golden agora ou depois? ([08](08-comparacao-visual.md))
+6. ~~Golden agora ou depois?~~ Sem golden nem pixel perfect: revisão da LLM por um subagente, com critério do que
+   importa e do que ignorar, base obrigatória no brief e fatos sem pixel como pista; sempre depois do `check`.
+   ([08](08-comparacao-visual.md))

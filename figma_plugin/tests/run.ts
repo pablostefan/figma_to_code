@@ -168,6 +168,13 @@ equal(JSON.stringify([text?.maxLines, text?.truncation, text?.autoResize]), JSON
 equal(limitedNode.rotation, 180, 'nó girado guarda a rotação');
 const flat = await serializeNode({ ...limited, rotation: 0 } as unknown as TextNode, ctx, { root: false, inAutoLayout: true, inComponent: false });
 assert(!('rotation' in flat), 'sem rotação, o campo não aparece');
+const onScreen = await serializeNode({ ...limited, absoluteBoundingBox: box(110, 230, 80, 20) } as unknown as TextNode, ctx, {
+  root: false,
+  inAutoLayout: true,
+  inComponent: false,
+  screen: screenFrame,
+});
+equal(JSON.stringify(onScreen.bounds), JSON.stringify(box(10, 30, 80, 20)), 'texto na tela também guarda a caixa (seções da revisão visual)');
 console.log('✔ limites de texto e rotação');
 
 // Lint: o mesmo aviso no mesmo nó (dois vetores `Vector` num ícone) sai uma vez.

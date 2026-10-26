@@ -3,10 +3,10 @@
  * schema/ir.v1.schema.json is generated from these types (`npm run schema`); edit here, not there.
  */
 
-export type IRVersion = '1.0.0' | '1.1.0' | '1.2.0' | '1.3.0';
+export type IRVersion = '1.0.0' | '1.1.0' | '1.2.0' | '1.3.0' | '1.4.0';
 
-export const IR_VERSION: IRVersion = '1.3.0';
-export const EXTRACTOR_VERSION = '0.4.1';
+export const IR_VERSION: IRVersion = '1.4.0';
+export const EXTRACTOR_VERSION = '0.5.0';
 
 export type Kind = 'component' | 'screen' | 'flow' | 'library';
 export type Fidelity = 'exact' | 'inferred' | 'unresolved';
@@ -187,7 +187,7 @@ export interface IRNode {
   modes?: Record<string, string>;
   /** Present when the node is not placed by auto layout (free positioning or absolute). */
   position?: { x: number; y: number };
-  /** Instances on a screen: box relative to the screen frame, to crop the instance from the screen image. */
+  /** Every node on a screen (1.4; only instances in 1.3): box relative to the screen frame, to crop it from the image. */
   bounds?: { x: number; y: number; width: number; height: number };
   sizing?: { horizontal: Sizing; vertical: Sizing };
   layout?: Layout;

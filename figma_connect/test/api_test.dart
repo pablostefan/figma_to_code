@@ -134,7 +134,10 @@ const policy = FigmaPolicy(
   },
   icons: IconTable(values: DsIconName.values, byKey: {'c983': DsIconName.mail}),
   tokens: TokenTable(
-    collections: {'Spacing': TokenSource(Spacing), 'Color': TokenSource(Colors, via: 'context.dsColors')},
+    collections: {
+      'Spacing': TokenSource(Spacing),
+      'Color': TokenSource(Colors, via: 'context.dsColors'),
+    },
   ),
   ignored: {'4a7e': 'Anotação de handoff'},
 );

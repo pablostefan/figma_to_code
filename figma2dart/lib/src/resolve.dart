@@ -239,7 +239,7 @@ const _styleFields = {'fills', 'strokes', 'effects', 'opacity', 'cornerRadius', 
 /// Overrides de conteúdo (texto, visibilidade, troca de componente) em camadas sem prop: o mapeamento não os lê.
 const _contentFields = {'characters', 'visible', 'mainComponent', 'componentProperties'};
 
-const _irVersions = {'1.0.0', '1.1.0', '1.2.0', '1.3.0'};
+const _irVersions = {'1.0.0', '1.1.0', '1.2.0', '1.3.0', '1.4.0'};
 
 String _overrideKind(List<Object?> fields) => fields.any(_contentFields.contains)
     ? 'content'

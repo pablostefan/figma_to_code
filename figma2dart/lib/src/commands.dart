@@ -8,6 +8,7 @@ import 'package:yaml/yaml.dart';
 import 'brief.dart';
 import 'component_brief.dart';
 import 'crop.dart';
+import 'review.dart';
 import 'export.dart';
 import 'hints.dart';
 import 'mappings.dart';
@@ -228,6 +229,8 @@ Json _task(
     }),
   );
   File('${dir.path}/BRIEF.md').writeAsStringSync(brief(s, images: images));
+  // Para a revisão visual: o tamanho do frame (captura), os textos e as seções com a estrutura (`review`).
+  File('${dir.path}/review.json').writeAsStringSync(json.convert(reviewInput(s, images: images)));
   // PNG da tela decodificado uma vez, só se algum componente a montar tiver instância para recortar.
   img.Image? screenPng;
   var decoded = false;
@@ -489,13 +492,18 @@ ${(["import 'package:figma_connect/figma_connect.dart';", "import '$import';"]..
 typedef ${cls}Figma = $cls;
 ''');
 
-  final added = RegExp(r'^\s+figma_connect:', multiLine: true).hasMatch(pubspec) ? null : _addFigmaConnect(ws, package);
+  final added = ensureFigmaConnect(ws, package);
   return {'file': out.path, 'import': import, 'class': cls, 'written': true, 'devDependency': ?added};
 }
 
-/// `pub add` do `figma_connect` como dev_dependency de [package], pelo mesmo caminho (ou versão) que o pacote de
-/// mapeamentos usa. Devolve o que foi adicionado.
-String _addFigmaConnect(Workspace ws, String package) {
+/// `pub add` do `figma_connect` como dev_dependency de [package] (o `@FigmaLocal` do `link` e a captura do `review`),
+/// pelo mesmo caminho (ou versão) que o pacote de mapeamentos usa. Devolve o que foi adicionado; null se já tinha.
+String? ensureFigmaConnect(Workspace ws, String package) =>
+    RegExp(r'^\s+figma_connect:', multiLine: true).hasMatch(File('$package/pubspec.yaml').readAsStringSync())
+    ? null
+    : addFigmaConnect(ws, package);
+
+String addFigmaConnect(Workspace ws, String package) {
   final m = ws.mappings() ?? (throw ResolveError('Pacote de mapeamentos não encontrado: rode `figma2dart doctor`.'));
   final dep =
       ((loadYaml(File('${m.path}/pubspec.yaml').readAsStringSync()) as Map)['dependencies'] as Map?)?['figma_connect'];
