@@ -1,3 +1,4 @@
+import { IMAGE_SCALE } from '../extractor/context';
 import { extract, plan, type ExtractResult } from '../extractor/extract';
 import type { IR, Kind } from '../extractor/ir';
 import type { Summary, ToPlugin, ToUi } from './messages';
@@ -45,14 +46,28 @@ async function exportImages(result: ExtractResult) {
     post({ type: 'busy', label: `Exportando imagens ${index + 1}/${result.images.length}…` });
     const node = await figma.getNodeByIdAsync(request.nodeId);
     if (!node || !('exportAsync' in node)) throw new Error(`Não foi possível exportar a imagem de ${request.nodeId}.`);
-    const bytes = await node.exportAsync({ format: 'PNG', constraint: { type: 'SCALE', value: 2 } });
+    const bytes = await node.exportAsync({ format: 'PNG', constraint: { type: 'SCALE', value: IMAGE_SCALE } });
     post({ type: 'export-file', path: request.path, bytes });
   }
 }
 
 function zipName(ir: IR) {
-  const base = ir.kind === 'library' ? ir.source.fileName : (ir.screens[0]?.name ?? ir.components[0]?.name ?? ir.kind);
-  return `figma2dart-${ir.kind}-${base}`.replace(/[^\w-]+/g, '_').toLowerCase() + '.zip';
+  // Fluxo: o nome da section selecionada ou da página, não o da primeira tela.
+  const [only, ...more] = figma.currentPage.selection;
+  const flow = only?.type === 'SECTION' && !more.length ? only.name : ir.source.pageName;
+  const base =
+    ir.kind === 'library'
+      ? ir.source.fileName
+      : ir.kind === 'flow'
+        ? flow
+        : (ir.screens[0]?.name ?? ir.components[0]?.name ?? ir.kind);
+  return (
+    `figma2dart-${ir.kind}-${base}`
+      .normalize('NFD')
+      .replace(/[̀-ͯ]/g, '')
+      .replace(/[^\w-]+/g, '_')
+      .toLowerCase() + '.zip'
+  );
 }
 
 figma.ui.onmessage = async (message: ToPlugin) => {

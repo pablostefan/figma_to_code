@@ -99,7 +99,15 @@ Gerados via MCP a partir dos arquivos do POC:
   `overrides[].values` existir: os overrides dele não trazem valores.
 - `examples/flow-transferencia.ir.json` — `kind: flow` (5 telas, 4 componentes locais, 7 navegações, lint).
 
-Os dois saíram do extrator 0.1 (IR 1.0.0). IR 1.1 e 1.2 só acrescentam campos opcionais, então continuam válidos.
+Os dois saíram do extrator 0.1 (IR 1.0.0). IR 1.1, 1.2 e 1.3 só acrescentam campos opcionais, então continuam
+válidos.
+
+**IR 1.3 (extrator 0.4):** instância numa tela traz `bounds` (caixa relativa ao frame) e `instance.content` (textos e
+instâncias visíveis de dentro, até 200 itens, com `contentTruncated` se passar); o estado da tela traz `imageScale`
+(escala do PNG, 2); texto traz `maxLines`, `truncation: 'ENDING'` e `autoResize` (quando não é o padrão). A CLI usa
+`bounds` + `imageScale` para recortar cada instância do PNG da tela. Extrator 0.4.1: nó girado traz `rotation`
+(graus, anti-horário como no Figma; o "voltar" costuma ser o `chevron-right` a 180°); o `content` deixa de fora a
+troca de instância de camada oculta; o zip do fluxo leva o nome da section ou da página.
 
 ## DS maiores
 

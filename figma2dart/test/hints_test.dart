@@ -6,13 +6,19 @@ import 'package:figma2dart/src/resolve.dart';
 import 'package:figma2dart/src/workspace.dart';
 import 'package:test/test.dart';
 
+import 'dart:convert';
+
 import 'commands_test.dart' show mappingsDir, tempApp, zip;
+import 'resolve_test.dart' show instanceNode, screenWith, statementKey;
 
 void main() {
   const tokens = {
     '12': [
       {'code': 'DsSpacing.md', 'collection': 'Spacing'},
       {'code': 'DsRadius.md', 'collection': 'Radius'},
+    ],
+    '24': [
+      {'code': 'DsSize.icon', 'collection': 'Size'},
     ],
     '#64748B': [
       {'code': 'DsPrimitives.gray500', 'collection': 'Primitives'},
@@ -39,7 +45,8 @@ const SizedBox(width: 20),
         '2 `12` solto em `BorderRadius.circular(12)` → use `DsRadius.md`',
         '3 cor solta `Color(0xFF64748B)` → use `DsColors.textSecondary` ou `DsPrimitives.gray500`',
         '4 cor do Material `Colors.red`: use a cor do DS',
-        '6 `20` solto em `width: 20`: use um token do DS (nenhum tem esse valor) ou explique com `f2d:inferred`',
+        '6 `20` solto em `width: 20`: nenhum token usado nesta tela tem esse valor; procure no DS (`search`) ou explique '
+            'com `f2d:inferred`',
       ],
     );
   });
@@ -92,5 +99,86 @@ class ContactItem {
       r['blocking'],
       (r['analyze'] as List).where((i) => (i as Json)['severity'] != 'info').length,
     ); // dica não conta
+  });
+
+  test('texto escrito certo em Dart (com escape) não vira dica; texto repetido no Figma vira uma dica só', () {
+    final task = {
+      'texts': [r'R$ 150,00', "Olá d'água", 'Linha 1\nLinha 2', 'Falta', 'Falta'],
+    };
+    expect(messages(r"Text('R\$ 150,00'); Text('Olá d\'água'); Text('Linha 1\nLinha 2');", expect: task), [
+      '- texto do Figma não aparece: "Falta" (se vem de dados ou de tradução, ignore)',
+    ]);
+  });
+
+  test('valor solto em chamada quebrada em linhas: a linha certa; f2d:inferred cala só a linha dele', () {
+    expect(
+      messages('padding: const EdgeInsets.only(\n  left: 12,\n  top: 12, // f2d:inferred — alinhado ao ícone\n),\n'),
+      [
+        '2 `12` solto em `EdgeInsets.only( left: 12, top: 12, // f2d:inferred — alinhado ao ícone )` → use '
+            '`DsSpacing.md`',
+      ],
+    );
+  });
+
+  test('size: só vira dica quando há token com o valor (tamanho de ícone do Figma é o que o brief manda)', () {
+    expect(messages('DsIcon(DsIconName.x, size: 20)'), isEmpty); // sem token
+    expect(messages('DsIcon(DsIconName.x, size: 12)'), isEmpty); // 12 é espaçamento e raio, não tamanho
+    expect(messages('DsIcon(DsIconName.x, size: 24)'), ['1 `24` solto em `size: 24` → use `DsSize.icon`']);
+  });
+
+  test('sketch dentro de componente local: a dica fica no widget do componente, não na tela', () async {
+    final app = tempApp(config: 'screens: lib/telas\n');
+    final local = instanceNode(key: 'local1', component: 'Statement Card', props: {});
+    final ir = {
+      ...screenWith([
+        {
+          ...local,
+          'instance': {...local['instance'] as Json, 'remote': false},
+        },
+      ]),
+      'components': [
+        {
+          'id': '6:1',
+          'key': 'local1',
+          'name': 'Statement Card',
+          'props': <String, Object>{},
+          'variants': [
+            {
+              'id': '6:1',
+              'name': 'Statement Card',
+              'props': <String, Object>{},
+              'tree': {
+                'id': '6:1',
+                'type': 'COMPONENT',
+                'name': 'Statement Card',
+                'children': [
+                  instanceNode(key: statementKey, component: 'Template / Extrato', props: {'title': 'E'}),
+                ],
+              },
+            },
+          ],
+        },
+      ],
+    };
+    final export = File('${app.path}/export.json')..writeAsStringSync(jsonEncode(ir));
+    final ws = Workspace.find(app.path);
+    await resolveTasks(ws, export, mappings: mappingsDir);
+    final files = (jsonDecode(File('${ws.tasks}/t/check.json').readAsStringSync()) as Json)['files'] as Json;
+    expect((files['lib/telas/t_page.dart'] as Json)['widgets'], isNull);
+    expect((files['lib/telas/widgets/statement_card.dart'] as Json)['widgets'], [
+      {'component': 'Template / Extrato', 'widget': 'DsStatementTemplate'},
+    ]);
+
+    final screen = File('${app.path}/lib/telas/t_page.dart')
+      ..createSync(recursive: true)
+      ..writeAsStringSync('final page = StatementCard();\n');
+    final card = File('${app.path}/lib/telas/widgets/statement_card.dart')
+      ..createSync(recursive: true)
+      ..writeAsStringSync('class StatementCard {}\n');
+    final hints = [
+      for (final h in ((await check(ws, [screen.path, card.path]))['hints'] as List).cast<Json>())
+        '${(h['file'] as String).split('/').last} ${h['kind']}',
+    ];
+    expect(hints, ['statement_card.dart widget']);
   });
 }

@@ -2,6 +2,7 @@ import { Ctx, hex, isVectorOnly, ownerOf, propName, readPaints, round } from './
 import type {
   Effect,
   ExposedInstance,
+  InstanceContent,
   InstanceInfo,
   IRNode,
   Layout,
@@ -21,7 +22,12 @@ interface Placement {
   inAutoLayout: boolean;
   /** Inside a component definition: record component property bindings. */
   inComponent: boolean;
+  /** The screen frame this node is in: instances record their box relative to it and their content. */
+  screen?: SceneNode;
 }
+
+/** Most items recorded in `InstanceInfo.content`, so a big list or template does not blow up the export. */
+export const CONTENT_LIMIT = 200;
 
 type Bound = Partial<Record<string, VariableAlias | VariableAlias[]>>;
 
@@ -46,6 +52,7 @@ export async function serializeNode(node: SceneNode, ctx: Ctx, placement: Placem
     size: { width: round(node.width), height: round(node.height) },
   };
   if (!node.visible) out.visible = false;
+  if ('rotation' in node && Math.abs(node.rotation) >= 0.5) out.rotation = round(node.rotation);
 
   const absolute = 'layoutPositioning' in node && node.layoutPositioning === 'ABSOLUTE';
   if (!placement.root && (!placement.inAutoLayout || absolute)) out.position = { x: round(node.x), y: round(node.y) };
@@ -76,6 +83,13 @@ export async function serializeNode(node: SceneNode, ctx: Ctx, placement: Placem
     const { info, fidelity } = await instanceInfo(node, ctx);
     out.instance = info;
     out.fidelity = fidelity;
+    if (placement.screen) {
+      const bounds = boundsIn(node, placement.screen);
+      if (bounds) out.bounds = bounds;
+      const content = await instanceContent(node, ctx);
+      if (content.items.length) info.content = content.items;
+      if (content.truncated) info.contentTruncated = true;
+    }
     return out;
   }
 
@@ -100,7 +114,12 @@ export async function serializeNode(node: SceneNode, ctx: Ctx, placement: Placem
     out.children = [];
     for (const child of node.children) {
       out.children.push(
-        await serializeNode(child, ctx, { root: false, inAutoLayout: autoLayout, inComponent: placement.inComponent }),
+        await serializeNode(child, ctx, {
+          root: false,
+          inAutoLayout: autoLayout,
+          inComponent: placement.inComponent,
+          screen: placement.screen,
+        }),
       );
     }
   }
@@ -270,6 +289,9 @@ async function readText(node: TextNode, ctx: Ctx): Promise<TextInfo> {
 
   const info: TextInfo = { characters: node.characters };
   if (node.textAlignHorizontal !== 'LEFT') info.align = node.textAlignHorizontal;
+  if (typeof node.maxLines === 'number') info.maxLines = node.maxLines;
+  if (node.textTruncation === 'ENDING') info.truncation = 'ENDING';
+  if (node.textAutoResize && node.textAutoResize !== 'WIDTH_AND_HEIGHT') info.autoResize = node.textAutoResize;
 
   if (segments.length <= 1) {
     const segment = segments[0];
@@ -300,6 +322,63 @@ async function readText(node: TextNode, ctx: Ctx): Promise<TextInfo> {
 }
 
 // ---------------------------------------------------------------- instances
+
+/** Box of [node] relative to the [screen] frame, to crop it from the screen image; null when Figma has no box. */
+export function boundsIn(node: SceneNode, screen: SceneNode): IRNode['bounds'] | undefined {
+  const box = 'absoluteBoundingBox' in node ? node.absoluteBoundingBox : null;
+  const frame = 'absoluteBoundingBox' in screen ? screen.absoluteBoundingBox : null;
+  if (!box || !frame) return undefined;
+  return { x: round(box.x - frame.x), y: round(box.y - frame.y), width: round(box.width), height: round(box.height) };
+}
+
+/** What a screen instance shows inside: visible texts and nested instances (component and props), in layer order. */
+export async function instanceContent(
+  instance: InstanceNode,
+  ctx: Ctx,
+): Promise<{ items: InstanceContent[]; truncated: boolean }> {
+  const items: InstanceContent[] = [];
+  let truncated = false;
+  const visit = async (node: SceneNode): Promise<void> => {
+    for (const child of 'children' in node ? node.children : []) {
+      if (!child.visible) continue;
+      if (items.length >= CONTENT_LIMIT) {
+        truncated = true;
+        return;
+      }
+      const path = pathFrom(instance, child);
+      if (child.type === 'TEXT') items.push({ path, text: child.characters });
+      if (child.type === 'INSTANCE') {
+        const main = await child.getMainComponentAsync();
+        items.push({
+          path,
+          component: main ? ownerOf(main).name : child.name,
+          props: await propValues(shownProps(child), ctx),
+        });
+      }
+      await visit(child);
+    }
+  };
+  await visit(instance);
+  return { items, truncated };
+}
+
+/**
+ * Props without the instance swaps whose layer is hidden here: Avatar `type=initials` still reports `icon`. Only for
+ * `content` (what the instance shows); mapped instances keep every prop, the mappings read them.
+ */
+function shownProps(instance: InstanceNode): ComponentProperties {
+  const shown = new Set<string>();
+  const visit = (node: SceneNode): void => {
+    if (!node.visible) return;
+    const swap = 'componentPropertyReferences' in node ? node.componentPropertyReferences?.mainComponent : undefined;
+    if (swap) shown.add(swap);
+    if ('children' in node) node.children.forEach(visit);
+  };
+  instance.children.forEach(visit);
+  return Object.fromEntries(
+    Object.entries(instance.componentProperties).filter(([key, prop]) => prop.type !== 'INSTANCE_SWAP' || shown.has(key)),
+  );
+}
 
 /** Layer-name path from `root` (exclusive) down to `node`, e.g. `field/leadingIcon`. */
 function pathFrom(root: BaseNode, node: BaseNode): string {

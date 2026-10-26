@@ -266,3 +266,48 @@ monorepo de teste (Carteira dentro de `libraries/design_ops/packages`, sample ap
 | 7 | `mappings()` recalculado várias vezes por comando | `late final` | — |
 | 8 | Getter `configPath` sem uso | apagado | — |
 | 9 | Índice do plano com decisões já tomadas como abertas | atualizado | — |
+
+---
+
+## Auditoria dos hints (05)
+
+| # | Achado | Correção | Prova |
+|---|---|---|---|
+| 1 | Texto escrito certo em Dart (`'R\$ 150,00'`, `'d\'água'`, `\n`) virava "texto do Figma não aparece" | compara sem os escapes do Dart | `hints_test` |
+| 2 | Sketch/`local` dentro de componente a construir: dica falsa na tela e nenhuma no widget do componente | o `check.json` põe o widget esperado no arquivo de quem o usa (`within`) | `hints_test` de ponta a ponta (`resolve` → `check`) |
+| 3 | "nenhum token tem esse valor" quando o DS tinha (o export só traz os tokens da tela) | "nenhum token usado nesta tela…; procure no DS" | `hints_test` |
+| 4 | Valor solto em chamada quebrada em linhas não era visto | busca no arquivo inteiro, linha pelo deslocamento; `f2d:inferred` cala só a linha dele | `hints_test` |
+| 5 | `size: 20` (o tamanho do Figma que o brief manda passar) virava dica | `size:` só com token de tamanho do mesmo valor | `hints_test`; sample app: 2 dicas falsas → 0 |
+| 6 | Sem teste para 1, 2 e 4 | 4 testes novos | 70 testes |
+| 7 | Nome dos parâmetros calculado em dois lugares (brief e `check`) | uma regra só (`_propParam`, `_exposedParam`) | — |
+| 8 | Texto repetido no Figma dava dica repetida | sem repetição | `hints_test` |
+
+Além disso, as dicas saem na ordem do arquivo (as sem linha no fim).
+
+## Validação dos exports reais (07)
+
+Três exports do plugin novo (extrator 0.4.0, IR 1.3.0) do arquivo de exemplo do fluxo: `screen-05_sucesso`,
+`flow-01_login_senha_incorreta` (5 telas) e `screen-transactions` (um pedaço do Dashboard).
+
+**O que chegou certo**
+
+- Os três passam no schema; `screens` e `resolve` rodam em todas as telas.
+- O PNG de cada tela tem frame × `imageScale` (390×844 → 780×1688; 342×256 → 684×512) e toda `bounds` cabe nele.
+- `content` traz textos e instâncias de dentro, na ordem das camadas; definições de componente não ganham caixa nem
+  conteúdo; `autoResize: HEIGHT` aparece nos textos de largura fixa e vira "quebra linha (largura fixa)".
+- Recorte com dado real: com o ContactItem ligado por `link` a um widget do app (numa cópia do sample app), o
+  `resolve` gerou um PNG por instância (684×132 = 342×66 × 2; no Confirmar, 616×132), cada um só com o seu contato,
+  e o brief `local` com o conteúdo certo (avatar, nome, detalhe, chevron).
+
+| # | Achado | Correção | Prova |
+|---|---|---|---|
+| 1 | Rotação não ia para o IR: o "voltar" do TopBar é `chevron-right` girado 180°, e o brief mandava `DsIconName.chevronRight` sem dizer nada (só a descrição do designer salvava) | plugin grava `rotation` (extrator 0.4.1); a estrutura mostra "**girado 180°**" | `npm run check`; `structure_test`; export real com a rotação injetada |
+| 2 | `link` aceitava a key curta do placeholder (`key 26729128`): o `@FigmaLocal` era gravado, o `doctor` contava, e o `resolve` nunca casava, sem aviso | `link` exige a key inteira (40 hex) e diz onde achar | `local_test` (cada guard confere a própria mensagem) |
+| 3 | PNG da tela maior que o frame (sombra no frame, filho para fora de frame sem recorte) deslocaria todos os recortes | sem recorte quando o PNG não tem frame × escala (±1 px); o resto do brief fica | `crop_test` |
+| 4 | O zip do fluxo levava o nome da primeira tela (`flow-01_login_senha_incorreta`) | nome da section selecionada ou da página, sem acento | — (só no plugin rodando no Figma) |
+| 5 | Lint repetia `style-override` quando um ícone tem dois vetores com o mesmo nome (`Vector`) | o mesmo aviso no mesmo nó sai uma vez | `npm run check` |
+| 6 | Brief `local`/`sketch` repetia as instâncias expostas em JSON cru (com keys) logo depois do `content` | com `content`, só ele; sem (IR 1.2), as expostas no mesmo formato compacto | `crop_test` |
+| 7 | `content` trazia troca de instância de camada oculta (Avatar `type=initials` com `icon`) | o `content` tira a troca cuja camada não aparece; as props das instâncias mapeadas ficam inteiras (os mapeamentos leem) | `npm run check` |
+
+**Não deu para validar com estes exports:** `maxLines`/reticências (nenhum texto do arquivo usa) e sketch do DS
+(o `Template / Extrato` não está no fluxo).

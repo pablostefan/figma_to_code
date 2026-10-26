@@ -73,7 +73,7 @@ Todos aceitam `--json` e `--package <pasta>`; erro com `--json` sai como `{"erro
 | `resolve [<zip>] --screen <nome>…` | `--screen` repetível: carrega os mapeamentos uma vez e escreve uma pasta de tarefa por tela (a pasta padrão recomeça do zero). Devolve `tasks`, cada uma com `brief`, `image`, `screenFile` e `components` (`kind`: `build` com `widgetFile`, `class`, `dependsOn`; `sketch`/`local` com `widget` e `import`; `build` ganha `existing` quando uma classe de mesmo nome já existe no app) |
 | `check <arquivo.dart>…` | marcadores que sobraram (`guided`, `gap`, `sketch`, `local` reprovam; `placeholder`, `inferred` e `TODO(f2d)` só contam) + `dart analyze`; sai com 1 se reprovar. Mais `hints`, que **não reprovam**: valor solto com o token do mesmo valor (`EdgeInsets.all(12)` → `DsSpacing.md`), widget a montar que sumiu, parâmetro da API proposta ausente, texto do Figma ausente (o `resolve` grava em cada tarefa o `check.json` com o que esperar). `// f2d:inferred` na linha cala a dica de valor solto |
 | `library [<zip>…]` | grava o retrato do DS (`figma_library.json`: key e nome de cada componente) no pacote de mapeamentos, a partir de exports do plugin em modo biblioteca; uma página por export, a mesma página de novo substitui. Sem zip: o `figma2dart-library-*.zip` mais novo |
-| `link <key> <arquivo.dart>[#Classe] [--name <nome>]` | liga um componente do Figma a um widget do app que já existe: escreve o `@FigmaLocal` em `figma/connect/` do pacote do widget e põe o `figma_connect` nas dev_dependencies, se faltar. O widget tem que estar no pacote da tela ou numa dependência direta dele (é onde o `resolve` procura) |
+| `link <key> <arquivo.dart>[#Classe] [--name <nome>]` | liga um componente do Figma (key inteira, 40 caracteres: a do `components[].key` do `resolve`) a um widget do app que já existe: escreve o `@FigmaLocal` em `figma/connect/` do pacote do widget e põe o `figma_connect` nas dev_dependencies, se faltar. O widget tem que estar no pacote da tela ou numa dependência direta dele (é onde o `resolve` procura) |
 | `init [--force]` | app só: config, `.gitignore`, agente e skills (não sobrescreve sem `--force`) |
 
 Sem `<zip>`, usa o `figma2dart-*.zip` mais novo da pasta de exports. Opções de `resolve`: `--state`, `--out`,
@@ -136,7 +136,8 @@ DsInput(
 Mapeamento `@FigmaConnect.sketch` (um `typedef` para a classe do DS, sem função) não é avaliado: a instância vira
 `/* f2d:sketch Componente → Widget */` + placeholder, e a tarefa `components/<nome>/BRIEF.md` traz o norte, a **API
 do widget** lida do código do DS (construtores, parâmetros, tipos auxiliares e enums), os dados de cada instância no
-Figma, docs e exemplos. Mapeamentos `partial` também mostram a API do widget no brief da tela. `@FigmaLocal` (widget
+Figma, docs e exemplos. Mapeamentos `partial` também mostram a API do widget no brief da tela. Com export IR 1.3, cada instância a montar traz o conteúdo de dentro (textos e instâncias, com props) e um recorte do
+PNG da tela só com ela (`components/<nome>/<id>.png`, pela caixa da instância e a escala do PNG). `@FigmaLocal` (widget
 do app que já existe) segue o mesmo caminho com o marcador `f2d:local`, o `import` do widget e sem docs do DS.
 
 ## Ícones e imagens

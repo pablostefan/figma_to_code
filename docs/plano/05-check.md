@@ -48,5 +48,14 @@ Testes com um arquivo de tela/widget errado de propósito para cada regra.
 
 ## Limites
 
-- Valor solto é por texto (regex), não pelo analyzer: número em outra API (ex.: `Offset(0, 2)`) não é visto.
-- "Texto ausente" compara o texto exato; texto formatado ou traduzido vira dica que a LLM ignora.
+- Valor solto é por texto (regex, no arquivo inteiro: pega chamada quebrada em linhas), não pelo analyzer: número em
+  outra API (ex.: `Offset(0, 2)`) ou `Color.fromRGBO` não é visto.
+- "Texto ausente" compara o texto sem os escapes do Dart (`'R\$ 150,00'` bate com `R$ 150,00`); texto formatado ou
+  traduzido vira dica que a LLM ignora.
+- `size:` só vira dica quando há token de tamanho com o valor (ícone de 20 sem token é o que o brief manda passar).
+- Sem token com o valor, a dica diz "nenhum token **usado nesta tela**": o export só traz os tokens da tela, e o DS
+  pode ter um; a LLM procura antes de explicar.
+
+## Auditoria
+
+Achados e correções em [AUDITORIA.md](../AUDITORIA.md#auditoria-dos-hints-05).

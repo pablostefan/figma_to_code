@@ -20,7 +20,7 @@ Uma questão por arquivo. Cada um traz o problema, a proposta, as tarefas, a ver
 | [04](04-tokens-em-dart.md) | Tokens já em Dart no brief | feita |
 | [05](05-check.md) | `check` que confere as regras (dicas, sem bloqueio) | feita |
 | [06](06-skills.md) | Skills de construir e de montar | aberta |
-| [07](07-plugin.md) | Plugin: conteúdo das instâncias e texto | aberta |
+| [07](07-plugin.md) | Plugin: conteúdo das instâncias e texto (+ recorte do PNG) | feita (falta export real) |
 | [08](08-comparacao-visual.md) | Comparação visual por golden | depois |
 
 **Ordem:** 01 → 02 → 03 → 04 → 05 → 06 → 07. 01 e 02 primeiro porque sem elas a ferramenta não roda no monorepo;
@@ -32,5 +32,5 @@ Uma questão por arquivo. Cada um traz o problema, a proposta, as tarefas, a ver
 2. ~~O Acme é um arquivo só no Figma?~~ O retrato aceita vários exports (um por página, de um ou mais arquivos). ([02](02-acme-e-componentes-do-app.md))
 3. ~~Nome da anotação do app~~ `@FigmaLocal`. ([02](02-acme-e-componentes-do-app.md))
 4. ~~Anotação em arquivo separado ou na classe~~ `typedef` em `figma/connect/`, fora de `lib/`. ([02](02-acme-e-componentes-do-app.md))
-5. Recorte do PNG por instância (dependência `image`)? ([07](07-plugin.md))
+5. ~~Recorte do PNG por instância?~~ Sim, com a dependência `image`. ([07](07-plugin.md))
 6. Golden agora ou depois? ([08](08-comparacao-visual.md))

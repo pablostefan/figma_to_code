@@ -357,8 +357,9 @@ typedef StatementTemplate = DsStatementTemplate;
   lida do código do DS (construtores, parâmetros com tipo, obrigatório, padrão e doc, e os tipos auxiliares como
   `DsStatementDay` e enums); os **dados de cada instância** no Figma (props, instâncias expostas, overrides com
   valores); docs e exemplos. A LLM monta o widget no lugar do placeholder e marca com `f2d:inferred` o que decidiu.
-  Limite: o export da tela não traz as camadas internas do componente do DS, só o que é exposto ou sobrescrito; o
-  resto vem do PNG (até existir o retrato da biblioteca).
+  Desde o IR 1.3 o brief de cada instância traz também o **conteúdo de dentro** (textos e instâncias visíveis, com
+  caminho e props: os dias e as linhas do Extrato) e o **recorte do PNG** da tela só com aquela instância. Export
+  anterior (IR 1.2) tem só o que é exposto ou sobrescrito, e o PNG da tela inteira.
 
 Casos reais no Carteira DS (`design_system/carteira_ds_figma`): `TransactionList` é `partial` (título e ação do
 Figma, linhas em `f.guided`) e `Template / Extrato` é `sketch`.

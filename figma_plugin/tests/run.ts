@@ -94,3 +94,87 @@ equal(overrides.length, 2, 'camadas homônimas devem manter seus dois overrides'
 equal(overrides[0].id, firstLabel.id, 'primeiro override deve manter o id da camada');
 equal(overrides[1].id, secondLabel.id, 'segundo override deve manter o id da camada');
 assert(ctx.dependencies.has(main.id), 'componente local aninhado deve ser registrado como dependência');
+
+// Instância numa tela: caixa relativa ao frame (para recortar o PNG) e o conteúdo de dentro (textos e instâncias).
+const box = (x: number, y: number, width: number, height: number) => ({ x, y, width, height });
+const screenFrame = { ...scene('FRAME', 'Extrato'), absoluteBoundingBox: box(100, 200, 390, 844) } as unknown as FrameNode;
+const nestedMain = { ...main, id: 'component:row', name: 'Row', key: 'row-key' } as unknown as ComponentNode;
+const nestedRecord: Record<string, unknown> = {
+  id: 'instance:row',
+  type: 'INSTANCE',
+  name: 'Row',
+  visible: true,
+  // `icon` liga a uma camada oculta nesta instância (sai do conteúdo); `badge`, a uma visível (fica).
+  componentProperties: {
+    'value#1:2': { type: 'TEXT', value: 'R$ 10,00' },
+    'icon#1:3': { type: 'INSTANCE_SWAP', value: 'swap:icon' },
+    'badge#1:4': { type: 'INSTANCE_SWAP', value: 'swap:badge' },
+  },
+  getMainComponentAsync: async () => nestedMain,
+};
+const listRecord: Record<string, unknown> = {
+  ...instanceRecord,
+  id: 'instance:list',
+  name: 'Lista',
+  overrides: [],
+  absoluteBoundingBox: box(116, 300, 358, 120),
+};
+const day = { id: 'text:day', type: 'TEXT', name: 'day', visible: true, characters: 'Hoje' };
+const hidden = { id: 'text:hidden', type: 'TEXT', name: 'hidden', visible: false, characters: 'não aparece' };
+listRecord.children = [day, hidden, nestedRecord];
+for (const child of listRecord.children as Record<string, unknown>[]) child.parent = listRecord;
+nestedRecord.children = [
+  { id: 'text:value', type: 'TEXT', name: 'value', visible: true, characters: 'R$ 10,00', parent: nestedRecord },
+  { id: 'frame:icon', type: 'FRAME', name: 'icon', visible: false, componentPropertyReferences: { mainComponent: 'icon#1:3' } },
+  { id: 'frame:badge', type: 'FRAME', name: 'badge', visible: true, componentPropertyReferences: { mainComponent: 'badge#1:4' } },
+];
+const listed = await serializeNode(listRecord as unknown as InstanceNode, ctx, {
+  root: false,
+  inAutoLayout: true,
+  inComponent: false,
+  screen: screenFrame,
+});
+equal(JSON.stringify(listed.bounds), JSON.stringify(box(16, 100, 358, 120)), 'instância na tela guarda a caixa relativa ao frame');
+equal(
+  JSON.stringify(listed.instance?.content),
+  JSON.stringify([
+    { path: 'day', text: 'Hoje' },
+    { path: 'Row', component: 'Row', props: { value: 'R$ 10,00', badge: 'swap:badge' } },
+    { path: 'Row/value', text: 'R$ 10,00' },
+  ]),
+  'conteúdo da instância: textos e instâncias visíveis, na ordem das camadas, sem troca de instância oculta',
+);
+const inComponent = await serializeNode(listRecord as unknown as InstanceNode, ctx, { root: false, inAutoLayout: true, inComponent: true });
+assert(!inComponent.bounds && !inComponent.instance?.content, 'fora de uma tela (definição de componente) não há caixa nem conteúdo');
+console.log('✔ conteúdo e caixa das instâncias na tela');
+
+// Texto: limite de linhas, reticências e como a caixa cresce.
+const limited = {
+  ...scene('TEXT', 'descrição'),
+  characters: 'Um texto longo',
+  textAlignHorizontal: 'LEFT',
+  rotation: 180,
+  maxLines: 2,
+  textTruncation: 'ENDING',
+  textAutoResize: 'HEIGHT',
+  fills: [],
+  strokes: [],
+  effects: [],
+  getStyledTextSegments: () => [],
+} as unknown as TextNode;
+const limitedNode = await serializeNode(limited, ctx, { root: false, inAutoLayout: true, inComponent: false });
+const text = limitedNode.text;
+equal(JSON.stringify([text?.maxLines, text?.truncation, text?.autoResize]), JSON.stringify([2, 'ENDING', 'HEIGHT']), 'texto guarda limite de linhas, reticências e crescimento');
+equal(limitedNode.rotation, 180, 'nó girado guarda a rotação');
+const flat = await serializeNode({ ...limited, rotation: 0 } as unknown as TextNode, ctx, { root: false, inAutoLayout: true, inComponent: false });
+assert(!('rotation' in flat), 'sem rotação, o campo não aparece');
+console.log('✔ limites de texto e rotação');
+
+// Lint: o mesmo aviso no mesmo nó (dois vetores `Vector` num ícone) sai uma vez.
+const lintCtx = new Ctx({ via: 'plugin', kind: 'screen', images: false, svg: false });
+const icon = { id: 'instance:input', name: 'Input' };
+lintCtx.issue(icon, 'style-override', 'estilo sobrescrito em "leftIcon/Vector" (strokes)');
+lintCtx.issue(icon, 'style-override', 'estilo sobrescrito em "leftIcon/Vector" (strokes)');
+lintCtx.issue(icon, 'style-override', 'estilo sobrescrito em "rightIcon/Vector" (strokes)');
+equal(lintCtx.lint.length, 2, 'aviso repetido no mesmo nó sai uma vez');
+console.log('✔ lint sem repetição');

@@ -70,6 +70,7 @@ List<StructureLine> structureLines(
     };
     // O tamanho da instância no Figma: o mapeamento pode não ler (ícone redimensionado para 20 com padrão 24).
     if (_size(node, root: false) case final size?) parts.add(size);
+    if (_rotation(node) case final rotation?) parts.add(rotation);
     if (exposed.contains(path)) parts.add('**exposta**: os valores mudam em cada uso (veja "Usos na tela")');
     return [line(parts)];
   }
@@ -90,6 +91,7 @@ List<StructureLine> structureLines(
   if (node['layout'] case final Json layout) parts.add(_layout(layout));
   if (node['style'] case final Json style) parts.addAll(_style(node, style));
   if (_size(node, root: depth == 0) case final size?) parts.add(size);
+  if (_rotation(node) case final rotation?) parts.add(rotation);
   if (node['position'] case {'x': final x, 'y': final y}) parts.add('posição absoluta ${_num(x)},${_num(y)}');
   if ((node['bindings'] as Json?)?['visible'] case final visible?) parts.add('visível ← prop `$visible`');
   return [
@@ -119,6 +121,14 @@ List<String>? _text(Json node) {
       text['colorStyle'] ?? (text['color'] == null ? null : _value(text['color'])),
     ].whereType<Object>().join(' '),
     if (text['align'] case final String align when align != 'LEFT') 'alinhado $align',
+    if (text['maxLines'] case final int lines) 'máx $lines ${lines == 1 ? 'linha' : 'linhas'}',
+    if (text['truncation'] == 'ENDING') 'reticências',
+    ?switch (text['autoResize']) {
+      'HEIGHT' => 'quebra linha (largura fixa)',
+      'NONE' => 'caixa fixa',
+      'TRUNCATE' => 'corta na caixa',
+      _ => null,
+    },
     if (text['segments'] case final List<Object?> segments when segments.isNotEmpty)
       'trechos: ${[
         for (final s in segments.cast<Json>()) [jsonEncode(s['characters']), s['style'], s['colorStyle'] ?? (s['color'] == null ? null : _value(s['color']))].whereType<Object>().join(' '),
@@ -212,6 +222,13 @@ String _effect(Json e) {
 
 /// Tamanho `L×A`: número (ou token) no eixo fixo, `HUG`/`FILL` nos outros. A raiz de um componente não leva número:
 /// a largura dela vem de quem usa. Nó fora do auto layout (sem `sizing`) leva o tamanho.
+/// Rotação do Figma (graus, anti-horário). Em Flutter: `Transform.rotate(angle: -graus * pi / 180)`.
+String? _rotation(Json node) => switch (node['rotation']) {
+  final num r when r.abs() == 180 => '**girado 180°**',
+  final num r => '**girado ${_num(r.abs())}° ${r > 0 ? 'anti-horário' : 'horário'}**',
+  _ => null,
+};
+
 String? _size(Json node, {required bool root}) {
   final size = node['size'] as Json? ?? const {};
   final tokens = node['sizeTokens'] as Json? ?? const {};

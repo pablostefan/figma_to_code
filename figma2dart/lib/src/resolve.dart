@@ -44,6 +44,7 @@ class ResolvedInstance {
     this.guided = const [],
     this.overrides = const [],
     this.figma,
+    this.bounds,
   });
 
   final String id;
@@ -65,9 +66,12 @@ class ResolvedInstance {
   final List<String> guided;
   final List<Json> overrides;
 
-  /// Em `sketch`, `local` e `placeholder`: props e instâncias expostas da instância no Figma, para a LLM montar o resto ou
-  /// construir o componente.
+  /// Em `sketch`, `local` e `placeholder`: props, instâncias expostas e o conteúdo de dentro (`content`, IR 1.3) da
+  /// instância no Figma, para a LLM montar o resto ou construir o componente.
   final Json? figma;
+
+  /// Caixa da instância relativa ao frame da tela (IR 1.3), para recortar o PNG da tela.
+  final Json? bounds;
 
   Json toJson() => {
     'id': id,
@@ -97,6 +101,7 @@ class ResolvedScreen {
     this.used = const [],
     this.references = const {},
     this.image,
+    this.imageScale = 2,
     this.tree = const {},
     this.navigation = const [],
     this.ignored = const [],
@@ -113,6 +118,9 @@ class ResolvedScreen {
 
   /// PNG da tela dentro do zip do plugin (`images/screens/…`); null no IR do MCP.
   final String? image;
+
+  /// Pixels do PNG por unidade do Figma (o plugin exporta em 2x).
+  final num imageScale;
 
   /// Árvore do frame no IR, para a estrutura da tela no brief.
   final Json tree;
@@ -231,7 +239,7 @@ const _styleFields = {'fills', 'strokes', 'effects', 'opacity', 'cornerRadius', 
 /// Overrides de conteúdo (texto, visibilidade, troca de componente) em camadas sem prop: o mapeamento não os lê.
 const _contentFields = {'characters', 'visible', 'mainComponent', 'componentProperties'};
 
-const _irVersions = {'1.0.0', '1.1.0', '1.2.0'};
+const _irVersions = {'1.0.0', '1.1.0', '1.2.0', '1.3.0'};
 
 String _overrideKind(List<Object?> fields) => fields.any(_contentFields.contains)
     ? 'content'
@@ -287,6 +295,7 @@ class Resolver {
       state: st['state'] as String,
       frameId: st['id'] as String,
       image: st['image'] as String?,
+      imageScale: (st['imageScale'] as num?) ?? 2,
       tree: st['tree'] as Json,
       navigation: _navigation(ir, st['id'] as String, instances),
       ignored: List.of(_ignored),
@@ -495,8 +504,15 @@ class Resolver {
               'exposed': [
                 for (final e in (inst['exposed'] as List).cast<Json>()) {...e, 'props': _readable(e['props'] as Json)},
               ],
+              if (inst['content'] case final List<Object?> content)
+                'content': [
+                  for (final c in content.cast<Json>())
+                    {...c, if (c['props'] case final Json props) 'props': _readable(props)},
+                ],
+              if (inst['contentTruncated'] == true) 'contentTruncated': true,
             }
           : null,
+      bounds: node['bounds'] as Json?,
       overrides: [
         for (final o in (inst['overrides'] as List).cast<Json>())
           {

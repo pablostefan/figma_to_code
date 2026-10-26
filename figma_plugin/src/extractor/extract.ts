@@ -1,4 +1,4 @@
-import { Ctx, type ComponentOwner, type ImageRequest, isVectorOnly, ownerOf, propDefs } from './context';
+import { Ctx, type ComponentOwner, IMAGE_SCALE, type ImageRequest, isVectorOnly, ownerOf, propDefs } from './context';
 import { EXTRACTOR_VERSION, IR_VERSION } from './ir';
 import type { ComponentDef, FlowDef, FlowEdge, IR, Kind, ScreenDef, VariantDef, Via } from './ir';
 import { serializeNode } from './serialize';
@@ -224,8 +224,8 @@ async function screenDefs(frames: SceneNode[], ctx: Ctx): Promise<ScreenDef[]> {
       state,
       id: frame.id,
       frameName: frame.name,
-      tree: await serializeNode(frame, ctx, { root: true, inAutoLayout: false, inComponent: false }),
-      ...(image ? { image } : {}),
+      tree: await serializeNode(frame, ctx, { root: true, inAutoLayout: false, inComponent: false, screen: frame }),
+      ...(image ? { image, imageScale: IMAGE_SCALE } : {}),
     });
   }
   return [...screens.values()];

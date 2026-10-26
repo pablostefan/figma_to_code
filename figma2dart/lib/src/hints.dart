@@ -41,25 +41,33 @@ List<Json> hintsFor(String file, String source, {Json? expect, Map<String, List<
   void add(int line, String kind, String message) =>
       hints.add({'file': file, 'line': ?(line > 0 ? line : null), 'kind': kind, 'message': message});
 
+  // O arquivo inteiro, não linha a linha: o `dart format` quebra chamadas longas (`EdgeInsets.only(\n left: 12,`).
   final lines = source.split('\n');
-  for (var n = 0; n < lines.length; n++) {
-    final line = lines[n];
-    if (line.trimLeft().startsWith('//') || line.contains('f2d:inferred')) continue;
-    for (final m in _color.allMatches(line)) {
-      final argb = m[1]!.toUpperCase();
-      final hex = argb.startsWith('FF') ? '#${argb.substring(2)}' : '#${argb.substring(2)}${argb.substring(0, 2)}';
-      add(n + 1, 'value', 'cor solta `${m[0]}`${_suggest(tokens[hex])}');
-    }
-    for (final m in _material.allMatches(line)) {
-      add(n + 1, 'value', 'cor do Material `${m[0]}`: use a cor do DS');
-    }
-    for (final (pattern, prefer) in _numbers) {
-      for (final m in pattern.allMatches(line)) {
-        for (final value in _number.allMatches(m[m.groupCount]!).map((v) => v[0]!).where((v) => num.parse(v) != 0)) {
-          final found = tokens[_key(num.parse(value))] ?? const [];
-          final preferred = found.where((t) => prefer.any((p) => (t['collection'] as String).contains(p))).toList();
-          add(n + 1, 'value', '`$value` solto em `${m[0]}`${_suggest(preferred.isEmpty ? found : preferred)}');
-        }
+  int lineOf(int offset) => '\n'.allMatches(source.substring(0, offset)).length + 1;
+  bool silenced(int line) => lines[line - 1].trimLeft().startsWith('//') || lines[line - 1].contains('f2d:inferred');
+  String shown(String code) => code.replaceAll(RegExp(r'\s+'), ' ');
+
+  for (final m in _color.allMatches(source)) {
+    final line = lineOf(m.start);
+    if (silenced(line)) continue;
+    final argb = m[1]!.toUpperCase();
+    final hex = argb.startsWith('FF') ? '#${argb.substring(2)}' : '#${argb.substring(2)}${argb.substring(0, 2)}';
+    add(line, 'value', 'cor solta `${m[0]}`${_suggest(tokens[hex])}');
+  }
+  for (final m in _material.allMatches(source)) {
+    if (!silenced(lineOf(m.start))) add(lineOf(m.start), 'value', 'cor do Material `${m[0]}`: use a cor do DS');
+  }
+  for (final (pattern, prefer, onlyWithToken) in _numbers) {
+    for (final m in pattern.allMatches(source)) {
+      final group = m[m.groupCount]!;
+      final groupStart = m.start + m[0]!.lastIndexOf(group);
+      for (final v in _number.allMatches(group).where((v) => num.parse(v[0]!) != 0)) {
+        final line = lineOf(groupStart + v.start);
+        if (silenced(line)) continue;
+        final found = tokens[_key(num.parse(v[0]!))] ?? const [];
+        final preferred = found.where((t) => prefer.any((p) => (t['collection'] as String).contains(p))).toList();
+        if (onlyWithToken && preferred.isEmpty) continue; // `size: 12` não é `DsSpacing.md` só por valer 12
+        add(line, 'value', '`${v[0]}` solto em `${shown(m[0]!)}`${_suggest(preferred.isEmpty ? found : preferred)}');
       }
     }
   }
@@ -81,20 +89,24 @@ List<Json> hintsFor(String file, String source, {Json? expect, Map<String, List<
         add(0, 'param', 'parâmetro proposto `$param` não está no construtor (renomeou? confira os "Usos na tela")');
       }
     }
-    for (final text in (expect['texts'] as List? ?? const []).cast<String>()) {
-      if (text.trim().isNotEmpty && !source.contains(text)) {
+    // Texto escrito certo em Dart tem escape (`'R\$ 150,00'`, `'d\'água'`): compara sem ele.
+    final plain = source.replaceAllMapped(RegExp(r'\\(.)'), (m) => m[1] == 'n' ? '\n' : m[1]!);
+    for (final text in (expect['texts'] as List? ?? const []).cast<String>().toSet()) {
+      if (text.trim().isNotEmpty && !plain.contains(text)) {
         add(0, 'text', 'texto do Figma não aparece: "$text" (se vem de dados ou de tradução, ignore)');
       }
     }
   }
-  return hints;
+  // Na ordem do arquivo; as dicas sem linha (o que falta no arquivo todo) no fim.
+  return hints..sort((a, b) => ((a['line'] as int?) ?? 1 << 30).compareTo((b['line'] as int?) ?? 1 << 30));
 }
 
 /// Sugestão: o token semântico antes do primitivo de mesmo valor (`DsColors.bg` antes de `DsPrimitives.gray50`).
 String _suggest(List<Json>? tokens) => switch (tokens) {
   [_, ...] =>
     ' → use ${([...tokens]..sort((a, b) => _primitive(a) - _primitive(b))).map((t) => '`${t['code']}`').join(' ou ')}',
-  _ => ': use um token do DS (nenhum tem esse valor) ou explique com `f2d:inferred`',
+  // O export só traz os tokens que a tela usa: o DS pode ter um com esse valor.
+  _ => ': nenhum token usado nesta tela tem esse valor; procure no DS (`search`) ou explique com `f2d:inferred`',
 };
 
 int _primitive(Json token) => (token['collection'] as String).toLowerCase().contains('primitive') ? 1 : 0;
@@ -103,13 +115,17 @@ final _color = RegExp(r'\bColor\(\s*0x([0-9A-Fa-f]{8})\s*\)');
 final _material = RegExp(r'\bColors\.\w+');
 final _number = RegExp(r'\b\d+(?:\.\d+)?\b');
 
-/// Onde número solto é valor de layout, e qual coleção de token combina com ele.
+/// Onde número solto é valor de layout, qual coleção de token combina com ele e se só vale dar dica quando há
+/// token dessa coleção com o valor (`size:` de ícone sem token de tamanho é o tamanho do Figma que o brief manda
+/// passar).
 final _numbers = [
-  (RegExp(r'\b(?:Border)?Radius\.circular\(([^)]*)\)'), const ['Radius']),
-  (RegExp(r'\bEdgeInsets(?:Directional)?\.\w+\(([^)]*)\)'), const ['Spacing']),
+  (RegExp(r'\b(?:Border)?Radius\.circular\(([^)]*)\)'), const ['Radius'], false),
+  (RegExp(r'\bEdgeInsets(?:Directional)?\.\w+\(([^)]*)\)'), const ['Spacing'], false),
   (
-    RegExp(r'\b(?:width|height|spacing|runSpacing|mainAxisSpacing|crossAxisSpacing|gap|size)\s*:\s*(\d+(?:\.\d+)?)\b'),
+    RegExp(r'\b(?:width|height|spacing|runSpacing|mainAxisSpacing|crossAxisSpacing|gap)\s*:\s*(\d+(?:\.\d+)?)\b'),
     const ['Spacing', 'Size'],
+    false,
   ),
-  (RegExp(r'\bfontSize\s*:\s*(\d+(?:\.\d+)?)\b'), const ['Font', 'Type']),
+  (RegExp(r'\bsize\s*:\s*(\d+(?:\.\d+)?)\b'), const ['Size'], true),
+  (RegExp(r'\bfontSize\s*:\s*(\d+(?:\.\d+)?)\b'), const ['Font', 'Type'], false),
 ];

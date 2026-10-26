@@ -2,10 +2,12 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:isolate';
 
+import 'package:image/image.dart' as img;
 import 'package:yaml/yaml.dart';
 
 import 'brief.dart';
 import 'component_brief.dart';
+import 'crop.dart';
 import 'export.dart';
 import 'hints.dart';
 import 'mappings.dart';
@@ -187,34 +189,68 @@ Json _task(
   File('${dir.path}/resolved.json').writeAsStringSync(json.convert(s.toJson()));
   final images = export.copyImages(s, dir);
   final screenFile = ws.screens == null ? null : '${ws.screens}/${slug}_page.dart';
-  // O que o `check` confere nesta tarefa (dicas, não reprova): tokens por valor, widgets a montar, API e textos.
+  // O que o `check` confere nesta tarefa (dicas, não reprova): tokens por valor e, por arquivo, widgets a montar,
+  // parâmetros e textos.
+  final builds = {for (final c in s.components.where((c) => c.sketch == null)) c.name: c};
+  String? widgetFile(ComponentTask c) => ws.screens == null ? null : '${ws.screens}/widgets/${c.folder}.dart';
+  final files = <String, Json>{
+    ?screenFile: {'texts': staticTexts(s.tree).toSet().toList()},
+    for (final c in builds.values)
+      ?widgetFile(c): {
+        'params': apiParams(c),
+        'texts': {
+          for (final v in (c.definition?['variants'] as List? ?? const []).cast<Json>())
+            ...staticTexts(v['tree'] as Json),
+        }.toList(),
+      },
+  };
+  // Widget a montar vai no arquivo de quem o usa: a tela, ou o componente local que o tem dentro (`within`).
+  for (final c in s.components) {
+    final widget = c.sketch?.widget;
+    if (widget == null) continue;
+    for (final owner in {for (final u in c.uses) c.within[u.id]}) {
+      final path = owner == null
+          ? screenFile
+          : switch (builds[owner]) {
+              final b? => widgetFile(b),
+              null => null,
+            };
+      if (path != null) {
+        (((files[path] ??= {})['widgets'] ??= <Json>[]) as List).add({'component': c.name, 'widget': widget.name});
+      }
+    }
+  }
   File('${dir.path}/check.json').writeAsStringSync(
     json.convert({
       if (maps.policy.tokens case final tokens?)
         'tokens': tokenValues((export.ir['tokens'] as Json?) ?? const {}, tokens),
-      'files': {
-        ?screenFile: {
-          'widgets': [
-            for (final c in s.components)
-              if (c.sketch?.widget case final widget?) {'component': c.name, 'widget': widget.name},
-          ],
-          'texts': staticTexts(s.tree),
-        },
-        if (ws.screens case final screens?)
-          for (final c in s.components.where((c) => c.sketch == null))
-            '$screens/widgets/${c.folder}.dart': {
-              'params': apiParams(c),
-              'texts': {
-                for (final v in (c.definition?['variants'] as List? ?? const []).cast<Json>())
-                  ...staticTexts(v['tree'] as Json),
-              }.toList(),
-            },
-      },
+      'files': files,
     }),
   );
   File('${dir.path}/BRIEF.md').writeAsStringSync(brief(s, images: images));
+  // PNG da tela decodificado uma vez, só se algum componente a montar tiver instância para recortar.
+  img.Image? screenPng;
+  var decoded = false;
   for (final c in s.components) {
     final cdir = Directory('${dir.path}/components/${c.folder}')..createSync(recursive: true);
+    // Recorte de cada instância a montar (sketch/local) na tela: a LLM vê só o pedaço que vai montar.
+    final crops = <String, String>{};
+    if (c.sketch != null && s.image != null) {
+      for (final u in c.uses.where((u) => u.bounds != null && !c.within.containsKey(u.id))) {
+        if (!decoded) {
+          decoded = true;
+          if (export.file(s.image!) case final png?) screenPng = img.decodePng(png);
+          // PNG maior que o frame: recorte deslocado engana mais do que ajuda; fica só a imagem da tela.
+          if (screenPng != null && !coversFrame(screenPng, s.tree['size'] as Json?, s.imageScale)) screenPng = null;
+        }
+        if (screenPng == null) break;
+        if (crop(screenPng, u.bounds!, s.imageScale) case final bytes?) {
+          final name = '${u.id.replaceAll(RegExp('[^0-9A-Za-z]+'), '-')}.png';
+          File('${cdir.path}/$name').writeAsBytesSync(bytes);
+          crops[u.id] = name;
+        }
+      }
+    }
     final md = componentBrief(
       c,
       folders: (i) => taskOf(s, i)?.folder,
@@ -222,6 +258,7 @@ Json _task(
       references: s.references[c.name],
       screenImage: images.contains(s.image) ? s.image : null,
       tokens: s.tokens,
+      crops: crops,
     );
     File('${cdir.path}/BRIEF.md').writeAsStringSync(md);
     for (final v in (c.definition?['variants'] as List? ?? const []).cast<Json>()) {
@@ -395,6 +432,13 @@ Json library(Workspace ws, List<String> files) {
 /// `arquivo.dart#Classe`): escreve o `@FigmaLocal` em `<connect>/` do pacote do widget e põe o `figma_connect` nas
 /// dev_dependencies dele, se faltar. Daí em diante o `resolve` manda montar o widget em vez de construir outro.
 Future<Json> link(Workspace ws, String key, String target, {String? name}) async {
+  // A key curta do placeholder (`key 26729128`) seria gravada e nunca casaria no `resolve`, sem aviso.
+  if (!RegExp(r'^[0-9a-f]{40}$').hasMatch(key)) {
+    throw ResolveError(
+      'Key "$key" incompleta: use a key inteira do componente (40 caracteres), a do `components[].key` do '
+      '`resolve --json` ou do cabeçalho do brief de construção.',
+    );
+  }
   final [path, ...rest] = target.split('#');
   if (!File(path).existsSync()) throw ResolveError('$path não existe.');
   // Caminho real dos dois lados: com link simbólico ou `..` no caminho, o arquivo não "começaria" com o pacote.

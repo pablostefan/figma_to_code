@@ -14,6 +14,9 @@ class Export {
   final Json ir;
   final Map<String, Uint8List> _files;
 
+  /// Um arquivo do zip (o PNG da tela, por exemplo); null fora do zip ou num export JSON.
+  Uint8List? file(String path) => _files[path];
+
   static Export read(String path) {
     if (!path.toLowerCase().endsWith('.zip')) return Export(jsonDecode(File(path).readAsStringSync()) as Json);
     final files = {

@@ -17,8 +17,9 @@ String componentBrief(
   String? references,
   String? screenImage,
   Tokens? tokens,
+  Map<String, String> crops = const {},
 }) {
-  if (c.sketch != null) return _sketchBrief(c, references: references, screenImage: screenImage);
+  if (c.sketch != null) return _sketchBrief(c, references: references, screenImage: screenImage, crops: crops);
   final def = c.definition;
   final cls = pascalCase(c.folder);
   final out = StringBuffer()
@@ -177,7 +178,7 @@ String componentBrief(
 /// Montar um widget que já existe e que a anotação não mapeia campo a campo: do DS (`FigmaConnect.sketch`) ou do
 /// app (`@FigmaLocal`). A API dele, os dados de cada instância na tela e o norte. Não há código pronto: a LLM
 /// escreve o widget no lugar do placeholder `f2d:sketch`/`f2d:local`.
-String _sketchBrief(ComponentTask c, {String? references, String? screenImage}) {
+String _sketchBrief(ComponentTask c, {String? references, String? screenImage, Map<String, String> crops = const {}}) {
   final m = c.sketch!;
   final widget = m.widget!;
   final local = c.kind == 'local';
@@ -229,8 +230,27 @@ String _sketchBrief(ComponentTask c, {String? references, String? screenImage}) 
       )
       ..writeln()
       ..writeln('- Props do Figma: `${jsonEncode(u.figma?['props'])}`');
-    if (u.figma?['exposed'] case final List<Object?> exposed when exposed.isNotEmpty) {
-      out.writeln('- Instâncias expostas: `${jsonEncode(exposed)}`');
+    if (crops[u.id] case final file?) out.writeln('- Recorte do Figma: `$file` (nesta pasta)');
+    if (u.figma?['content'] case final List<Object?> content when content.isNotEmpty) {
+      out.writeln(
+        '- Conteúdo dentro da instância, como está no Figma'
+        '${u.figma?['contentTruncated'] == true ? ' (cortado nos primeiros ${content.length} itens)' : ''}:',
+      );
+      for (final item in content.cast<Json>()) {
+        out.writeln(
+          '  - `${item['path']}`: ${switch (item) {
+            {'text': final text} => jsonEncode(text),
+            _ => '${item['component']} `${jsonEncode(item['props'])}`',
+          }}',
+        );
+      }
+    }
+    // O `content` (IR 1.3) já lista as instâncias de dentro; as expostas só para export sem ele.
+    if (u.figma?['exposed'] case final List<Object?> exposed when exposed.isNotEmpty && u.figma?['content'] == null) {
+      out.writeln('- Instâncias expostas:');
+      for (final e in exposed.cast<Json>()) {
+        out.writeln('  - `${e['path']}`: ${e['componentName']} `${jsonEncode(e['props'])}`');
+      }
     }
     for (final o in u.overrides.where((o) => o['values'] != null)) {
       out.writeln('- Sobrescrito em `${o['node']}`: `${jsonEncode(o['values'])}`');
@@ -263,10 +283,14 @@ String _sketchBrief(ComponentTask c, {String? references, String? screenImage}) 
 
 /// Nomes dos parâmetros da API proposta (props do Figma e expostas que mudam nos usos), para o `check` conferir.
 List<String> apiParams(ComponentTask c) => [
-  for (final figma in ((c.definition?['props'] as Json?) ?? const {}).keys) identifier(figma),
+  for (final figma in ((c.definition?['props'] as Json?) ?? const {}).keys) _propParam(figma),
   for (final MapEntry(key: path, value: props) in _varyingExposed(c.uses).entries)
-    for (final prop in props.keys) identifier('$path $prop'),
+    for (final prop in props.keys) _exposedParam(path, prop),
 ];
+
+/// Nome do parâmetro de uma prop do Figma e de uma prop de instância exposta: o mesmo no brief e no `check`.
+String _propParam(String figma) => identifier(figma);
+String _exposedParam(String path, String prop) => identifier('$path $prop');
 
 /// Arquivo do SVG de uma variant na pasta da tarefa.
 String svgFile(Json variant) => '${snakeCase(variant['name'] as String)}.svg';
@@ -332,7 +356,7 @@ String _api(String cls, Map<String, Json> props, [Map<String, Map<String, List<O
   final params = <String>[];
   final fields = <String>[];
   for (final MapEntry(key: figma, value: p) in props.entries) {
-    final name = identifier(figma);
+    final name = _propParam(figma);
     final options = (p['options'] as List? ?? const []).cast<String>();
     final (type, init) = switch (p['type']) {
       'TEXT' => ('String', null),
@@ -358,7 +382,7 @@ String _api(String cls, Map<String, Json> props, [Map<String, Map<String, List<O
   }
   for (final MapEntry(key: path, value: varying) in exposed.entries) {
     for (final MapEntry(key: prop, value: values) in varying.entries) {
-      final name = identifier('$path $prop');
+      final name = _exposedParam(path, prop);
       // Ícone já sai como código (`DsIconName.x`): o tipo é o enum.
       final type = switch (values) {
         _ when values.every((v) => v is bool) => 'bool',

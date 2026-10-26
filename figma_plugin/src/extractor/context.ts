@@ -15,6 +15,9 @@ import type {
 
 export type ComponentOwner = ComponentSetNode | ComponentNode;
 
+/** Scale of the exported PNGs; the IR records it so a generator can crop by Figma coordinates. */
+export const IMAGE_SCALE = 2;
+
 export interface ImageRequest {
   nodeId: string;
   path: string;
@@ -83,6 +86,8 @@ export class Ctx {
   constructor(readonly options: ContextOptions) {}
 
   issue(node: BaseNode | { id: string; name: string }, rule: LintRule, detail: string, locatable = true): void {
+    // Mesmo aviso no mesmo nó (dois vetores `Vector` num ícone) aparece uma vez.
+    if (this.lint.some((l) => l.node === node.id && l.rule === rule && l.detail === detail)) return;
     this.lint.push({ node: node.id, name: node.name, rule, detail, ...(locatable ? {} : { locatable: false }) });
   }
 

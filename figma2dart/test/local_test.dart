@@ -186,35 +186,45 @@ void main() {
         '${repo.path}/app/pubspec.yaml',
         'name: app\ndependencies:\n  ds:\n    path: ../ds\ndev_dependencies:\n  figma_connect:\n    path: ../fc\n',
       );
-      final r = await link(
-        ws,
-        'contact',
-        '${repo.path}/app/lib/widgets/contact_item.dart#ContactItem',
-        name: 'Contato',
+      // Keys do Figma têm 40 caracteres hex; a curta (8, a do placeholder) é erro antes de tudo.
+      final contact = 'c' * 40, other = 'a' * 40, dsKey = 'b' * 40;
+      expect(
+        () => link(ws, 'cccccccc', '${repo.path}/app/lib/widgets/contact_item.dart'),
+        throwsA(isA<ResolveError>().having((e) => e.message, 'message', contains('incompleta'))),
       );
+      final r = await link(ws, contact, '${repo.path}/app/lib/widgets/contact_item.dart#ContactItem', name: 'Contato');
       expect(r['import'], 'package:app/widgets/contact_item.dart');
       expect(r.containsKey('devDependency'), isFalse);
       final file = File('${repo.path}/app/figma/connect/contact_item.figma.dart').readAsStringSync();
-      expect(file, contains("@FigmaLocal(key: 'contact', name: 'Contato')\ntypedef ContactItemFigma = ContactItem;"));
+      expect(file, contains("@FigmaLocal(key: '$contact', name: 'Contato')\ntypedef ContactItemFigma = ContactItem;"));
       expect(file, contains("import 'package:app/widgets/contact_item.dart';"));
-      expect((await link(ws, 'contact', '${repo.path}/app/lib/widgets/contact_item.dart'))['written'], isFalse);
-      expect(() => link(ws, 'outra', '${repo.path}/app/lib/widgets/contact_item.dart'), throwsA(isA<ResolveError>()));
+      expect((await link(ws, contact, '${repo.path}/app/lib/widgets/contact_item.dart'))['written'], isFalse);
+      expect(
+        () => link(ws, other, '${repo.path}/app/lib/widgets/contact_item.dart'),
+        throwsA(isA<ResolveError>().having((e) => e.message, 'message', contains('outra key'))),
+      );
 
       library(ws, [
-        export('l.json', libraryIr('Botões', {'b1': 'Button'})),
+        export('l.json', libraryIr('Botões', {dsKey: 'Button'})),
       ]);
-      expect(() => link(ws, 'b1', '${repo.path}/app/lib/widgets/contact_item.dart'), throwsA(isA<ResolveError>()));
-      expect(() => link(ws, 'novo', '${repo.path}/ds/lib/contact_item.dart'), throwsA(isA<ResolveError>()));
+      expect(
+        () => link(ws, dsKey, '${repo.path}/app/lib/widgets/contact_item.dart'),
+        throwsA(isA<ResolveError>().having((e) => e.message, 'message', contains('é do DS'))),
+      );
+      expect(
+        () => link(ws, other, '${repo.path}/ds/lib/contact_item.dart'),
+        throwsA(isA<ResolveError>().having((e) => e.message, 'message', contains('é do DS'))),
+      );
       // Pacote que não é dependência direta do pacote da tela: o resolve nunca leria a anotação.
       write('${repo.path}/outro/pubspec.yaml', 'name: outro\n');
       write('${repo.path}/outro/lib/x.dart', 'class X {}\n');
       expect(
-        () => link(ws, 'x', '${repo.path}/outro/lib/x.dart'),
+        () => link(ws, other, '${repo.path}/outro/lib/x.dart'),
         throwsA(isA<ResolveError>().having((e) => e.message, 'message', contains('dependência direta'))),
       );
       // Caminho com `..` (ou link simbólico) chega ao mesmo arquivo.
       expect(
-        (await link(ws, 'contact', '${repo.path}/app/lib/widgets/../widgets/contact_item.dart'))['written'],
+        (await link(ws, contact, '${repo.path}/app/lib/widgets/../widgets/contact_item.dart'))['written'],
         isFalse,
       );
     });

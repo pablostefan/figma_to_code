@@ -40,7 +40,8 @@ as escolhas do usuário sobre os componentes fora do DS.
 - **`f2d:sketch` (componente do DS a montar) e `f2d:local` (widget do app que já existe, `@FigmaLocal`):** o
   placeholder aponta para o brief da tarefa (`components/<nome>/BRIEF.md`, `"kind": "sketch"`/`"local"` no JSON,
   com o `import`). Widget do app não se altera sem perguntar ao usuário. Leia-o: tem o norte, a **API do widget** (construtor,
-  parâmetros e tipos auxiliares), os dados de cada instância no Figma, docs e exemplos. Troque o placeholder pelo
+  parâmetros e tipos auxiliares), os dados de cada instância no Figma (props, expostas, o **conteúdo de dentro** e o
+  **recorte do PNG** só daquela instância — abra a imagem), docs e exemplos. Troque o placeholder pelo
   widget montado com essa API: valores do Figma entram como estão; conteúdo de exemplo (linhas, itens) vem dos dados
   da tela. Apague o marcador e deixe `f2d:inferred` no que decidiu.
 - **Navegação:** use o mecanismo de navegação que o app já usa. Destino que ainda não existe no app: deixe um

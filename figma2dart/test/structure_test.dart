@@ -58,10 +58,24 @@ Json variant(String name, {required String gap, required String textStyle, bool 
         },
       },
       {
+        'id': 'n-$name',
+        'type': 'TEXT',
+        'name': 'note',
+        'sizing': {'horizontal': 'FILL', 'vertical': 'HUG'},
+        'text': {
+          'characters': 'Obs',
+          'style': 'body/sm',
+          'maxLines': 1,
+          'truncation': 'ENDING',
+          'autoResize': 'HEIGHT',
+        },
+      },
+      {
         'id': 'd-$name',
         'type': 'RECTANGLE',
         'name': 'divider',
         'size': {'width': 200, 'height': 1},
+        'rotation': -90,
         'sizing': {'horizontal': 'FILL', 'vertical': 'FIXED'},
       },
       {
@@ -69,6 +83,7 @@ Json variant(String name, {required String gap, required String textStyle, bool 
         'type': 'FRAME',
         'name': 'badge',
         'size': {'width': 8, 'height': 8},
+        'rotation': 180,
         'position': {'x': 190, 'y': 2},
       },
       if (icon)
@@ -131,8 +146,9 @@ void main() {
         r'- `value`: texto "R$ 120" · body/md · alinhado RIGHT · trechos: "R$ " body/sm, "120" body/md · HUG×HUG',
       ),
     );
-    expect(md, contains('- `divider`: RECTANGLE · FILL×1'));
-    expect(md, contains('- `badge`: FRAME · 8×8 · posição absoluta 190,2'));
+    expect(md, contains('- `divider`: RECTANGLE · FILL×1 · **girado 90° horário**'));
+    expect(md, contains('texto "Obs" · body/sm · máx 1 linha · reticências · quebra linha (largura fixa) · FILL×HUG'));
+    expect(md, contains('- `badge`: FRAME · 8×8 · **girado 180°** · posição absoluta 190,2'));
 
     // As outras variantes: só a diferença.
     expect(md, contains('## O que muda em cada variante'));

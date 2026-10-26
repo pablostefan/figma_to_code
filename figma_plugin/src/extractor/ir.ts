@@ -3,10 +3,10 @@
  * schema/ir.v1.schema.json is generated from these types (`npm run schema`); edit here, not there.
  */
 
-export type IRVersion = '1.0.0' | '1.1.0' | '1.2.0';
+export type IRVersion = '1.0.0' | '1.1.0' | '1.2.0' | '1.3.0';
 
-export const IR_VERSION: IRVersion = '1.2.0';
-export const EXTRACTOR_VERSION = '0.3.0';
+export const IR_VERSION: IRVersion = '1.3.0';
+export const EXTRACTOR_VERSION = '0.4.1';
 
 export type Kind = 'component' | 'screen' | 'flow' | 'library';
 export type Fidelity = 'exact' | 'inferred' | 'unresolved';
@@ -146,6 +146,8 @@ export interface ScreenState {
   frameName: string;
   tree: IRNode;
   image?: string;
+  /** Scale of `image` (pixels per Figma unit), to crop instances from it by their `bounds`. */
+  imageScale?: number;
 }
 
 export interface FlowDef {
@@ -176,6 +178,8 @@ export interface IRNode {
   fidelity: Fidelity;
   visible?: false;
   size: { width: number; height: number };
+  /** Degrees, counterclockwise as in Figma (-180..180); only when rotated (a back chevron is often `chevron-right` at 180). */
+  rotation?: number;
   /** Variables bound to the node's width/height (e.g. icon sizes), keys into `IR.tokens`. */
   sizeTokens?: { width?: string; height?: string };
   limits?: { minWidth?: Value<number>; maxWidth?: Value<number>; minHeight?: Value<number>; maxHeight?: Value<number> };
@@ -183,6 +187,8 @@ export interface IRNode {
   modes?: Record<string, string>;
   /** Present when the node is not placed by auto layout (free positioning or absolute). */
   position?: { x: number; y: number };
+  /** Instances on a screen: box relative to the screen frame, to crop the instance from the screen image. */
+  bounds?: { x: number; y: number; width: number; height: number };
   sizing?: { horizontal: Sizing; vertical: Sizing };
   layout?: Layout;
   style?: Style;
@@ -243,6 +249,15 @@ export interface TextInfo {
   /** Color style of the text (key into `IR.paintStyles`). */
   colorStyle?: string;
   align?: string;
+  /** Line limit set in Figma (`maxLines`). */
+  maxLines?: number;
+  /** `ENDING`: text cut with an ellipsis when it does not fit. */
+  truncation?: 'ENDING';
+  /**
+   * How the text box grows, when not the default `WIDTH_AND_HEIGHT` (one line, grows sideways): `HEIGHT` wraps at a
+   * fixed width, `NONE` is a fixed box, `TRUNCATE` cuts at the box.
+   */
+  autoResize?: string;
   /** Present when the text mixes styles or colors. */
   segments?: { characters: string; style?: string; color?: Value<string>; colorStyle?: string }[];
 }
@@ -277,10 +292,27 @@ export interface InstanceInfo {
   /** Nested instances exposed through this instance ("expose nested instances"), at any depth. */
   exposed: ExposedInstance[];
   /**
+   * Instances on a screen: what is inside, as shown (texts and nested instances, visible only), so a generator can
+   * assemble a component whose content is not in its props (lists, templates). Capped at `CONTENT_LIMIT` items.
+   */
+  content?: InstanceContent[];
+  /** `content` stopped at the limit. */
+  contentTruncated?: true;
+  /**
    * Customizations beyond what this IR already records as props: style changes, and text, visibility or nested
    * instances changed directly on a layer that is not driven by a recorded component property.
    */
   overrides: Override[];
+}
+
+export interface InstanceContent {
+  /** Layer path inside the instance. */
+  path: string;
+  /** TEXT layer: what it shows. */
+  text?: string;
+  /** Nested instance: its component (set) name and props. */
+  component?: string;
+  props?: Record<string, PropValue>;
 }
 
 export interface Override {
