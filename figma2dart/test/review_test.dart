@@ -54,6 +54,16 @@ void main() {
     expect(outOfOrder([...contact, ('Continuar', text('Continuar', 0, -40))]), ['Continuar']);
     // Lado a lado trocados na mesma faixa.
     expect(outOfOrder([('A', text('A', 100, 0)), ('B', text('B', 0, 0))]), ['B']);
+    // Grade 2×2 do item de transação: o Figma lista a coluna da esquerda e depois a da direita.
+    expect(
+      outOfOrder([
+        ('Aluguel', text('Aluguel', 76, 424, width: 52)),
+        ('Hoje, 07:30', text('Hoje, 07:30', 76, 448, width: 78)),
+        ('- R\$ 1.800,00', text('- R\$ 1.800,00', 240, 422, width: 93)),
+        ('Pago', text('Pago', 291, 448, width: 35)),
+      ]),
+      isEmpty,
+    );
   });
 
   test('ordem de leitura: na mesma linha (centro dentro da altura) da esquerda para a direita', () {

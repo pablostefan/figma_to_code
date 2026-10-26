@@ -332,3 +332,26 @@ primeiros quebravam justamente no ambiente real: monorepo com o agente na raiz e
 Além disso, o teste "docs e exemplos citados pelos mapeamentos do Carteira existem" validava os dados do Carteira (e,
 por eles, o sample app), não a CLI: falhava quando o sample app mudava. Virou um teste com pasta própria do mesmo
 comportamento (doc e exemplo que existem entram; o que sumiu é avisado).
+
+## Teste com uma LLM sem contexto (Haiku)
+
+Uma LLM sem nada desta conversa, no modelo mais fraco, implementou o fluxo inteiro (export real IR 1.4, 5 telas, 4
+componentes construídos e ligados) no sample app seguindo só o agente e as skills instalados pelo `init`. Resultado
+conferido à parte: `check` ok nos 9 arquivos (0 pendências, 19 `f2d:inferred` com motivo), `flutter analyze` limpo,
+9 testes passando, revisão visual com as imagens abertas e 2 achados reais corrigidos (cor do ícone de olho no
+login; estado do campo no teste da Transferir). As telas ficaram visualmente iguais ao Figma.
+
+O que o teste mostrou e foi corrigido:
+
+| # | Achado | Correção |
+|---|---|---|
+| 1 | Telas na ordem do fluxo: o botão para a próxima ficava com ação vazia, porque o destino ainda não existia; o fluxo não andava | orquestrador ganhou o passo "Ligar a navegação" depois de todas as telas; a skill de tela padroniza o marcador que ele procura |
+| 2 | "Esqueleto da tela" confundia: `@FigmaScreen`/`FigmaScreenProps` não existem no app | skill: copiar o **corpo** do esqueleto para o `build`, sem a anotação |
+| 3 | Skill de revisão não citava o `prepare` (a LLM o achou lendo o código) nem o que fazer sem tema no `main.dart` | skill cita os dois |
+| 4 | Linha de componente `sketch`/`local` na estrutura da tela sem as props (a LLM foi buscar no `component.json`) | props e expostas na linha, como no placeholder |
+| 5 | Grade de duas colunas (item de transação) virava "fora de ordem" | "acima" só conta na mesma coluna |
+| 6 | Faixa "DEBUG" do `MaterialApp` no canto da captura | `figmaCapture` desliga a faixa |
+
+Investigado e mantido: texto um pouco mais grosso no Flutter que no Figma. O DS usa os mesmos pesos do Figma
+(`label` = Medium 500) e a captura carrega os quatro pesos da Inter certos (conferido renderizando 400–700); é
+diferença de renderização entre Figma e Flutter, que o critério da revisão manda ignorar, e a LLM ignorou.

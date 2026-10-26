@@ -14,8 +14,13 @@ o `check` ok. A revisão não reprova nada: é para deixar a tela o mais parecid
    criar o teste) e `test` (o modelo). O `figma_connect` já fica nas dev_dependencies (`devDependency` diz se
    precisou adicionar).
 2. Escreva o `testFile` completando o modelo: a tela do `screenFile` dentro do `MaterialApp` com o **mesmo tema do
-   app** (o do `main.dart`) e os **dados de exemplo do Figma** (os textos do brief), sem back-end: parâmetros, um
-   cubit com estado fixo ou um repositório falso. Imagem de rede fica como está.
+   app** (o do `main.dart`; sem tema no app, o do DS, ex.: `DsTheme.light()`) e os **dados de exemplo do Figma** (os
+   textos do brief), sem back-end: parâmetros, um cubit com estado fixo ou um repositório falso. Imagem de rede
+   fica como está.
+   - **Estado do Figma:** se a tela no Figma está num estado que depende de interação (campo preenchido ou em
+     foco, item selecionado, senha visível), reproduza no parâmetro `prepare` do `figmaCapture`, que roda antes da
+     captura: `prepare: (tester) => tester.enterText(find.byType(TextField), '15000')`. Sem isso, botão
+     desabilitado e campo vazio viram diferença que não é da tela.
 3. `flutter test <testFile>`, **de dentro da pasta do pacote** (`app` do `doctor`): o `figmaCapture` acha a tarefa
    por `.figma2dart/tasks/` a partir dela. Overflow não reprova (vai para a revisão). Se o teste falhar por outro motivo,
    corrija o **teste** (dados, tema, dependência), não a tela. O teste fica no repositório: é o teste de widget da

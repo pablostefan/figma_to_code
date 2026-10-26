@@ -272,18 +272,23 @@ bool _icon(String text) =>
     text.runes.every((r) => (r >= 0xE000 && r <= 0xF8FF) || r >= 0xF0000 || String.fromCharCode(r).trim().isEmpty);
 
 /// Textos fora da ordem do Figma ([matched]: na ordem do Figma, cada um com o retângulo no Flutter). Só conta quem
-/// ficou **inteiramente acima** de um que vinha antes (ou inteiramente à esquerda, na mesma faixa): avatar ao lado
-/// do nome não é ordem trocada. Sai primeiro quem tem mais inversões (empate: o que vinha depois no Figma, o que
+/// ficou **inteiramente acima** de um que vinha antes na mesma coluna (ou inteiramente à esquerda, na mesma faixa):
+/// avatar ao lado do nome e grade de duas colunas não são ordem trocada. Sai primeiro quem tem mais inversões (empate: o que vinha depois no Figma, o que
 /// "subiu").
 List<String> outOfOrder(List<(String, Json)> matched) {
   num top(Json t) => t['y'] as num;
   num bottom(Json t) => top(t) + (t['height'] as num);
   num left(Json t) => t['x'] as num;
   num right(Json t) => left(t) + (t['width'] as num);
-  // [later] (depois no Figma) aparece antes de [earlier] no Flutter?
-  bool before(Json later, Json earlier) =>
-      bottom(later) <= top(earlier) + 2 ||
-      (bottom(later) > top(earlier) && top(later) < bottom(earlier) && right(later) <= left(earlier) + 2);
+  // [later] (depois no Figma) aparece antes de [earlier] no Flutter? "Acima" só vale na mesma coluna: numa grade
+  // (título e data à esquerda, valor e status à direita) o Figma lista coluna por coluna, e o valor fica acima da
+  // data sem estar fora de ordem.
+  bool before(Json later, Json earlier) {
+    final sameColumn = left(later) < right(earlier) && left(earlier) < right(later);
+    final sameRow = top(later) < bottom(earlier) && top(earlier) < bottom(later);
+    return (sameColumn && bottom(later) <= top(earlier) + 2) || (sameRow && right(later) <= left(earlier) + 2);
+  }
+
   final alive = {for (var i = 0; i < matched.length; i++) i};
   final out = <int>[];
   while (true) {

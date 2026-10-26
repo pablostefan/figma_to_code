@@ -51,16 +51,17 @@ List<StructureLine> structureLines(
   StructureLine line(List<String> parts) => (depth: depth, path: path, name: name, parts: parts);
 
   if (resolved[node['id']] case final i?) {
+    // Os valores desta instância, onde a LLM está olhando (o brief do componente repete por instância).
+    final values = [
+      if (i.figma?['props'] case final Json props when props.isNotEmpty) 'props ${jsonEncode(props)}',
+      if (i.figma?['exposed'] case final List<Object?> list when list.isNotEmpty)
+        'expostas ${jsonEncode({for (final e in list.cast<Json>()) e['path']: e['props']})}',
+    ];
     final parts = switch (i.status) {
-      'placeholder' => [
-        'componente local **${i.component}** → [brief](${brief(i)})',
-        if (i.figma?['props'] case final Json props when props.isNotEmpty) 'props ${jsonEncode(props)}',
-        if (i.figma?['exposed'] case final List<Object?> list when list.isNotEmpty)
-          'expostas ${jsonEncode({for (final e in list.cast<Json>()) e['path']: e['props']})}',
-      ],
+      'placeholder' => ['componente local **${i.component}** → [brief](${brief(i)})', ...values],
       'gap' => ['${i.component} do DS **sem mapeamento**${i.error == null ? '' : ' (${i.error})'}'],
-      'sketch' => ['DS **${i.component}** a montar → [brief](${brief(i)})'],
-      'local' => ['widget do app **${i.mapping!.widget!.name}** a montar → [brief](${brief(i)})'],
+      'sketch' => ['DS **${i.component}** a montar → [brief](${brief(i)})', ...values],
+      'local' => ['widget do app **${i.mapping!.widget!.name}** a montar → [brief](${brief(i)})', ...values],
       _ when !inline => ['DS **${i.component}** (código em Componentes, ${i.id})'],
       _ => [
         'DS `${i.code.replaceAll(RegExp(r'\n\s*'), ' ')}`', // só as quebras: espaço de texto fica

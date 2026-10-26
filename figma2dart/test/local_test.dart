@@ -95,6 +95,13 @@ void main() {
     expect(md, contains('required String name'));
     expect(md, contains('não altere o `ContactItem` sem perguntar'));
     expect(brief(s), contains('(do app)'));
+    // Na estrutura da tela, os valores desta instância já na linha (não só no brief do componente).
+    expect(
+      brief(s),
+      contains(
+        'widget do app **ContactItem** a montar → [brief](components/contact_item/BRIEF.md) · props {"name":"Ana"}',
+      ),
+    );
   });
 
   test('retrato do DS: key do DS sem mapeamento é gap; remoto de outra biblioteca é a construir', () {

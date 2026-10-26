@@ -57,6 +57,11 @@ CLI, pergunta ao usuário o que só ele decide, constrói e confere.
       captura da tela num teste (`figmaCapture`), `figma2dart review` e o subagente `figma-visual-reviewer`, que
       compara com o Figma pelo critério do `REVIEW.md` (o que importa, o que ignorar). Corrija os achados pela base
       de cada um; no máximo 2 rodadas. Não reprova: o que sobrar vai para o relatório.
-5. **Relatório final**, por tela: arquivo escrito, componentes construídos, placeholders que ficaram, cada
+5. **Ligar a navegação** — depois de todas as telas. As telas saem na ordem do fluxo, então o botão que leva à
+   próxima ficou com ação vazia e `// f2d:inferred — tela <nome> ainda não existe`. Procure esse texto (`search`)
+   nos arquivos desta rodada: se a tela de destino foi escrita agora, troque a ação vazia pela navegação até ela
+   (o mecanismo do app; sem nenhum, `Navigator.of(context).push(MaterialPageRoute(builder: (_) => <Página>()))`) e
+   apague o marcador. Rode o `check` dos arquivos alterados.
+6. **Relatório final**, por tela: arquivo escrito, componentes construídos, placeholders que ficaram, cada
    `f2d:inferred` com o motivo, os `TODO(f2d)` (ícone ou imagem que o dev precisa trocar), os `hints` que ficaram,
    o que não passou no `check`, os achados da revisão visual que ficaram e o `review/screen.png` para conferir.

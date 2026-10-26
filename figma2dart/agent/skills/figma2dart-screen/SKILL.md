@@ -13,8 +13,10 @@ as escolhas do usuário sobre os componentes fora do DS.
 - Leia o `BRIEF.md` inteiro e abra o PNG (`image`): é a referência visual.
 - Seções do brief:
   - **Componentes:** o código de cada instância do DS, já com os valores do Figma.
-  - **Esqueleto da tela:** a regra de toda tela do DS (`@FigmaScreen`). Use-a como está; `s.body()` é o layout da
-    tela.
+  - **Esqueleto da tela:** o que toda tela do DS tem por fora. É um modelo do pacote de mapeamentos (`@FigmaScreen`,
+    `FigmaScreenProps`, que **não existem no app**: não copie a anotação nem a função). Copie o **corpo** dela para o
+    `build` da página, trocando `s.body()` pelo layout da "Estrutura da tela" e `s.instance(x)` pela instância
+    (ou nada).
   - **Estrutura da tela:** o layout (frames, direção, gap, padding, tokens) e onde cada instância fica.
   - **Navegação:** o protótipo do Figma; diz para onde cada botão leva.
   - **Decisões (f2d:guided):** o que você decide, com o norte.
@@ -25,7 +27,7 @@ as escolhas do usuário sobre os componentes fora do DS.
 ## 2. Escrever
 
 - Arquivo: `screenFile`. Se já existir, pergunte ao usuário antes de sobrescrever.
-- Classe `<Nome>Page`, com o "Esqueleto da tela" do brief por fora (sem ele, um `Scaffold` simples).
+- Classe `<Nome>Page`, com o corpo do "Esqueleto da tela" do brief por fora (sem esqueleto, um `Scaffold` simples).
 - **Layout:** monte a árvore da "Estrutura da tela" com `Column`/`Row`/`Padding`/`Expanded`. Direção, gap, padding
   e alinhamento vêm dela. `FILL` vira `Expanded`/largura total; `spacer` com `FILL` vira `Spacer()`/`Expanded`.
 - **Tokens:** com a tabela de tokens do DS, a estrutura já traz o código Dart (`DsSpacing.md`,
@@ -44,8 +46,9 @@ as escolhas do usuário sobre os componentes fora do DS.
   **recorte do PNG** só daquela instância — abra a imagem), docs e exemplos. Troque o placeholder pelo
   widget montado com essa API: valores do Figma entram como estão; conteúdo de exemplo (linhas, itens) vem dos dados
   da tela. Apague o marcador e deixe `f2d:inferred` no que decidiu.
-- **Navegação:** use o mecanismo de navegação que o app já usa. Destino que ainda não existe no app: deixe um
-  `// f2d:inferred — tela <nome> ainda não existe` e uma ação vazia.
+- **Navegação:** use o mecanismo de navegação que o app já usa. Destino que ainda não existe no app: deixe uma ação
+  vazia com **exatamente** `// f2d:inferred — tela <nome> ainda não existe` (o agente procura esse texto para ligar
+  a navegação depois que a tela de destino for escrita).
 - **Placeholders (`f2d:placeholder`):**
   - Componente construído → troque o placeholder pela classe, com os valores de "props" da estrutura (ou de "Usos
     na tela" no brief do componente). Importe de `widgets/`.

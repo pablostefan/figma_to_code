@@ -57,6 +57,9 @@ Future<void> figmaCapture(
     ..physicalSize = size * scale
     ..devicePixelRatio = scale;
   addTearDown(tester.view.reset);
+  // A faixa "DEBUG" do MaterialApp no canto não está no Figma: vira diferença falsa na revisão.
+  WidgetsApp.debugAllowBannerOverride = false;
+  addTearDown(() => WidgetsApp.debugAllowBannerOverride = true);
 
   // Overflow e afins viram dado da revisão, não falha do teste.
   final errors = <String>[];
