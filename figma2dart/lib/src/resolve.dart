@@ -1,3 +1,6 @@
+// shortcut: analyzer 7.7's replacement element model is experimental; migrate after dropping Dart 3.5.
+// ignore_for_file: deprecated_member_use
+
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/element/element.dart';
 
@@ -221,7 +224,7 @@ class ComponentTask {
     'name': name,
     'key': key,
     'kind': kind,
-    if (sketch?.widget case final widget?) ...{'widget': widget.name, 'import': '${widget.library.uri}'},
+    if (sketch?.widget case final widget?) ...{'widget': widget.name, 'import': '${widget.library.source.uri}'},
     'folder': folder,
     'definition': definition,
     'variants': {
@@ -417,7 +420,7 @@ class Resolver {
         guided: const [],
         devNotes: {m.name: m.devNotes},
         sketch: m,
-        within: {for (final i in list) i.id: ?within[i.id]},
+        within: {for (final i in list) if (within[i.id] case final owner?) i.id: owner},
       );
     }
     final taken = <String>{};
@@ -644,14 +647,14 @@ class _Eval {
     SimpleIdentifier(:final name) => bindings[name],
     MethodInvocation(methodName: SimpleIdentifier(name: 'nested'), target: final inner) => _scopeOf(
       inner,
-    )?.nested(_string(target.argumentList.arguments.first.argumentExpression)),
+    )?.nested(_string(_argument(target.argumentList.arguments.first))),
     _ => null,
   };
 
   String _call(MethodInvocation m, _Scope s) {
-    final args = [for (final a in m.argumentList.arguments) a.argumentExpression];
+    final args = [for (final a in m.argumentList.arguments) _argument(a)];
     final named = {
-      for (final a in m.argumentList.arguments.whereType<NamedArgument>()) a.name.lexeme: a.argumentExpression,
+      for (final a in m.argumentList.arguments.whereType<NamedExpression>()) a.name.label.name: a.expression,
     };
     String name() => _string(args.first);
     switch (m.methodName.name) {
@@ -702,13 +705,15 @@ class _Eval {
     if (fn == null || body is! ExpressionFunctionBody) return null;
     final inner = <String, _Scope>{};
     final params = fn.parameters!.parameters;
-    final args = [for (final a in m.argumentList.arguments) a.argumentExpression];
+    final args = [for (final a in m.argumentList.arguments) _argument(a)];
     for (var i = 0; i < params.length && i < args.length; i++) {
       if (_scopeOf(args[i]) case final scope?) inner[params[i].name!.lexeme] = scope;
     }
     if (inner.isEmpty) return null;
     return _Eval(r, mapping, inner).emit(body.expression);
   }
+
+  Expression _argument(Expression argument) => argument is NamedExpression ? argument.expression : argument;
 
   String _string(Expression? e) => switch (e) {
     StringLiteral(:final stringValue?) => stringValue,

@@ -47,7 +47,7 @@ está explicado em [DESIGN_OPS.md](DESIGN_OPS.md).
 name: acme_figma
 publish_to: none
 environment:
-  sdk: ^3.11.0
+  sdk: ^3.5.3
 dependencies:
   flutter:
     sdk: flutter

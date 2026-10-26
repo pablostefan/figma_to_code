@@ -1,3 +1,6 @@
+// shortcut: analyzer 7.7's replacement element model is experimental; migrate after dropping Dart 3.5.
+// ignore_for_file: deprecated_member_use
+
 import 'dart:convert';
 import 'dart:io';
 import 'dart:isolate';
@@ -195,9 +198,9 @@ Json _task(
   final builds = {for (final c in s.components.where((c) => c.sketch == null)) c.name: c};
   String? widgetFile(ComponentTask c) => ws.screens == null ? null : '${ws.screens}/widgets/${c.folder}.dart';
   final files = <String, Json>{
-    ?screenFile: {'texts': staticTexts(s.tree).toSet().toList()},
+    if (screenFile != null) screenFile: {'texts': staticTexts(s.tree).toSet().toList()},
     for (final c in builds.values)
-      ?widgetFile(c): {
+      if (widgetFile(c) case final file?) file: {
         'params': apiParams(c),
         'texts': {
           for (final v in (c.definition?['variants'] as List? ?? const []).cast<Json>())
@@ -304,7 +307,7 @@ Json _task(
           'uses': c.uses.length,
           if (c.sketch?.widget case final widget?) ...{
             'widget': widget.name,
-            'import': '${widget.library.uri}',
+            'import': '${widget.library.source.uri}',
           } else ...{
             'class': pascalCase(c.folder),
             'widgetFile': switch (widgetFile(c)) {
@@ -312,7 +315,7 @@ Json _task(
               null => null,
             },
             'dependsOn': c.dependencies.values.toList(),
-            'existing': ?existing[pascalCase(c.folder)],
+            if (existing[pascalCase(c.folder)] case final path?) 'existing': path,
           },
         },
     ],
@@ -500,7 +503,13 @@ typedef ${cls}Figma = $cls;
 ''');
 
   final added = ensureFigmaConnect(ws, package);
-  return {'file': out.path, 'import': import, 'class': cls, 'written': true, 'devDependency': ?added};
+  return {
+    'file': out.path,
+    'import': import,
+    'class': cls,
+    'written': true,
+    if (added != null) 'devDependency': added,
+  };
 }
 
 /// `pub add` do `figma_connect` como dev_dependency de [package] (o `@FigmaLocal` do `link` e a captura do `review`),

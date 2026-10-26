@@ -1,3 +1,6 @@
+// shortcut: analyzer 7.7's replacement element model is experimental; migrate after dropping Dart 3.5.
+// ignore_for_file: deprecated_member_use
+
 import 'dart:convert';
 
 import 'api.dart';
@@ -197,7 +200,7 @@ String _sketchBrief(ComponentTask c, {String? references, String? screenImage, M
     )
     ..writeln('API, os dados do Figma e o norte abaixo. O `check` só passa quando não sobrar o marcador.')
     ..writeln()
-    ..writeln("Import: `import '${widget.library.uri}';`");
+    ..writeln("Import: `import '${widget.library.source.uri}';`");
   if (screenImage != null) {
     out
       ..writeln()

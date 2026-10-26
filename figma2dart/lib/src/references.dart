@@ -141,9 +141,9 @@ class References {
       if (d is FunctionDeclaration && member.isEmpty && d.name.lexeme == name) {
         return source.substring(d.offset, d.end);
       }
-      if (d is ClassDeclaration && d.namePart.typeName.lexeme == name) {
+      if (d is ClassDeclaration && d.name.lexeme == name) {
         if (member.isEmpty) return source.substring(d.offset, d.end);
-        final m = d.body.members.whereType<MethodDeclaration>().where((m) => m.name.lexeme == member.single);
+        final m = d.members.whereType<MethodDeclaration>().where((m) => m.name.lexeme == member.single);
         if (m.firstOrNull case final m?) return '  ${source.substring(m.offset, m.end)}';
       }
     }

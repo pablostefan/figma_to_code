@@ -121,7 +121,7 @@ typedef ContactItemFigma = ListPage;
 Widget icon(FigmaProps f) => DsIcon(f.icon('name'));
 
 @FigmaScreen()
-Widget screen(FigmaScreenProps s) => Column(children: [?s.instance(badge), s.body()]);
+Widget screen(FigmaScreenProps s) => Column(children: [if (s.instance(badge) case final instance?) instance, s.body()]);
 
 const policy = FigmaPolicy(
   kinds: {

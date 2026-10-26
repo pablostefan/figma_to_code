@@ -95,7 +95,7 @@ void main() {
 
   Json swap(String name, {String? variantKey}) => {
     'componentKey': 'iconset',
-    'mainComponentKey': ?variantKey,
+    if (variantKey != null) 'mainComponentKey': variantKey,
     'componentName': 'Icon',
     'variant': {'name': name},
   };

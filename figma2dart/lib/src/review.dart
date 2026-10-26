@@ -40,7 +40,12 @@ Json reviewInput(ResolvedScreen s, {required Set<String> images}) {
     'ignored': [for (final i in s.ignored) '${i['path']} (${i['component']})'],
     'sections': [
       for (final node in sections(s.tree, skip: ignored))
-        {'name': node['name'], 'id': node['id'], 'bounds': ?node['bounds'], 'structure': structure(node)},
+        {
+          'name': node['name'],
+          'id': node['id'],
+          if (node['bounds'] case final bounds?) 'bounds': bounds,
+          'structure': structure(node),
+        },
     ],
   };
 }
@@ -110,7 +115,7 @@ Json review(Workspace ws, String screen) {
       'task': task,
       'testFile': '${ws.app}/test/${screens.isEmpty ? '' : '$screens/'}${task}_figma_test.dart',
       'test': captureTest(input['screen'] as String, task),
-      'devDependency': ?ensureFigmaConnect(ws, ws.app),
+      if (ensureFigmaConnect(ws, ws.app) case final dependency?) 'devDependency': dependency,
     };
   }
   final layout = jsonDecode(layoutFile.readAsStringSync()) as Json;

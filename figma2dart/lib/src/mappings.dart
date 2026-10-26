@@ -1,3 +1,6 @@
+// shortcut: analyzer 7.7's replacement element model is experimental; migrate after dropping Dart 3.5.
+// ignore_for_file: deprecated_member_use
+
 import 'dart:convert';
 import 'dart:io';
 
@@ -147,7 +150,7 @@ class MappingSet {
   /// O mapeamento da instância: primeiro pela key exata da variant, depois pela do set. Entre os candidatos, os que
   /// têm `when` compatível com as props; vence o mais específico. Empate é erro: a escolha seria por acaso.
   Mapping? find({required String componentKey, String? mainComponentKey, required Map<String, Object?> props}) {
-    for (final key in [?mainComponentKey, componentKey]) {
+    for (final key in [if (mainComponentKey != null) mainComponentKey, componentKey]) {
       final candidates =
           components.where((m) => m.key == key && m.when.entries.every((w) => props[w.key] == w.value)).toList()
             ..sort((a, b) => b.when.length.compareTo(a.when.length));
@@ -214,7 +217,7 @@ Future<MappingSet> loadMappings(String packageDir, {String? packageConfig}) asyn
   for (final unit in units) {
     for (final variable in unit.unit.declarations.whereType<TopLevelVariableDeclaration>()) {
       for (final v in variable.variables.variables) {
-        final value = v.declaredFragment?.element.computeConstantValue();
+        final value = v.declaredElement?.computeConstantValue();
         if (value?.type?.element?.name == 'FigmaPolicy') (policy, kindNotes) = _policy(value!);
       }
     }
@@ -344,13 +347,13 @@ Future<List<ResolvedUnitResult>> _analyze(
   final session = AnalysisContextCollectionImpl(
     byteStore: _byteStore,
     includedPaths: [root],
-    packageConfigFile: packageConfig == null ? null : File(packageConfig).absolute.uri.normalizePath().toFilePath(),
+    packagesFile: packageConfig == null ? null : File(packageConfig).absolute.uri.normalizePath().toFilePath(),
   ).contextFor(root).currentSession;
   final units = <ResolvedUnitResult>[];
   for (final file in files) {
     final result = await session.getResolvedUnit(file);
     final errors = result is ResolvedUnitResult
-        ? result.diagnostics.where((d) => d.severity == Severity.error).toList()
+        ? result.errors.where((d) => d.severity == Severity.error).toList()
         : null;
     final problem = switch (errors) {
       null => 'Não foi possível analisar $file',
@@ -381,13 +384,13 @@ Future<List<ResolvedUnitResult>> _analyze(
       icons: values.firstOrNull?.type?.element is EnumElement ? values.first.type!.element as EnumElement : null,
       iconByKey: {
         for (final MapEntry(:key, value: v) in (icons?.getField('byKey')?.toMapValue() ?? const {}).entries)
-          key!.toStringValue()!: v!.variable!.name!,
+          key!.toStringValue()!: v!.variable!.name,
       },
       tokens: Tokens.read(value.getField('tokens')),
     ),
     {
       for (final MapEntry(:key, value: kind) in (value.getField('kinds')?.toMapValue() ?? const {}).entries)
-        key!.variable!.name!: [
+        key!.variable!.name: [
           for (final note in kind?.getField('devNotes')?.toListValue() ?? const <DartObject>[]) _devNote(note),
         ],
     },

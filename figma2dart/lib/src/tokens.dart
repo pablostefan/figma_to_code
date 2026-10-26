@@ -1,3 +1,6 @@
+// shortcut: analyzer 7.7's replacement element model is experimental; migrate after dropping Dart 3.5.
+// ignore_for_file: deprecated_member_use
+
 import 'package:analyzer/dart/constant/value.dart';
 import 'package:analyzer/dart/element/element.dart';
 
@@ -18,7 +21,7 @@ class Tokens {
   }
 
   /// Algum token vem do tema (`context.…`): o código precisa de `BuildContext` e não é `const`.
-  bool get fromTheme => [...collections.values, ?textStyles].any((c) => c.theme);
+  bool get fromTheme => [...collections.values, if (textStyles case final styles?) styles].any((c) => c.theme);
 
   /// Estilo de texto (`body/sm`) → código; null sem correspondência.
   String? textStyle(String name) => textStyles?.code(name);
@@ -29,7 +32,7 @@ class Tokens {
     return Tokens(
       collections: {
         for (final MapEntry(:key, :value) in (table.getField('collections')?.toMapValue() ?? const {}).entries)
-          key!.toStringValue()!: ?TokenClass.read(value),
+          if (TokenClass.read(value) case final tokenClass?) key!.toStringValue()!: tokenClass,
       },
       textStyles: TokenClass.read(table.getField('textStyles')),
     );
@@ -61,12 +64,16 @@ class TokenClass {
     final element = source?.getField('type')?.toTypeValue()?.element;
     if (element is! InterfaceElement) return null;
     final members = [
-      ...element.fields.where((f) => f.isOriginDeclaration),
-      ...element.getters.where((g) => g.isOriginDeclaration),
+      ...element.fields.where((f) => !f.isAugmentation),
+      ...element.accessors.where((a) => a.isGetter && !a.isAugmentation),
     ].where((m) => m.isPublic);
     return TokenClass(
-      source!.getField('via')?.toStringValue() ?? element.name!,
-      {for (final m in members) ?RegExp('`([^`]+)`').firstMatch(m.documentationComment ?? '')?.group(1): m.name!},
+      source!.getField('via')?.toStringValue() ?? element.name,
+      {
+        for (final m in members)
+          if (RegExp('`([^`]+)`').firstMatch(m.documentationComment ?? '')?.group(1) case final figmaName?)
+            figmaName: m.name!,
+      },
       {for (final m in members) m.name!},
       theme: source.getField('via')?.toStringValue() != null,
     );

@@ -39,7 +39,7 @@ String _key(Object? value) => switch (value) {
 List<Json> hintsFor(String file, String source, {Json? expect, Map<String, List<Json>> tokens = const {}}) {
   final hints = <Json>[];
   void add(int line, String kind, String message) =>
-      hints.add({'file': file, 'line': ?(line > 0 ? line : null), 'kind': kind, 'message': message});
+      hints.add({'file': file, if (line > 0) 'line': line, 'kind': kind, 'message': message});
 
   // O arquivo inteiro, não linha a linha: o `dart format` quebra chamadas longas (`EdgeInsets.only(\n left: 12,`).
   final lines = source.split('\n');

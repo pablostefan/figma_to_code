@@ -5,7 +5,7 @@ import 'package:test/test.dart';
 
 import 'resolve_test.dart' show instanceNode, screenWith;
 
-Json v(Object value, [String? token]) => {'value': value, 'token': ?token};
+Json v(Object value, [String? token]) => {'value': value, if (token != null) 'token': token};
 
 /// Variant de um botão local: o que muda entre elas é o gap, o estilo do texto e, na `lg`, um ícone a mais.
 Json variant(String name, {required String gap, required String textStyle, bool icon = false}) => {

@@ -31,9 +31,10 @@ class Export {
   Set<String> copyImages(ResolvedScreen screen, Directory dir) {
     final copied = <String>{};
     final paths = {
-      ?screen.image,
+      if (screen.image case final image?) image,
       for (final c in screen.components)
-        for (final v in (c.definition?['variants'] as List? ?? const []).cast<Json>()) ?v['image'] as String?,
+        for (final v in (c.definition?['variants'] as List? ?? const []).cast<Json>())
+          if ((v['image'] as String?) case final image?) image,
     };
     for (final path in paths) {
       // O caminho vem do export: não deixar escrever fora da pasta da tarefa.

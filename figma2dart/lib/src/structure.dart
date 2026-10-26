@@ -115,6 +115,12 @@ List<String>? _text(Json node) {
   if (text == null) return null;
   final bound = (node['bindings'] as Json?)?['characters'];
   final font = text['font'] as Json?;
+  final resize = switch (text['autoResize']) {
+    'HEIGHT' => 'quebra linha (largura fixa)',
+    'NONE' => 'caixa fixa',
+    'TRUNCATE' => 'corta na caixa',
+    _ => null,
+  };
   return [
     'texto ${bound == null ? jsonEncode(text['characters']) : '← prop `$bound`'}',
     [
@@ -124,12 +130,7 @@ List<String>? _text(Json node) {
     if (text['align'] case final String align when align != 'LEFT') 'alinhado $align',
     if (text['maxLines'] case final int lines) 'máx $lines ${lines == 1 ? 'linha' : 'linhas'}',
     if (text['truncation'] == 'ENDING') 'reticências',
-    ?switch (text['autoResize']) {
-      'HEIGHT' => 'quebra linha (largura fixa)',
-      'NONE' => 'caixa fixa',
-      'TRUNCATE' => 'corta na caixa',
-      _ => null,
-    },
+    if (resize != null) resize,
     if (text['segments'] case final List<Object?> segments when segments.isNotEmpty)
       'trechos: ${[
         for (final s in segments.cast<Json>()) [jsonEncode(s['characters']), s['style'], s['colorStyle'] ?? (s['color'] == null ? null : _value(s['color']))].whereType<Object>().join(' '),
@@ -150,7 +151,7 @@ String _layout(Json layout) {
       'gap ${_value(gap)}',
     if (layout['wrap'] == true)
       'quebra linha${layout['counterGap'] == null ? '' : ' (gap entre linhas ${_value(layout['counterGap'])})'}',
-    ?_padding(layout['padding'] as Json),
+    if (_padding(layout['padding'] as Json) case final padding?) padding,
     'align ${align['main']}/${align['cross']}',
   ].join(' ');
 }
@@ -207,7 +208,7 @@ String _effect(Json e) {
   if (e['style'] case final String style) return 'efeito $style';
   final offset = e['offset'] as Json?;
   final shadow = [
-    ?e['color'],
+    if (e['color'] case final color?) color,
     if (offset != null) 'x ${_num(offset['x'])} y ${_num(offset['y'])}',
     if (e['radius'] != null) 'blur ${_num(e['radius'])}',
     if (e['spread'] case final num spread when spread != 0) 'spread ${_num(spread)}',
@@ -243,7 +244,7 @@ String? _size(Json node, {required bool root}) {
   };
   final limits = node['limits'] as Json? ?? const {};
   return [
-    ?text,
+    if (text != null) text,
     for (final MapEntry(:key, :value) in limits.entries)
       '${key.startsWith('min') ? 'mín' : 'máx'} ${key.endsWith('Width') ? 'L' : 'A'} ${_value(value)}',
   ].join(' ').nullIfEmpty;
