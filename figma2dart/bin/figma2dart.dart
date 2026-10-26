@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:args/args.dart';
 import 'package:figma2dart/src/commands.dart';
+import 'package:figma2dart/src/components.dart';
 import 'package:figma2dart/src/mappings.dart';
 import 'package:figma2dart/src/review.dart';
 import 'package:figma2dart/src/workspace.dart';
@@ -19,6 +20,8 @@ Uso: figma2dart <comando> [opções] [--json]   (de dentro do pacote, ou --packa
   check <arquivo.dart>...      marcadores f2d que sobraram + dart analyze
   review --screen <tela>       revisão visual: Figma | Flutter (da captura figmaCapture), fatos e critério
   library [<export.zip>...]    grava o retrato do DS (exports do plugin em modo biblioteca) no pacote de mapeamentos
+  components [<export.zip>...] componentes do DS × anotações: o que falta anotar (exports em modo biblioteca)
+      --name <componente>      um componente para anotar: key, props, variantes (PNG) e instâncias de dentro
   link <key> <arquivo.dart>[#Classe] [--name <nome no Figma>]
                                liga um componente do Figma a um widget do app que já existe (@FigmaLocal)
   init [--force]               figma2dart.yaml, .gitignore, agente e skills do Copilot''';
@@ -30,7 +33,7 @@ Future<void> main(List<String> argv) async {
     ..addOption('package', help: 'Pacote onde a tela vai (padrão: o pubspec.yaml mais próximo).')
     ..addOption('mappings', help: 'Pacote com lib/connect/*.figma.dart (padrão: descoberto pelo app).')
     ..addMultiOption('screen', help: 'Nome da tela ou do frame no export (repita para várias).', splitCommas: false)
-    ..addOption('name', help: 'link: nome do componente no Figma (padrão: o da classe).')
+    ..addOption('name', help: 'link: nome do componente no Figma (padrão: o da classe); components: o componente.')
     ..addOption('state', help: 'Estado da tela (padrão: o do frame, ou o primeiro).')
     ..addOption('out', help: 'Pasta da tarefa (padrão: .figma2dart/tasks/<tela> no app).');
   // O script `tool/figma2dart` roda de dentro da pasta da CLI (cache do `dart run`); volta para onde foi chamado.
@@ -59,6 +62,7 @@ Future<void> main(List<String> argv) async {
       'check' when rest.isNotEmpty => await check(ws, rest),
       'review' when args.multiOption('screen').length == 1 => review(ws, args.multiOption('screen').single),
       'library' => library(ws, rest),
+      'components' => components(ws, rest, name: args.option('name')),
       'link' when rest.length == 2 => await link(ws, rest[0], rest[1], name: args.option('name')),
       'init' => await init(ws, force: args.flag('force')),
       _ => throw const FormatException(''),
@@ -93,6 +97,9 @@ String _human(String command, Map<String, Object?> r) => switch (command) {
   'check' =>
     '${r['ok'] == true ? 'ok' : '${r['blocking']} pendência(s)'}; ${r['inferred']} f2d:inferred, '
         '${r['placeholders']} placeholder(s), ${r['todos']} TODO(f2d), ${(r['hints'] as List).length} dica(s)',
+  'components' when r['components'] is List =>
+    '${r['annotated']} de ${r['total']} anotados, ${r['pending']} faltam'
+        '${[for (final c in (r['components'] as List).cast<Map<String, Object?>>()) if (c['status'] == 'falta') '\n  ${c['page']} / ${c['name']}'].join()}',
   'review' when r['capture'] == false =>
     'Falta a captura. Escreva ${r['testFile']} (complete a tela), rode `flutter test ${r['testFile']}` e chame o '
         'review de novo:\n\n${r['test']}',

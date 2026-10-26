@@ -569,13 +569,24 @@ O set de ícones tem uma anotação só, com `kind: FigmaKind.icon`:
 Widget icon(FigmaProps f) => DsIcon(f.icon('name'));
 ```
 
+Os ícones do DS ficam no `IconTable` da política, de um destes jeitos:
+
+```dart
+icons: IconTable(values: DsIconName.values),   // enum
+icons: IconTable.constants(AcmeIcons),         // classe com `static const activity = AcmeIconData('activity')`
+```
+
+Na classe, contam como ícone as constantes estáticas públicas de um tipo do DS. Uma `static const String`
+auxiliar, por exemplo, não conta. Com a classe, o `f.icon` do mapeamento recebe o tipo do parâmetro do widget
+(`AcmeIcon(f.icon('name'))`, onde o parâmetro é `AcmeIconData`), e a CLI escreve `AcmeIcons.activity`.
+
 A resolução de cada ícone, em `f.icon` e em INSTANCE_SWAP:
 
 1. pela `mainComponentKey` na `IconTable.byKey` (todos os ícones de um set compartilham a `componentKey`; é a
    `mainComponentKey` que diz qual é);
 2. pela convenção de nomes (`arrow-up-right` → `DsIconName.arrowUpRight`), com as exceções de
    `figma_specs/naming.yaml`;
-3. sem correspondência: o primeiro valor do enum com `/* TODO(f2d): ícone "x" do Figma não existe em DsIconName */`.
+3. sem correspondência: o primeiro valor (do enum ou da classe) com `/* TODO(f2d): ícone "x" do Figma não existe em DsIconName */`.
    O componente continua na tela; o dev troca o ícone (o `check` lista o TODO e não reprova).
 
 ### 7.3 Tokens

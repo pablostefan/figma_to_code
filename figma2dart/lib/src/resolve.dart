@@ -685,11 +685,20 @@ class _Eval {
     }
   }
 
-  /// Ícone pela convenção de nomes (`arrow-up-right` → `arrowUpRight`), conferido contra o enum do tipo esperado.
+  /// Ícone pela convenção de nomes (`arrow-up-right` → `arrowUpRight`), conferido contra o enum do tipo esperado ou,
+  /// quando o tipo não é enum (`AcmeIconData`), contra a classe de `IconTable.constants` da política.
   String _icon(MethodInvocation m, Object value) {
-    final type = m.staticType?.element;
-    if (type is! EnumElement) throw ResolveError('${mapping.functionName}: f.icon precisa de um enum como destino');
     final policy = r.maps.policy;
+    final type = switch (m.staticType?.element) {
+      final EnumElement e => e,
+      _ when policy.icons is! EnumElement => policy.icons,
+      _ => null,
+    };
+    if (type == null) {
+      throw ResolveError(
+        '${mapping.functionName}: f.icon precisa de um enum como destino, ou de IconTable.constants na política',
+      );
+    }
     return iconCode(value, type, byKey: type == policy.icons ? policy.iconByKey : const {});
   }
 

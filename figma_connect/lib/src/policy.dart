@@ -51,15 +51,22 @@ class KindPolicy {
   final List<DevNote> devNotes;
 }
 
-/// Ícones do Figma → valores do enum de ícones do DS.
-class IconTable<T extends Enum> {
-  /// Ver `docs/FIGMA_CONNECT.md`, seção 7.2.
-  const IconTable({required this.values, this.byKey = const {}});
+/// Ícones do Figma → ícones do DS: valores de um enum (`IconTable(values: DsIconName.values)`) ou constantes
+/// estáticas de uma classe (`IconTable.constants(AcmeIcons)`).
+class IconTable<T> {
+  /// Ícones num enum. Ver `docs/FIGMA_CONNECT.md`, seção 7.2.
+  const IconTable({required List<T> this.values, this.byKey = const {}}) : constants = null;
+
+  /// Ícones como constantes estáticas de uma classe (`static const activity = AcmeIconData('activity')`).
+  const IconTable.constants(Type this.constants, {this.byKey = const {}}) : values = null;
 
   /// Todos os valores do enum, para a resolução por convenção de nomes.
-  final List<T> values;
+  final List<T>? values;
 
-  /// Exceções pela `mainComponentKey` do ícone.
+  /// A classe com uma constante estática por ícone.
+  final Type? constants;
+
+  /// Exceções pela `mainComponentKey` do ícone (`AcmeIcons.alertCircle`, `DsIconName.lock`).
   final Map<String, T> byKey;
 }
 
@@ -99,7 +106,7 @@ class FigmaPolicy {
   final Map<FigmaKind, KindPolicy> kinds;
 
   /// Tabela de ícones.
-  final IconTable? icons;
+  final IconTable<Object?>? icons;
 
   /// Tabela de tokens.
   final TokenTable? tokens;

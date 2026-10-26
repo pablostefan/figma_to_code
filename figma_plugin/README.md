@@ -27,7 +27,9 @@ npm run check     # typecheck + schema + testes + build + valida os exemplos
 
 ## Usar no Figma
 
-1. `npm run build`.
+1. `npm install && npm run build`, dentro de `figma_plugin/`. A pasta `dist/` não é versionada: sem o build, o
+   Figma mostra "Ocorreu um erro ao carregar o ambiente do plugin" e, no console, `ENOENT … dist/code.js`.
+   Depois de um `git pull`, rode o build de novo.
 2. No Figma desktop: **Plugins → Development → Import plugin from manifest…** e escolha `manifest.json`.
    Roda no modo Design e no Dev Mode (no painel Inspect); o plugin só lê o arquivo.
 3. Selecione o que exportar e rode **figma2dart Export**:

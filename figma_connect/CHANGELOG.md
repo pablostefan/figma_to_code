@@ -2,6 +2,10 @@
 
 ## Não lançado
 
+- `IconTable.constants(AcmeIcons)`: ícones como constantes estáticas de uma classe (`static const activity =
+  AcmeIconData('activity')`), além do enum (`IconTable(values: …)`). `FigmaProps.icon` passa de `T extends Enum` para
+  qualquer `T`; quem implementa `FigmaProps` (ex.: um `MapProps` de teste) troca a assinatura para `T icon<T>(…)`.
+
 - `TokenTable` e `TokenSource` no `FigmaPolicy` (`tokens:`): onde cada coleção de variáveis do Figma e os estilos de
   texto estão no código, estáticos (`DsSpacing.md`) ou pelo tema (`via: 'context.acmeSpacing'`).
 

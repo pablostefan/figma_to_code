@@ -16,8 +16,9 @@ abstract interface class FigmaProps {
   /// Prop VARIANT, traduzida por [values] (valor do Figma → valor no código).
   T variant<T>(String name, Map<String, T> values);
 
-  /// INSTANCE_SWAP de ícone, resolvido pela tabela de ícones da política.
-  T icon<T extends Enum>(String name);
+  /// INSTANCE_SWAP de ícone, resolvido pela tabela de ícones da política (valor do enum ou constante da classe de
+  /// ícones).
+  T icon<T>(String name);
 
   /// INSTANCE_SWAP ou instância exposta, resolvida pelo mapeamento dela.
   Widget instance(String name);

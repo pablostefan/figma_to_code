@@ -3,11 +3,12 @@
 
 import 'package:analyzer/dart/element/element.dart';
 
-/// Ícone do Figma → código Dart `Enum.valor`. Primeiro a exceção pela `mainComponentKey` (`IconTable.byKey`), senão
-/// o nome do Figma em camelCase (`arrow-up-right` → `arrowUpRight`), conferido contra o enum. Sem correspondência,
-/// o primeiro valor do enum com `TODO(f2d)`: o componente continua na tela e o dev troca o ícone.
-String iconCode(Object? value, EnumElement type, {Map<String, String> byKey = const {}}) {
-  final constants = type.fields.where((f) => f.isEnumConstant);
+/// Ícone do Figma → código Dart `Tipo.valor`, num enum (`DsIconName.lock`) ou numa classe com uma constante estática
+/// por ícone (`AcmeIcons.lock`). Primeiro a exceção pela `mainComponentKey` (`IconTable.byKey`), senão o nome do
+/// Figma em camelCase (`arrow-up-right` → `arrowUpRight`), conferido contra os valores. Sem correspondência, o
+/// primeiro valor com `TODO(f2d)`: o componente continua na tela e o dev troca o ícone.
+String iconCode(Object? value, InterfaceElement type, {Map<String, String> byKey = const {}}) {
+  final constants = iconValues(type);
   bool exists(String name) => constants.any((c) => c.name == name);
   if (value case {'mainComponentKey': final String key} when byKey[key] != null && exists(byKey[key]!)) {
     return '${type.name}.${byKey[key]}';
@@ -27,3 +28,13 @@ String iconCode(Object? value, EnumElement type, {Map<String, String> byKey = co
       : 'ícone "$figmaName" do Figma não existe em ${type.name}';
   return '/* TODO(f2d): ${why.replaceAll('*/', '* /')} */ ${type.name}.${constants.first.name}';
 }
+
+/// Os ícones de [type]: as constantes do enum, ou as constantes estáticas públicas da classe com tipo de fora do SDK
+/// (`AcmeIconData`; uma `static const String` auxiliar não é ícone).
+List<FieldElement> iconValues(InterfaceElement type) => [
+  for (final f in type.fields)
+    if (type is EnumElement
+        ? f.isEnumConstant
+        : f.isStatic && f.isConst && f.isPublic && !(f.type.element?.library?.isInSdk ?? true))
+      f,
+];

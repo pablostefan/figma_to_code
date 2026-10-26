@@ -87,7 +87,8 @@ O `figma_policy.dart` diz, para o DS inteiro:
 
 - **tokens**: cada coleção de variáveis do Figma → a classe Dart dos tokens (`Spacing` → `DsSpacing`), para o brief
   já sair com `DsSpacing.md` em vez de `Spacing/md`;
-- **ícones**: o enum de ícones do DS e as exceções por key;
+- **ícones**: onde estão os ícones do DS (um enum, ou uma classe com uma constante por ícone, como o `AcmeIcons`) e
+  as exceções por key;
 - **ignorados**: componentes que só existem no Figma (além do prefixo `_` ou `.`);
 - **regras por tipo** de componente (`component`, `section`, `template`, `icon`).
 

@@ -177,10 +177,10 @@ class Policy {
   /// Componentes só do Figma: key → motivo.
   final Map<String, String> ignored;
 
-  /// O enum de ícones do DS (`IconTable.values`).
-  final EnumElement? icons;
+  /// Os ícones do DS: o enum de `IconTable.values` ou a classe de `IconTable.constants`.
+  final InterfaceElement? icons;
 
-  /// Exceções de ícone: `mainComponentKey` → nome do valor no enum (`IconTable.byKey`).
+  /// Exceções de ícone: `mainComponentKey` → nome do valor (`IconTable.byKey`).
   final Map<String, String> iconByKey;
 
   /// Componente que não entra na tela: prefixo `_`/`.` no nome (só do Figma) ou key em `ignored`.
@@ -381,7 +381,11 @@ Future<List<ResolvedUnitResult>> _analyze(
         for (final MapEntry(:key, value: v) in (value.getField('ignored')?.toMapValue() ?? const {}).entries)
           key!.toStringValue()!: v!.toStringValue()!,
       },
-      icons: values.firstOrNull?.type?.element is EnumElement ? values.first.type!.element as EnumElement : null,
+      icons: switch ((values.firstOrNull?.type?.element, icons?.getField('constants')?.toTypeValue()?.element)) {
+        (final EnumElement e, _) => e,
+        (_, final InterfaceElement c) => c,
+        _ => null,
+      },
       iconByKey: {
         for (final MapEntry(:key, value: v) in (icons?.getField('byKey')?.toMapValue() ?? const {}).entries)
           key!.toStringValue()!: v!.variable!.name,

@@ -77,16 +77,22 @@ não tem o comentário.
 
 ## 3. Tabela de ícones
 
+No Acme, os ícones são constantes de uma classe (`abstract class AcmeIcons { static const activity =
+AcmeIconData('activity'); … }`), não um enum:
+
 ```dart
-icons: IconTable(
-  values: AcmeIconName.values,                                  // o enum de ícones do Acme
-  byKey: {'1ca79dba…': AcmeIconName.arrowDownLeft},             // só as exceções
+icons: IconTable.constants(
+  AcmeIcons,                                           // a classe com uma constante por ícone
+  byKey: {'1ca79dba…': AcmeIcons.arrowDownLeft},       // só as exceções
 ),
 ```
 
-O ícone do Figma vira valor do enum pelo nome em camelCase (`arrow-down-left` → `arrowDownLeft`). `byKey` é só para
-os que não batem, pela `mainComponentKey` do ícone. Ícone sem correspondência sai como o primeiro valor do enum com
-`TODO(f2d)`: aparece no `check` (`todos`).
+Se os ícones forem um enum, use `IconTable(values: AcmeIconName.values, byKey: {…})`.
+
+- **Convenção:** o ícone do Figma vira a constante pelo nome em camelCase (`arrow-down-left` → `arrowDownLeft`).
+- **`byKey`:** só para os que não batem, pela `mainComponentKey` do ícone.
+- **Sem correspondência:** sai a primeira constante, com `TODO(f2d)`. Aparece no `check` (`todos`).
+- **No mapeamento do ícone:** `AcmeIcon(f.icon('name'))`. O `f.icon` aceita o tipo do parâmetro (`AcmeIconData`).
 
 ## 4. Componentes ignorados e regras por tipo
 

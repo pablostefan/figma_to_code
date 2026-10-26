@@ -146,7 +146,8 @@ do app que já existe) segue o mesmo caminho com o marcador `f2d:local`, o `impo
 ## Ícones e imagens
 
 - Ícone: exceção do `IconTable.byKey` pela `mainComponentKey`, senão o nome do Figma em camelCase, conferido contra o
-  enum. Nos dados do Figma de sketches e placeholders, o ícone já sai como código (`"DsIconName.arrowUpRight"`).
+  enum (`IconTable(values:)`) ou contra as constantes estáticas da classe de ícones (`IconTable.constants(AcmeIcons)`,
+  quando o parâmetro do widget não é enum). Nos dados do Figma de sketches e placeholders, o ícone já sai como código (`"DsIconName.arrowUpRight"`).
 - Ícone que não existe no enum não derruba o componente: fica o primeiro valor do enum com
   `/* TODO(f2d): ícone "x" do Figma não existe em DsIconName */`.
 - Imagem (preenchimento `IMAGE`) e vetor solto: a estrutura mostra um `Placeholder` do tamanho do nó com `TODO(f2d)`

@@ -26,6 +26,24 @@ class DsIcon extends StatelessWidget {
   Widget build(BuildContext context) => const SizedBox();
 }
 
+// Ícones como constantes de uma classe (o Acme), em vez de enum.
+class AcmeIconData {
+  const AcmeIconData(this.name);
+  final String name;
+}
+
+abstract class AcmeIcons {
+  static const activity = AcmeIconData('activity');
+  static const alertCircle = AcmeIconData('alertCircle');
+}
+
+class AcmeIcon extends StatelessWidget {
+  const AcmeIcon(this.icon, {super.key});
+  final AcmeIconData icon;
+  @override
+  Widget build(BuildContext context) => const SizedBox();
+}
+
 class DsBadge extends StatelessWidget {
   const DsBadge({required this.label, required this.tone, super.key});
   final String label;
@@ -120,6 +138,11 @@ typedef ContactItemFigma = ListPage;
 @FigmaConnect(key: '087d', name: 'Icon', kind: FigmaKind.icon)
 Widget icon(FigmaProps f) => DsIcon(f.icon('name'));
 
+@FigmaConnect(key: 'acme-icon', name: 'Icon', kind: FigmaKind.icon)
+Widget acmeIcon(FigmaProps f) => AcmeIcon(f.icon('name'));
+
+const acmeIcons = IconTable.constants(AcmeIcons, byKey: {'a1': AcmeIcons.alertCircle});
+
 @FigmaScreen()
 Widget screen(FigmaScreenProps s) => Column(children: [if (s.instance(badge) case final instance?) instance, s.body()]);
 
@@ -181,5 +204,8 @@ void main() {
     expect(policy.kinds[FigmaKind.template]!.require, contains(Field.exampleCode));
     expect(policy.kinds[FigmaKind.icon]!.brief, BriefDepth.none);
     expect(policy.icons!.byKey['c983'], DsIconName.mail);
+    expect(policy.icons!.values, DsIconName.values);
+    expect((acmeIcons.constants, acmeIcons.values), (AcmeIcons, null));
+    expect(acmeIcons.byKey['a1']!.name, 'alertCircle');
   });
 }
