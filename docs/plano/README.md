@@ -22,6 +22,8 @@ Uma questão por arquivo. Cada um traz o problema, a proposta, as tarefas, a ver
 | [06](06-skills.md) | Skills de construir e de montar | aberta |
 | [07](07-plugin.md) | Plugin: conteúdo das instâncias e texto (+ recorte do PNG) | feita (validada com export real; falta sketch e `maxLines`) |
 | [08](08-comparacao-visual.md) | Revisão visual pela LLM (subagente, critério fixo), depois do `check` | feita (falta rodar o subagente no Copilot/opencode) |
+| [09](09-bases-travadas.md) | Bases travadas: um widget, várias keys no Figma (`Button Icon` × `.Icon Button / Large`) | feita: uma anotação no público, props das expostas pelo nome |
+| [10](10-export-de-anotacao.md) | Export para anotação no plugin (aba própria, `connect.json`), sem mexer no IR | aberta |
 
 **Ordem:** 01 → 02 → 03 → 04 → 05 → 06 → 07. 01 e 02 primeiro porque sem elas a ferramenta não roda no monorepo;
 03 e 04 são o maior ganho de acerto; 07 depende de um export real do Acme para validar.

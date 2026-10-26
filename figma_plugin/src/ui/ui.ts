@@ -23,6 +23,7 @@ const RULE_LABEL: Record<LintRule, string> = {
   'missing-code-syntax': 'Variável sem code syntax',
   'absolute-layout': 'Sem auto layout',
   'duplicate-name': 'Nome duplicado entre bibliotecas',
+  'unresolved-alias': 'Variável aponta para outra que não dá para ler',
 };
 
 const buttons = ['check', 'copy', 'export'].map((id) => $<HTMLButtonElement>(id));

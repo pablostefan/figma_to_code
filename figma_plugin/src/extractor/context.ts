@@ -146,9 +146,16 @@ export class Ctx {
     this.variableNames.set(id, qualified);
 
     const resolve = async (raw: VariableValue) => {
-      const aliasOf = isAlias(raw) ? await this.variable(raw.id) : undefined;
-      const value = aliasOf ? (this.tokens[aliasOf]?.value ?? '') : this.convert(raw, variable.resolvedType);
-      return aliasOf ? { value, aliasOf } : { value };
+      if (!isAlias(raw)) return { value: this.convert(raw, variable.resolvedType) };
+      const aliasOf = await this.variable(raw.id);
+      if (aliasOf) return { value: this.tokens[aliasOf]?.value ?? '', aliasOf };
+      this.issue(
+        { id: variable.id, name: qualified },
+        'unresolved-alias',
+        'aponta para uma variável que o plugin não lê (de outra biblioteca?); valor vazio',
+        false,
+      );
+      return { value: '' };
     };
     const defaultMode = collection?.defaultModeId ?? Object.keys(variable.valuesByMode)[0];
     const { value, aliasOf } = await resolve(variable.valuesByMode[defaultMode]);

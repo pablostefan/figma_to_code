@@ -292,6 +292,11 @@ export interface InstanceInfo {
   /** Nested instances exposed through this instance ("expose nested instances"), at any depth. */
   exposed: ExposedInstance[];
   /**
+   * In a component's tree: this nested instance is exposed, so its props show on every instance of the component
+   * (and arrive in its `exposed`). Absent when not exposed.
+   */
+  exposedInstance?: true;
+  /**
    * Instances on a screen: what is inside, as shown (texts and nested instances, visible only), so a generator can
    * assemble a component whose content is not in its props (lists, templates). Capped at `CONTENT_LIMIT` items.
    */
@@ -359,7 +364,8 @@ export type LintRule =
   | 'style-override'
   | 'missing-code-syntax'
   | 'absolute-layout'
-  | 'duplicate-name';
+  | 'duplicate-name'
+  | 'unresolved-alias';
 
 export interface LintIssue {
   node: string;

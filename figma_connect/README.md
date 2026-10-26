@@ -55,9 +55,11 @@ ou pelo tema; os briefs já saem com o código Dart do token ([seção 7.3](../d
 
 ## Anotar o DS com o agente
 
-As anotações do DS não precisam ser escritas à mão. O agente `figma-ds-mapper` lê o arquivo do DS pelo MCP do
-Figma (só leitura), faz o inventário do que falta anotar e escreve as anotações em lotes: o `*.figma.dart`, o doc
-quando há parte guiada, a linha do README e os casos do teste. A skill `figma2dart-connect` diz como anotar cada
+As anotações do DS não precisam ser escritas à mão. O agente `figma-ds-mapper` faz o inventário do que falta anotar
+pelo retrato do DS (`figma_library.json`, do `figma2dart library`). Depois, pede um export do plugin em modo
+Componente por lote e escreve as anotações: o `*.figma.dart`, o doc quando há parte guiada, a linha do README e os
+casos do teste. A key e os nomes das props saem desse export. O MCP local do Figma é opcional, só para ver o
+componente. A skill `figma2dart-connect` diz como anotar cada
 componente. Os dois ficam em [agent/](agent/). Para usar, copie para o pacote de mapeamentos:
 `agents/` → `.github/agents/` e `skills/` → `.agents/skills/` (Copilot e opencode leem essas pastas).
 

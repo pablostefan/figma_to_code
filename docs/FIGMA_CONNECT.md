@@ -193,7 +193,8 @@ A tabela mostra a política recomendada (exemplo da seção 7). As regras só va
 | Nome diferente, 1:1 | `Btn` → `DsButton` | `@FigmaConnect(key: …, name: 'Btn')` |
 | 1 do Figma → N widgets | `Button type=icon-only` → `DsIconButton` | duas funções com a mesma `key`, cada uma com `when: {'type': 'icon-only'}` |
 | N do Figma → 1 widget | `Card/Small` + `Card/Large` → `DsCard(size:)` | uma função por componente (cada um tem a sua key); o corpo fixa o valor: `DsCard(size: DsCardSize.small)` |
-| Só existe no Figma | `_Base/Shape`, `.Nested / …` | prefixo `_` ou `.` = ignorado; outros casos em `FigmaPolicy.ignored` |
+| Base travada exposta (um componente por tamanho, cada um com a sua key) | `Button Icon` (`👉 Size`) expõe `.Icon Button / Large`, `/ Medium` e `/ Small` | **uma** função, na key do público: lê o `👉 Size` dele e as props da base pelo nome (4.1). As bases não ganham anotação |
+| Só existe no Figma | `_Base/Shape`, `.Nested / …` | prefixo `_` ou `.` = ignorado (se não tiver anotação própria); outros casos em `FigmaPolicy.ignored` |
 
 ```dart
 @FigmaConnect(key: 'cc4d…', name: 'Button', when: {'type': 'icon-only'})
@@ -204,7 +205,18 @@ Widget button(FigmaProps f) => DsButton(label: f.text('label'));
 ```
 
 A função com `when` mais específico vence. Um componente `.Nested` com widget próprio ganha a sua anotação pela
-key, como qualquer outro.
+key, como qualquer outro, e aí entra na tela mesmo com o prefixo.
+
+```dart
+// Base travada: uma anotação só. O tamanho vem do público; tipo, ícone e estado, da base exposta.
+@FigmaConnect(key: 'e8186571…', name: 'Button Icon')
+Widget buttonIcon(FigmaProps f) => AcmeIconButton(
+  size: f.variant('👉 Size', {'Large': AcmeIconButtonSize.large, 'Medium': …, 'Small': …}),
+  type: f.variant('✏️ Type', {'Primary': …, 'Secondary': …, 'Tertiary': …}),
+  icon: f.icon('🔄 Icon'),
+  notification: f.boolean('🔔 Notification'),
+);
+```
 
 ### 3.4 `status`
 
@@ -241,7 +253,12 @@ status: Status.deprecated(replacement: 'Template / Lista v2', hint: 'Remover at�
 | `slot(part)` | área livre do template | `Widget`, gerado recursivamente a partir da árvore do IR |
 | `guided(part, …)` | nenhuma: parte que exige julgamento | o valor `or` (4.2) |
 
-Os nomes de prop vêm sem o sufixo `#id` do Figma (`label`, não `label#4:0`).
+Os nomes de prop vêm sem o sufixo `#id` do Figma (`label`, não `label#4:0`), e com o resto exato, inclusive emoji
+(`✏️ Type`).
+
+**Props das instâncias expostas:** `text`, `boolean`, `variant` e `icon` procuram a prop no componente e, se não
+acharem, nas instâncias expostas dele, como o painel do Figma mostra. Assim um componente público lê as props da base
+que expõe sem `nested` (3.3). Se a prop estiver em duas expostas, é erro: diga qual com `f.nested('<caminho>')`.
 
 ### 4.2 `f.guided`: parte com norte
 
@@ -612,12 +629,32 @@ tokens: TokenTable(
   },
   textStyles: TokenSource(AcmeTextStyles, via: 'context.acmeTextStyles'),
 ),
+
+// Coleção que é a marca (`MarcaA/Colors/Surface/primary`, `MarcaB/Colors/Surface/primary`): o tema escolhe a marca,
+// então a tabela liga o caminho, em qualquer coleção
+tokens: TokenTable(
+  scopes: {
+    'Colors/Surface': TokenSource(AcmeColorSchemeSurface, via: 'context.acme.designTokens.colorScheme.surface'),
+    'Colors/Surface/Brand': TokenSource(AcmeColorSchemeBrand, via: 'context.acme.designTokens.colorScheme.surface.brand'),
+    'Colors/Content': TokenSource(
+      AcmeColorSchemeContent,
+      via: 'context.acme.designTokens.colorScheme.content',
+      names: {'02': 'two', '03': 'three'},
+    ),
+  },
+),
 ```
 
 - **Coleção:** a primeira parte do nome da variável no Figma (`Spacing/md` → `Spacing`; `Color/text/primary` →
   `Color`).
-- **Membro:** o que tem o nome do Figma entre crases no doc (`` /// `2xs` = 2 `` → `xxs`); sem isso, o nome em
-  camelCase (`text/primary` → `textPrimary`). Vale campo, getter, estático ou de instância.
+- **`scopes`:** o caminho depois da coleção (`MarcaA/Colors/Surface/primary` → `Colors/Surface`), valendo para qualquer
+  coleção. É para quando cada marca é uma coleção com os mesmos tokens: uma marca nova não pede configuração. A
+  CLI procura primeiro em `collections`; se não achar, o caminho mais longo de `scopes` ganha
+  (`Colors/Surface/Brand/primary` vai para `Colors/Surface/Brand`, não para `Colors/Surface`).
+- **Membro:** o de `names` (`'02': 'two'`), para a classe que não dá para anotar; senão, o que tem o nome do Figma
+  entre crases no doc (`` /// `2xs` = 2 `` → `xxs`); senão, o nome em camelCase (`text/primary` → `textPrimary`).
+  Vale campo, getter, estático ou de instância. Membro que não existe na classe não vira código: o token sai como
+  sem correspondência.
 - **`via`:** a expressão que chega na instância do tema. Sem ela, o membro é estático (`DsSpacing.md`). Com ela, o
   brief avisa que o código precisa de `BuildContext` e não pode ser `const`.
 - **Sem correspondência:** o brief mantém o nome do Figma com o valor (`Spacing/huge (sem Dart, 48)`), e a LLM usa o

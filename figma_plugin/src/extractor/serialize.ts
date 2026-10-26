@@ -489,6 +489,7 @@ async function instanceInfo(node: InstanceNode, ctx: Ctx): Promise<{ info: Insta
     remote: main.remote,
     props: await propValues(node.componentProperties, ctx),
     exposed: [],
+    ...(node.isExposedInstance ? { exposedInstance: true as const } : {}),
     overrides: [],
   };
 

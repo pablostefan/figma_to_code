@@ -127,7 +127,7 @@ DsInput(
 
 | No mapeamento | Vira |
 |---|---|
-| `f.text('x')` | o texto do Figma, como literal Dart |
+| `f.text('x')` | o texto do Figma, como literal Dart. Vale para `text`, `boolean`, `variant` e `icon`: a prop que não está no componente é procurada nas instâncias expostas dele (a base travada do `Button Icon`); em duas expostas, é lacuna pedindo `f.nested` |
 | `f.boolean('x')` | `true`/`false`; num ternário, só o ramo escolhido fica |
 | `f.variant('x', {...})` | o valor do mapa para a opção do Figma; opção sem entrada é erro |
 | `f.icon('x')` | `Enum.valor` pela convenção (`arrow-up-right` → `arrowUpRight`), conferido contra o enum |

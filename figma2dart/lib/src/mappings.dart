@@ -184,8 +184,11 @@ class Policy {
   final Map<String, String> iconByKey;
 
   /// Componente que não entra na tela: prefixo `_`/`.` no nome (só do Figma) ou key em `ignored`.
-  String? ignoreReason(Map<String, Object?> instance) {
-    if (instance['componentName'] case final String name when name.startsWith('_') || name.startsWith('.')) {
+  /// O prefixo não vale para componente [annotated]: um `.Icon Button / Large` (base travada, exposta dentro de um
+  /// componente público) com anotação própria é do DS.
+  String? ignoreReason(Map<String, Object?> instance, {bool annotated = false}) {
+    if (instance['componentName'] case final String name
+        when !annotated && (name.startsWith('_') || name.startsWith('.'))) {
       return 'componente só do Figma (prefixo `${name[0]}`)';
     }
     return ignored[instance['mainComponentKey']] ?? ignored[instance['componentKey']];

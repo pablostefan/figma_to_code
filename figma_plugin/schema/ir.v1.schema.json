@@ -479,6 +479,11 @@
           },
           "type": "array"
         },
+        "exposedInstance": {
+          "const": true,
+          "description": "In a component's tree: this nested instance is exposed, so its props show on every instance of the component (and arrive in its `exposed`). Absent when not exposed.",
+          "type": "boolean"
+        },
         "mainComponentKey": {
           "description": "Key of the exact main component: the variant inside a set, or the component itself when it has no variants. Finds a mapping that targets one variant (e.g. each icon of an `Icon` set). Absent in IR 1.0.",
           "type": "string"
@@ -662,7 +667,8 @@
         "style-override",
         "missing-code-syntax",
         "absolute-layout",
-        "duplicate-name"
+        "duplicate-name",
+        "unresolved-alias"
       ],
       "type": "string"
     },

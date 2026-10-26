@@ -356,7 +356,8 @@ class Resolver {
     void walk(Json node, String path) {
       if (node['visible'] == false) return; // escondido no Figma: não entra na tela
       if (node['instance'] case final Json inst) {
-        if (maps.policy.ignoreReason(inst) case final reason?) {
+        final annotated = maps.components.any((m) => m.key == inst['componentKey'] || m.key == inst['mainComponentKey']);
+        if (maps.policy.ignoreReason(inst, annotated: annotated) case final reason?) {
           _ignored.add({'path': path, 'component': inst['componentName'], 'reason': reason});
         } else {
           instances.add(_node(node, path));
@@ -588,9 +589,23 @@ class _Scope {
   final List<Json> exposed;
   final String component;
 
-  Object prop(String name) =>
-      props[name] ??
-      (throw ResolveError('$component não tem a prop "$name" no export (props: ${props.keys.join(', ')})'));
+  /// A prop do componente ou, como no painel do Figma, de uma instância exposta dele: o `Button Icon` lê o
+  /// `✏️ Type` da base travada que expõe (`.Icon Button / Large`), sem anotação para a base. Prop em duas expostas
+  /// é erro: a anotação diz qual com `f.nested`.
+  Object prop(String name) {
+    if (props[name] case final value?) return value;
+    final found = [
+      for (final e in exposed)
+        if ((e['props'] as Json)[name] case final value?) (e['path'], value),
+    ];
+    return switch (found) {
+      [(_, final value)] => value,
+      [] => throw ResolveError('$component não tem a prop "$name" no export (props: ${props.keys.join(', ')})'),
+      _ => throw ResolveError(
+        '$component: a prop "$name" está em ${found.map((f) => f.$1).join(' e ')}; leia com f.nested(<caminho>)',
+      ),
+    };
+  }
 
   Json entry(String path) => exposed.firstWhere(
     (e) => e['path'] == path,

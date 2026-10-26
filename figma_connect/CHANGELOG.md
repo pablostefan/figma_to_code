@@ -2,6 +2,14 @@
 
 ## Não lançado
 
+- `TokenTable.scopes`: tokens pelo caminho depois da coleção (`Colors/Surface`), em qualquer coleção, para DS em
+  que a coleção é a marca (`MarcaA/…`, `MarcaB/…`) e o tema escolhe qual. O caminho mais longo ganha. `TokenSource.names`
+  (`{'02': 'two'}`): nome do Figma → membro, para classes que não dá para anotar no doc.
+
+- Agente `figma-ds-mapper` e skill `figma2dart-connect`: componente com base travada exposta (`Button Icon`) vira
+  uma anotação só, a partir do zip com o público e as bases. A exposição vem do export (`exposedInstance`), e os
+  nomes usados são conferidos contra o export antes do `flutter test`.
+
 - `IconTable.constants(AcmeIcons)`: ícones como constantes estáticas de uma classe (`static const activity =
   AcmeIconData('activity')`), além do enum (`IconTable(values: …)`). `FigmaProps.icon` passa de `T extends Enum` para
   qualquer `T`; quem implementa `FigmaProps` (ex.: um `MapProps` de teste) troca a assinatura para `T icon<T>(…)`.

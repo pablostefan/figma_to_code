@@ -236,7 +236,9 @@ Toda referência a componente (instância, instância exposta, valor de INSTANCE
   ícone (ou qualquer variant mapeada à parte) sem depender do nome.
 
 `exposed` inclui instâncias expostas em qualquer nível. Por exemplo, as `Flag` que um `.Nested / Global Switcher`
-expõe dentro do componente pai, com `path` `.Nested / Global Switcher/1. Flag`.
+expõe dentro do componente pai, com `path` `.Nested / Global Switcher/1. Flag`. Na árvore de um componente (export
+em modo Componente), a instância aninhada que está exposta leva `exposedInstance: true`: é o que diz ao agente de
+anotação que as props dela chegam à tela.
 
 Regras:
 - Todo valor que veio de variável carrega `token` **e** `value`. Valor sem `token` é valor solto no design, e o lint aponta.
@@ -345,6 +347,7 @@ maior, o que muda é isto:
 | Temas e marcas por modos de variável | `tokens[].modes` e `node.modes` (4.2) |
 | Estilos de cor em vez de variáveis | `fillStyle`/`strokeStyle`/`colorStyle` + `paintStyles`; não acusa `raw-color` |
 | Core + marca com nomes iguais | sufixo da key + `duplicate-name` |
+| Variável que é alias de outra que o plugin não lê (outra biblioteca) | valor vazio + `unresolved-alias` |
 | Texto sem prop, camada escondida sem prop, instância aninhada não exposta | `overrides[].values` (4.4) |
 | Templates dentro do arquivo do DS | componentes publicados ficam rasos (5.2) |
 | Sections aninhadas | as telas são procuradas em qualquer nível; a ordem usa a posição absoluta no canvas |

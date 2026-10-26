@@ -69,11 +69,20 @@ const figmaPolicy = FigmaPolicy(
   1. pelo nome do Figma entre crases no comentário do membro: `` /// `2xs` `` em cima de `final double xxs;`;
   2. senão, pelo nome em camelCase: `text/primary` → `textPrimary`, `md` → `md`.
 
-  Só os que não batem pelo camelCase precisam do comentário (ex.: `2xs` → `xxs`).
+  Só os que não batem pelo camelCase precisam do comentário (ex.: `2xs` → `xxs`). Quando não dá para mexer na
+  classe do DS, use `names` no `TokenSource`: `names: {'02': 'two'}`.
+- **Coleção que é a marca** (`MarcaA/Colors/Surface/primary`, `MarcaB/…`): em vez de `collections`, use `scopes`, pelo
+  caminho depois da marca, sem listar as marcas. O tema escolhe a marca; o caminho mais longo ganha:
+  ```dart
+  scopes: {
+    'Colors/Surface':       TokenSource(AcmeColorSchemeSurface, via: 'context.acme.designTokens.colorScheme.surface'),
+    'Colors/Surface/Brand': TokenSource(AcmeColorSchemeBrand,   via: 'context.acme.designTokens.colorScheme.surface.brand'),
+  },
+  ```
 
 **Conferir:** rode `figma2dart resolve` de uma tela e procure `(sem Dart` nos `BRIEF.md`. Cada ocorrência
-(`Spacing/2xs (sem Dart, 2)`) é um token sem correspondência: falta a coleção na tabela, ou o membro tem outro nome e
-não tem o comentário.
+(`Spacing/2xs (sem Dart, 2)`) é um token sem correspondência: falta a coleção (ou o caminho) na tabela, ou o membro
+tem outro nome e não tem o comentário nem está em `names`.
 
 ## 3. Tabela de ícones
 

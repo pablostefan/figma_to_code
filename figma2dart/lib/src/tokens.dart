@@ -8,20 +8,31 @@ import 'names.dart';
 
 /// `TokenTable` do `FigmaPolicy`: nome do Figma → código Dart (`DsSpacing.md`, `context.acmeSpacing.md`).
 class Tokens {
-  Tokens({this.collections = const {}, this.textStyles});
+  Tokens({this.collections = const {}, this.scopes = const {}, this.textStyles});
 
   /// Coleção de variáveis do Figma (`Spacing`) → a classe dela.
   final Map<String, TokenClass> collections;
+
+  /// Caminho no nome, em qualquer coleção (`Colors/Surface`, com a marca `MarcaA` ou `MarcaB` como coleção) → a classe.
+  final Map<String, TokenClass> scopes;
   final TokenClass? textStyles;
 
-  /// Variável `Coleção/nome` (`Spacing/md`, `Color/text/primary`) → código; null sem correspondência.
+  /// Variável `Coleção/nome` (`Spacing/md`, `MarcaA/Colors/Surface/primary`) → código; null sem correspondência. Pela
+  /// coleção; senão, pelo caminho mais longo em [scopes].
   String? variable(String key) {
     final slash = key.indexOf('/');
-    return slash < 0 ? null : collections[key.substring(0, slash)]?.code(key.substring(slash + 1));
+    if (slash < 0) return null;
+    final name = key.substring(slash + 1);
+    if (collections[key.substring(0, slash)] case final collection?) return collection.code(name);
+    for (var end = name.lastIndexOf('/'); end > 0; end = name.lastIndexOf('/', end - 1)) {
+      if (scopes[name.substring(0, end)] case final scope?) return scope.code(name.substring(end + 1));
+    }
+    return null;
   }
 
   /// Algum token vem do tema (`context.…`): o código precisa de `BuildContext` e não é `const`.
-  bool get fromTheme => [...collections.values, if (textStyles case final styles?) styles].any((c) => c.theme);
+  bool get fromTheme =>
+      [...collections.values, ...scopes.values, if (textStyles case final styles?) styles].any((c) => c.theme);
 
   /// Estilo de texto (`body/sm`) → código; null sem correspondência.
   String? textStyle(String name) => textStyles?.code(name);
@@ -29,11 +40,13 @@ class Tokens {
   /// Lê o `TokenTable` da política; null quando não há.
   static Tokens? read(DartObject? table) {
     if (table == null || table.isNull) return null;
+    Map<String, TokenClass> sources(String field) => {
+      for (final MapEntry(:key, :value) in (table.getField(field)?.toMapValue() ?? const {}).entries)
+        if (TokenClass.read(value) case final tokenClass?) key!.toStringValue()!: tokenClass,
+    };
     return Tokens(
-      collections: {
-        for (final MapEntry(:key, :value) in (table.getField('collections')?.toMapValue() ?? const {}).entries)
-          if (TokenClass.read(value) case final tokenClass?) key!.toStringValue()!: tokenClass,
-      },
+      collections: sources('collections'),
+      scopes: sources('scopes'),
       textStyles: TokenClass.read(table.getField('textStyles')),
     );
   }
@@ -49,16 +62,17 @@ class TokenClass {
   /// `DsSpacing` (membro estático) ou a expressão do tema (`context.acmeSpacing`).
   final String prefix;
 
-  /// Nome do Figma escrito no doc do membro (`` /// `2xs` = 2 ``) → membro.
+  /// Nome do Figma → membro: os `names` da política (`'02': 'two'`), que valem antes do doc do membro
+  /// (`` /// `2xs` = 2 ``).
   final Map<String, String> byFigma;
   final Set<String> members;
 
-  /// Pelo doc do membro; sem ele, pelo nome em camelCase (`text/primary` → `textPrimary`).
-  String? code(String name) =>
-      switch (byFigma[name] ?? (members.contains(identifier(name)) ? identifier(name) : null)) {
-        final member? => '$prefix.$member',
-        null => null,
-      };
+  /// Por `names` ou pelo doc do membro; sem eles, pelo nome em camelCase (`text/primary` → `textPrimary`). Membro
+  /// que não existe na classe (erro de digitação em `names`) não vira código.
+  String? code(String name) => switch (byFigma[name] ?? identifier(name)) {
+    final member when members.contains(member) => '$prefix.$member',
+    _ => null,
+  };
 
   static TokenClass? read(DartObject? source) {
     final element = source?.getField('type')?.toTypeValue()?.element;
@@ -73,6 +87,8 @@ class TokenClass {
         for (final m in members)
           if (RegExp('`([^`]+)`').firstMatch(m.documentationComment ?? '')?.group(1) case final figmaName?)
             figmaName: m.name!,
+        for (final MapEntry(:key, :value) in (source.getField('names')?.toMapValue() ?? const {}).entries)
+          key!.toStringValue()!: value!.toStringValue()!,
       },
       {for (final m in members) m.name!},
       theme: source.getField('via')?.toStringValue() != null,

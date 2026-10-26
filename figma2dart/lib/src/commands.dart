@@ -405,19 +405,15 @@ Future<Json> check(Workspace ws, List<String> paths) async {
   };
 }
 
-/// [files], ou o `figma2dart-library-*.zip` mais novo da pasta de exports.
-List<String> libraryExports(Workspace ws, List<String> files) {
-  if (files.isNotEmpty) return files;
-  final newest = ws.exports().where((f) => f.uri.pathSegments.last.startsWith('figma2dart-library-')).firstOrNull;
-  return [newest?.path ?? (throw ResolveError('Nenhum figma2dart-library-*.zip em ${ws.exportsDir}.'))];
-}
-
 /// Grava o retrato do DS (key e nome de cada componente) no pacote de mapeamentos, a partir de exports do plugin em
 /// modo biblioteca: um por página; exportar a mesma página de novo substitui a anterior. Sem [files], o
 /// `figma2dart-library-*.zip` mais novo da pasta de exports.
 Json library(Workspace ws, List<String> files) {
   final m = ws.mappings() ?? (throw ResolveError('Pacote de mapeamentos não encontrado: rode `figma2dart doctor`.'));
-  files = libraryExports(ws, files);
+  if (files.isEmpty) {
+    final newest = ws.exports().where((f) => f.uri.pathSegments.last.startsWith('figma2dart-library-')).firstOrNull;
+    files = [newest?.path ?? (throw ResolveError('Nenhum figma2dart-library-*.zip em ${ws.exportsDir}.'))];
+  }
   final file = File('${m.path}/$libraryFile');
   final snapshot = file.existsSync() ? jsonDecode(file.readAsStringSync()) as Json : <String, Object?>{};
   final pages = (snapshot['pages'] as Map?)?.cast<String, Object?>() ?? {};

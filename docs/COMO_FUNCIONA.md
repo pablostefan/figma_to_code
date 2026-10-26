@@ -29,8 +29,8 @@ Três papéis, três momentos:
 flowchart TD
   subgraph A["A · Preparar o DS — time do DS"]
     A1["A1 · Pacote de mapeamentos<br/>e figma_policy.dart"]
-    A2["A2 · Anotar os componentes<br/>agente figma-ds-mapper + MCP do Figma"]
-    A3["A3 · Retrato da biblioteca<br/>figma2dart library"]
+    A2["A2 · Retrato da biblioteca<br/>plugin em modo Biblioteca + figma2dart library"]
+    A3["A3 · Anotar os componentes<br/>agente figma-ds-mapper + export do plugin"]
     A1 --> A2 --> A3
   end
 
@@ -92,20 +92,34 @@ O `figma_policy.dart` diz, para o DS inteiro:
 - **ignorados**: componentes que só existem no Figma (além do prefixo `_` ou `.`);
 - **regras por tipo** de componente (`component`, `section`, `template`, `icon`).
 
-### A2 · Anotar os componentes
+### A2 · Retrato da biblioteca
+
+| | |
+|---|---|
+| **Quem** | time do DS |
+| **Entrada** | export do plugin em **modo biblioteca** (uma página do arquivo do DS, sem seleção) |
+| **Comando** | `figma2dart library <zip>…` |
+| **Saída** | `figma_library.json` no pacote de mapeamentos: key e nome de cada componente do DS |
+
+É também a lista de onde o agente da etapa A3 tira o que falta anotar. O retrato é o que separa "componente do DS sem anotação" (vira `gap`, fila de trabalho do time do DS) de
+"componente fora do DS" (vira placeholder e brief de construção). Sem retrato, vale a regra antiga: componente de
+qualquer biblioteca remota conta como do DS.
+
+### A3 · Anotar os componentes
 
 | | |
 |---|---|
 | **Quem** | agente [`figma-ds-mapper`](../figma_connect/agent/agents/figma-ds-mapper.agent.md), com a skill [`figma2dart-connect`](../figma_connect/agent/skills/figma2dart-connect/SKILL.md) |
-| **Entrada** | a URL do arquivo do DS no Figma (lido pelo MCP do Figma, só leitura) e o código dos widgets do DS |
+| **Entrada** | o retrato (A2), um export do plugin em modo **Componente** por lote e o código dos widgets do DS. O MCP local do Figma é opcional, só para ver o componente |
 | **Saída** | por componente: `lib/connect/<widget>.figma.dart`, `docs/<widget>.md` (quando há parte guiada), linha no README do pacote e casos no `mappings_test.dart` |
 | **Confere** | `flutter analyze` e `flutter test` no pacote |
 
 ```mermaid
 flowchart LR
-  INV["Inventário<br/>use_figma: componentes e keys"] --> FIL["Tira os já anotados,<br/>_privados e ignorados"]
-  FIL --> ESC["Usuário escolhe<br/>um lote de até 10"]
-  ESC --> DET["Detalhe de cada um<br/>props, opções, expostas<br/>+ get_screenshot"]
+  INV["Inventário<br/>figma_library.json"] --> FIL["Tira os já anotados,<br/>_privados e ignorados"]
+  FIL --> ESC["Usuário escolhe<br/>um lote de até 5"]
+  ESC --> EXP["Usuário exporta o lote<br/>plugin, modo Componente"]
+  EXP --> DET["Lê o export.json<br/>key, props, variantes,<br/>PNGs, instâncias"]
   DET --> WID["Acha o widget do DS<br/>e lê o construtor"]
   WID --> TAB["Tabela prop → parâmetro"]
   TAB --> ESCR["Escreve a anotação,<br/>o doc e o teste"]
@@ -132,20 +146,8 @@ A **cobertura** diz quanto a anotação resolve sozinha:
 | `partial` | parte é decisão da tela (ação, linhas de uma lista) | código pronto + `f2d:guided` nas partes com norte |
 | `sketch` | o conteúdo são camadas, não props (templates) | `f2d:sketch` + brief de montagem com a API do widget |
 
-A key é sempre copiada do MCP, nunca digitada. Referência completa: [FIGMA_CONNECT.md](FIGMA_CONNECT.md).
-
-### A3 · Retrato da biblioteca
-
-| | |
-|---|---|
-| **Quem** | time do DS |
-| **Entrada** | export do plugin em **modo biblioteca** (uma página do arquivo do DS, sem seleção) |
-| **Comando** | `figma2dart library <zip>…` |
-| **Saída** | `figma_library.json` no pacote de mapeamentos: key e nome de cada componente do DS |
-
-O retrato é o que separa "componente do DS sem anotação" (vira `gap`, fila de trabalho do time do DS) de
-"componente fora do DS" (vira placeholder e brief de construção). Sem retrato, vale a regra antiga: componente de
-qualquer biblioteca remota conta como do DS.
+A key e os nomes das props são sempre copiados do export do plugin, nunca digitados. O MCP local do Figma não
+serve para isso: ele não dá a key e converte os nomes das props (`Show icon` vira `showIcon`). Referência completa: [FIGMA_CONNECT.md](FIGMA_CONNECT.md).
 
 ---
 
@@ -347,8 +349,9 @@ flowchart TD
   F -->|"não: vetor, imagem,<br/>bloco desenhado à mão"| PH["placeholder<br/>ou TODO(f2d)"]
 ```
 
-Componentes com nome começando em `_` ou `.` (anotações do designer, bases) e os `ignored` do `FigmaPolicy` não
-entram na tela. Tabela completa: [ARCHITECTURE.md §10.5](ARCHITECTURE.md#105-marcadores-no-código).
+Componentes com nome começando em `_` ou `.` (anotações do designer, bases) sem anotação própria, e os `ignored` do
+`FigmaPolicy`, não entram na tela. Uma base exposta num componente público chega pela anotação do público, que lê as
+props dela pelo nome ([FIGMA_CONNECT §3.3](FIGMA_CONNECT.md#33-when-nomes-que-não-batem-11)). Tabela completa: [ARCHITECTURE.md §10.5](ARCHITECTURE.md#105-marcadores-no-código).
 
 ---
 
@@ -414,11 +417,11 @@ Comentários que a CLI escreve e o agente resolve. O `check` usa esses marcadore
 
 | Peça | Tipo | Onde está | Usado em |
 |---|---|---|---|
-| figma2dart Export | plugin do Figma | [figma_plugin/](../figma_plugin/) | C1, A3 |
-| `figma2dart` | CLI Dart | [figma2dart/](../figma2dart/) | B, C2–C7, A3 |
+| figma2dart Export | plugin do Figma | [figma_plugin/](../figma_plugin/) | C1, A2, A3 |
+| `figma2dart` | CLI Dart | [figma2dart/](../figma2dart/) | B, C2–C7, A2 |
 | `figma_connect` | pacote Flutter: anotações e `figmaCapture` | [figma_connect/](../figma_connect/) | A, C7 |
-| `figma-ds-mapper` | agente (time do DS) | [figma_connect/agent/agents/](../figma_connect/agent/agents/) | A1, A2 |
-| `figma2dart-connect` | skill: anotar um componente | [figma_connect/agent/skills/](../figma_connect/agent/skills/) | A2 |
+| `figma-ds-mapper` | agente (time do DS) | [figma_connect/agent/agents/](../figma_connect/agent/agents/) | A1, A3 |
+| `figma2dart-connect` | skill: anotar um componente | [figma_connect/agent/skills/](../figma_connect/agent/skills/) | A3 |
 | `figma-to-flutter` | agente orquestrador (dev) | [figma2dart/agent/agents/](../figma2dart/agent/agents/) | C |
 | `figma-component-builder` | subagente: constrói um componente | idem | C4 |
 | `figma-visual-reviewer` | subagente: revisa a tela, não edita | idem | C7 |

@@ -39,6 +39,20 @@ class AcmeColors {
   final int textPrimary = 1;
 }
 
+// Cores do Acme: a coleção é a marca (`MarcaA/Colors/Surface/primary`, `MarcaB/…`); cada caminho tem a sua classe.
+class AcmeSurface {
+  final int primary = 1;
+}
+
+class AcmeSurfaceBrand {
+  final int primary = 2;
+}
+
+class AcmeContent {
+  final int two = 3;
+  final int onBrand = 4;
+}
+
 abstract final class AcmeText {
   /// `body/sm`
   static const int bodySm = 1;
@@ -80,6 +94,11 @@ const figmaPolicy = FigmaPolicy(
     collections: {
       'Spacing': TokenSource(AcmeSpacing, via: 'context.acmeSpacing'),
       'Color': TokenSource(AcmeColors, via: 'context.acmeColors'),
+    },
+    scopes: {
+      'Colors/Surface': TokenSource(AcmeSurface, via: 'context.acme.surface'),
+      'Colors/Surface/Brand': TokenSource(AcmeSurfaceBrand, via: 'context.acme.surface.brand'),
+      'Colors/Content': TokenSource(AcmeContent, via: 'context.acme.content', names: {'02': 'two', '03': 'three'}),
     },
     textStyles: TokenSource(AcmeText),
   ),
@@ -167,6 +186,18 @@ void main() {
     );
     expect(md, contains('texto "Oi" · AcmeText.bodySm context.acmeColors.textPrimary'));
     expect(md, contains('precisa de `BuildContext`'));
+  });
+
+  test('tokens por caminho, em qualquer marca: o caminho mais longo ganha, e os names valem antes do camelCase', () {
+    final tokens = maps.policy.tokens!;
+    expect(tokens.variable('MarcaA/Colors/Surface/primary'), 'context.acme.surface.primary');
+    expect(tokens.variable('MarcaB/Colors/Surface/primary'), 'context.acme.surface.primary');
+    expect(tokens.variable('MarcaA/Colors/Surface/Brand/primary'), 'context.acme.surface.brand.primary');
+    expect(tokens.variable('MarcaB/Colors/Content/02'), 'context.acme.content.two');
+    expect(tokens.variable('MarcaA/Colors/Content/On Brand'), 'context.acme.content.onBrand');
+    expect(tokens.variable('MarcaA/Colors/Content/03'), isNull, reason: 'names aponta para um membro que não existe');
+    expect(tokens.variable('MarcaA/Colors/Other/primary'), isNull);
+    expect(tokens.variable('Spacing/md'), 'context.acmeSpacing.md', reason: 'a coleção vem antes dos caminhos');
   });
 
   test('enum grande entra cortado na API, e o ícone do sketch chega resolvido', () {

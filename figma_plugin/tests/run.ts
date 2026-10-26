@@ -94,6 +94,15 @@ equal(overrides.length, 2, 'camadas homônimas devem manter seus dois overrides'
 equal(overrides[0].id, firstLabel.id, 'primeiro override deve manter o id da camada');
 equal(overrides[1].id, secondLabel.id, 'segundo override deve manter o id da camada');
 assert(ctx.dependencies.has(main.id), 'componente local aninhado deve ser registrado como dependência');
+equal(serialized.instance?.exposedInstance, undefined, 'instância não exposta não leva a marca');
+
+// Base exposta dentro do componente (`✏️ Icon Button` no `Button Icon`): o agente sabe que as props dela chegam à tela.
+const exposedBase = await serializeNode(
+  { ...instanceRecord, id: 'instance:base', overrides: [], isExposedInstance: true } as unknown as InstanceNode,
+  ctx,
+  { root: false, inAutoLayout: false, inComponent: true },
+);
+equal(exposedBase.instance?.exposedInstance, true, 'instância exposta no componente deve levar a marca');
 
 // Instância numa tela: caixa relativa ao frame (para recortar o PNG) e o conteúdo de dentro (textos e instâncias).
 const box = (x: number, y: number, width: number, height: number) => ({ x, y, width, height });
@@ -185,3 +194,25 @@ lintCtx.issue(icon, 'style-override', 'estilo sobrescrito em "leftIcon/Vector" (
 lintCtx.issue(icon, 'style-override', 'estilo sobrescrito em "rightIcon/Vector" (strokes)');
 equal(lintCtx.lint.length, 2, 'aviso repetido no mesmo nó sai uma vez');
 console.log('✔ lint sem repetição');
+
+// Alias para uma variável que o plugin não lê (de outra biblioteca): valor vazio e aviso, nunca "[object Object]".
+const aliasCtx = new Ctx({ via: 'plugin', kind: 'screen', images: false, svg: false });
+const branded = {
+  id: 'VariableID:1:1',
+  name: 'Colors/Content/01',
+  key: 'k1',
+  remote: false,
+  resolvedType: 'COLOR',
+  variableCollectionId: 'xp',
+  valuesByMode: { light: { type: 'VARIABLE_ALIAS', id: 'VariableID:core/9:9' } },
+  codeSyntax: {},
+  scopes: [],
+};
+(globalThis as unknown as { figma: { variables: unknown } }).figma.variables = {
+  getVariableByIdAsync: async (id: string) => (id === branded.id ? branded : null),
+  getVariableCollectionByIdAsync: async () => ({ name: 'MarcaA', defaultModeId: 'light', modes: [{ modeId: 'light', name: 'Light' }] }),
+};
+equal(await aliasCtx.variable(branded.id), 'MarcaA/Colors/Content/01', 'nome do token com a coleção');
+equal(aliasCtx.tokens['MarcaA/Colors/Content/01'].value, '', 'alias sem destino fica com valor vazio');
+equal(aliasCtx.lint[0]?.rule, 'unresolved-alias', 'alias sem destino vira aviso');
+console.log('✔ alias para variável que não dá para ler');

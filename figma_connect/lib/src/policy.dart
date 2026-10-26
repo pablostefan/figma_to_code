@@ -74,10 +74,15 @@ class IconTable<T> {
 /// `context.acmeSpacing.md`) em vez de `Spacing/md`.
 class TokenTable {
   /// Ver `docs/FIGMA_CONNECT.md`, seção 7.3.
-  const TokenTable({this.collections = const {}, this.textStyles});
+  const TokenTable({this.collections = const {}, this.scopes = const {}, this.textStyles});
 
   /// Coleção de variáveis do Figma (`Spacing`, `Color`) → onde estão os tokens dela no código.
   final Map<String, TokenSource> collections;
+
+  /// Caminho no nome da variável, sem a coleção (`Colors/Surface`) → onde estão os tokens, em qualquer coleção. É
+  /// para quando a coleção é a marca (`MarcaA`, `MarcaB`) e o tema escolhe qual. Vale depois de [collections]; o caminho
+  /// mais longo ganha (`Colors/Surface/Brand` antes de `Colors/Surface`).
+  final Map<String, TokenSource> scopes;
 
   /// Onde estão os estilos de texto (`body/sm`, `label`).
   final TokenSource? textStyles;
@@ -88,13 +93,17 @@ class TokenTable {
 class TokenSource {
   /// [via] é a expressão que chega na instância quando o token vem do tema (`context.acmeSpacing`); sem ela, o
   /// membro é estático (`DsSpacing.md`).
-  const TokenSource(this.type, {this.via});
+  const TokenSource(this.type, {this.via, this.names = const {}});
 
   /// A classe com os tokens.
   final Type type;
 
   /// Expressão até a instância, para tokens do tema (`context.acmeColors`).
   final String? via;
+
+  /// Nome do Figma → membro, para a classe que não dá para anotar no doc (`{'02': 'two'}`). Vale antes do doc e
+  /// do camelCase.
+  final Map<String, String> names;
 }
 
 /// Política do pacote de mapeamentos: regras por tipo, ícones, tokens e componentes ignorados.

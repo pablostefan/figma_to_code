@@ -10,7 +10,7 @@ de uma CLI; a LLM só decide o que o Figma não diz (ação de botão, dados de 
 flowchart LR
   subgraph DS["Time do DS · uma vez, e quando o DS muda"]
     direction TB
-    FDS["Arquivo do DS<br/>no Figma"] -->|"MCP do Figma"| MAP["agente figma-ds-mapper"]
+    FDS["Arquivo do DS<br/>no Figma"] -->|"plugin: lote de componentes"| MAP["agente figma-ds-mapper"]
     MAP --> CONN["pacote de mapeamentos<br/>lib/connect/*.figma.dart"]
   end
 
@@ -29,7 +29,7 @@ flowchart LR
 ```
 
 1. **O time do DS anota o DS uma vez.** Cada componente do Figma ganha um `*.figma.dart`, que diz qual widget ele
-   vira e como cada prop do Figma vira parâmetro. Um agente escreve isso lendo o Figma pelo MCP.
+   vira e como cada prop do Figma vira parâmetro. Um agente escreve isso a partir do export do plugin.
 2. **O designer (ou o dev) exporta** a tela ou o fluxo com o plugin: um `.zip` com o JSON da tela (o IR) e os PNGs.
 3. **A CLI resolve** a tela com os mapeamentos: o código de cada componente do DS já com os valores do Figma, o
    layout com tokens e o que falta decidir. Tudo num `BRIEF.md`.
