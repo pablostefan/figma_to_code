@@ -53,6 +53,14 @@ Para um widget **do app** (fora do DS) que já existe, `@FigmaLocal(key: '…', 
 `FigmaPolicy(tokens: TokenTable(...))` liga as coleções de variáveis do Figma às classes de tokens do DS, estáticas
 ou pelo tema; os briefs já saem com o código Dart do token ([seção 7.3](../docs/FIGMA_CONNECT.md#73-tokens)).
 
+## Anotar o DS com o agente
+
+As anotações do DS não precisam ser escritas à mão. O agente `figma-ds-mapper` lê o arquivo do DS pelo MCP do
+Figma (só leitura), faz o inventário do que falta anotar e escreve as anotações em lotes: o `*.figma.dart`, o doc
+quando há parte guiada, a linha do README e os casos do teste. A skill `figma2dart-connect` diz como anotar cada
+componente. Os dois ficam em [agent/](agent/). Para usar, copie para o pacote de mapeamentos:
+`agents/` → `.github/agents/` e `skills/` → `.agents/skills/` (Copilot e opencode leem essas pastas).
+
 ## O que o pacote exporta
 
 | Arquivo | Conteúdo |
