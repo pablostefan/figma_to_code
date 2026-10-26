@@ -290,7 +290,8 @@ Json _task(
       'placeholder': count('placeholder'),
       'guided': s.guided.length,
     },
-    'screenFile': screenFile,
+    // Absolutos, como `brief` e `dir`: o agente pode estar na raiz do monorepo, não no pacote.
+    'screenFile': screenFile == null ? null : '${ws.app}/$screenFile',
     'components': [
       for (final c in s.components)
         {
@@ -306,7 +307,10 @@ Json _task(
             'import': '${widget.library.uri}',
           } else ...{
             'class': pascalCase(c.folder),
-            'widgetFile': ws.screens == null ? null : '${ws.screens}/widgets/${c.folder}.dart',
+            'widgetFile': switch (widgetFile(c)) {
+              final f? => '${ws.app}/$f',
+              null => null,
+            },
             'dependsOn': c.dependencies.values.toList(),
             'existing': ?existing[pascalCase(c.folder)],
           },
@@ -321,7 +325,10 @@ const _blocking = {'guided', 'gap', 'sketch', 'local'};
 
 /// Confere os arquivos gerados: marcadores que sobraram e o `dart analyze` deles (reprovam), e as dicas do que parece
 /// fora do brief (não reprovam: a LLM corrige ou explica com `f2d:inferred`).
-Future<Json> check(Workspace ws, List<String> files) async {
+Future<Json> check(Workspace ws, List<String> paths) async {
+  // Caminho absoluto: o agente chama da raiz do monorepo e o `dart analyze` roda de dentro do pacote; relativo, o
+  // analyze não acharia o arquivo e passaria sem erro nenhum.
+  final files = [for (final p in paths) File(p).absolute.path];
   // O que as tarefas do pacote esperam (gravado pelo `resolve`); sem tarefa, só as dicas de valor solto sem sugestão.
   final tokens = <String, List<Json>>{};
   final expected = <String, Json>{};

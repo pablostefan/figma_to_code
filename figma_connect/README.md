@@ -3,11 +3,14 @@
 API dos mapeamentos Figma → Flutter do figma2dart. Define a anotação `@FigmaConnect`, o que a função anotada pode
 ler do Figma (`FigmaProps`) e a política por tipo de componente (`FigmaPolicy`).
 
-O pacote **só define tipos**: não roda no app. Quem lê as anotações é a CLI `figma2dart`, que gera o código e
+O pacote **só define tipos**: não roda no app (a exceção é `capture.dart`, abaixo, que roda em teste). Quem lê as anotações é a CLI `figma2dart`, que gera o código e
 monta o brief para a LLM. **O widget do DS não é alterado**: os mapeamentos ficam num pacote à parte
 (`carteira_ds_figma`).
 
 - Referência completa da API: [docs/FIGMA_CONNECT.md](../docs/FIGMA_CONNECT.md)
+- Captura para a revisão visual (`package:figma_connect/capture.dart`, só em teste de widget): `figmaCapture`
+  renderiza a tela no tamanho do frame do Figma, com as fontes do app, para o `figma2dart review`. É por ela que o
+  pacote depende do `flutter_test`. Ver [FIGMA_CONNECT.md §10.1](../docs/FIGMA_CONNECT.md#101-captura-para-a-revisão-visual-figmacapture)
 - Onde o pacote entra na ferramenta: [docs/ARCHITECTURE.md](../docs/ARCHITECTURE.md), seções 7 e 10
 
 ## Instalação

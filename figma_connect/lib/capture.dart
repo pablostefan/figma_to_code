@@ -30,7 +30,8 @@ import 'package:flutter_test/flutter_test.dart';
 /// });
 /// ```
 ///
-/// Erros de layout (overflow) não reprovam o teste: vão para o `layout.json`, para a revisão.
+/// Erros de layout (overflow) não reprovam o teste: vão para o `layout.json`, para a revisão. Sem a tarefa (CI, outra
+/// máquina), não faz nada: o teste pode ficar no repositório.
 Future<void> figmaCapture(
   WidgetTester tester,
   Widget app, {
@@ -39,7 +40,14 @@ Future<void> figmaCapture(
   String tasks = '.figma2dart/tasks',
 }) async {
   final dir = '$tasks/$task';
-  final review = jsonDecode(File('$dir/review.json').readAsStringSync()) as Map<String, Object?>;
+  final input = File('$dir/review.json');
+  // `.figma2dart/` não é versionado: na CI e em outra máquina não há tarefa. O teste passa sem capturar (no tamanho
+  // padrão do teste a tela daria overflow falso).
+  if (!input.existsSync()) {
+    debugPrint('figmaCapture: sem ${input.path} (rode `figma2dart resolve` desta tela); nada capturado.');
+    return;
+  }
+  final review = jsonDecode(input.readAsStringSync()) as Map<String, Object?>;
   final frame = review['frame']! as Map<String, Object?>;
   final size = Size((frame['width']! as num).toDouble(), (frame['height']! as num).toDouble());
   final scale = (review['imageScale'] as num? ?? 2).toDouble();

@@ -311,3 +311,24 @@ Três exports do plugin novo (extrator 0.4.0, IR 1.3.0) do arquivo de exemplo do
 
 **Não deu para validar com estes exports:** `maxLines`/reticências (nenhum texto do arquivo usa) e sketch do DS
 (o `Template / Extrato` não está no fluxo).
+
+## Auditoria geral (CLI, captura, revisão, agentes)
+
+Contrato agente × CLI conferido campo a campo (`doctor`, `screens`, `resolve`, `check`, `review`, `link`). Os três
+primeiros quebravam justamente no ambiente real: monorepo com o agente na raiz e CI.
+
+| # | Achado | Correção | Prova |
+|---|---|---|---|
+| 1 | `check` chamado da raiz com `--package` e caminho relativo: o `dart analyze` (rodando no pacote) não achava o arquivo e devolvia `"ok": true` para código que nem compila | caminhos absolutos no `check` | `commands_test` (chamada com caminho relativo à pasta atual) |
+| 2 | `resolve` devolvia `screenFile`/`widgetFile` (e o `review`, `testFile`) relativos ao pacote: com o agente na raiz do monorepo, a tela ia para `<raiz>/lib/…` | absolutos, como `brief` e `dir`; o `check.json` segue relativo | `commands_test`, `review_test` |
+| 3 | Teste de captura versionado quebrava na CI e em outra máquina: o `review.json` fica em `.figma2dart/` (fora do git) | sem a tarefa, `figmaCapture` avisa e passa sem capturar | `capture_test` |
+| 4 | `review` com PNG do Figma maior que o frame (sombra) recortava as seções deslocadas: achado falso | `coversFrame` também no `review`; sem pares por seção e aviso no `REVIEW.md` | `review_test` |
+| 5 | Anotação do designer (`_Nota`, ignorada pela política) entrava nos fatos como texto ausente e aparecia no PNG sem aviso: o revisor cobraria "elemento faltando" | fora dos textos e das seções; listada em "Só do Figma (não implementar)" | `review_test` |
+| 6 | Dois recortes quase iguais (brief e revisão) | um só, `cropBox` | `crop_test`, `review_test` |
+| 7 | Skill de setup dizia três chaves no config; são quatro (`connect:`) | skill corrigida | — |
+| 8 | `review --screen "07 · Sucesso"` resolvida com "05 · Sucesso" abria a tarefa da outra (mesmo nome base) | acha pelo nome exato gravado no `review.json` primeiro | `review_test` |
+| 9 | README do `figma_connect` não citava a captura nem o `flutter_test` | parágrafo com o link para a FIGMA_CONNECT §10.1 | — |
+
+Além disso, o teste "docs e exemplos citados pelos mapeamentos do Carteira existem" validava os dados do Carteira (e,
+por eles, o sample app), não a CLI: falhava quando o sample app mudava. Virou um teste com pasta própria do mesmo
+comportamento (doc e exemplo que existem entram; o que sumiu é avisado).

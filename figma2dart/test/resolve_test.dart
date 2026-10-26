@@ -146,12 +146,22 @@ void main() {
     expect(brief(s), isNot(contains('## Componentes desta tela')));
   });
 
-  test('docs e exemplos citados pelos mapeamentos do Carteira existem', () {
-    final refs = References(maps.root!);
-    for (final m in maps.components) {
-      final md = refs.render(m, {'x'});
-      expect(md, isNot(matches(RegExp('não encontrado|não existe no arquivo'))), reason: m.file);
-    }
+  test('doc e exemplo que existem entram no brief; o que sumiu é avisado, sem quebrar', () {
+    // Pasta própria: o teste não depende do que existe hoje nos pacotes do Carteira (o sample app muda).
+    final root = Directory.systemTemp.createTempSync('f2d_refs');
+    addTearDown(() => root.deleteSync(recursive: true));
+    File('${root.path}/carteira_ds_figma/docs/ds_transaction_list.md')
+      ..createSync(recursive: true)
+      ..writeAsStringSync('# Lista\n\nAs linhas vêm dos dados da tela.\n');
+    File('${root.path}/carteira_ds_examples/lib/transaction_list_example.dart')
+      ..createSync(recursive: true)
+      ..writeAsStringSync('class TransactionListExample {}\n');
+    final list = maps.components.firstWhere((m) => m.name == 'TransactionList');
+    final md = References(root.path).render(list, {'x'});
+    expect(md, contains('As linhas vêm dos dados da tela.'));
+    expect(md, contains('class TransactionListExample {}'));
+    expect(md, contains('`_DashboardPageState.build` (arquivo não encontrado)')); // o uso real no sample app
+    expect(md, isNot(contains('**(não encontrado')));
   });
 
   test('doc sem seções ## entra inteiro como Geral', () {

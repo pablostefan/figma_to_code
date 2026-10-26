@@ -16,9 +16,10 @@ o `check` ok. A revisão não reprova nada: é para deixar a tela o mais parecid
 2. Escreva o `testFile` completando o modelo: a tela do `screenFile` dentro do `MaterialApp` com o **mesmo tema do
    app** (o do `main.dart`) e os **dados de exemplo do Figma** (os textos do brief), sem back-end: parâmetros, um
    cubit com estado fixo ou um repositório falso. Imagem de rede fica como está.
-3. `flutter test <testFile>`. Overflow não reprova (vai para a revisão). Se o teste falhar por outro motivo,
+3. `flutter test <testFile>`, **de dentro da pasta do pacote** (`app` do `doctor`): o `figmaCapture` acha a tarefa
+   por `.figma2dart/tasks/` a partir dela. Overflow não reprova (vai para a revisão). Se o teste falhar por outro motivo,
    corrija o **teste** (dados, tema, dependência), não a tela. O teste fica no repositório: é o teste de widget da
-   tela.
+   tela. Em outra máquina ou na CI (sem `.figma2dart/`, que não é versionado), ele passa sem capturar.
 
 ## 2. Revisar
 

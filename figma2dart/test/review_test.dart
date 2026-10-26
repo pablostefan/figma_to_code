@@ -74,6 +74,11 @@ void main() {
     (local['instance'] as Json)['content'] = [
       {'path': 'name', 'text': 'Ana'},
     ];
+    // Anotação do designer (componente `_…`): no PNG do Figma, fora do código, fora da revisão.
+    final note = instanceNode(key: 'note-key', component: '_Nota', props: {}, remote: false);
+    (note['instance'] as Json)['content'] = [
+      {'path': 'text', 'text': 'Conferir com o jurídico'},
+    ];
     final ir = screenWith([
       {
         'id': '2:1',
@@ -89,6 +94,7 @@ void main() {
           },
           local,
           {'id': '2:3', 'type': 'FRAME', 'name': 'spacer'},
+          note,
         ],
       },
     ]);
@@ -114,15 +120,15 @@ void main() {
 
     final input = jsonDecode(File('${task['dir']}/review.json').readAsStringSync()) as Json;
     expect(input['frame'], {'width': 100, 'height': 100});
-    expect(input['texts'], ['Título', 'Ana']);
+    expect(input['texts'], ['Título', 'Ana']); // sem o texto da anotação
     final sections = (input['sections'] as List).cast<Json>();
-    expect(sections.map((s) => s['name']), ['title', 'ContactItem']); // dentro do `content`, sem o espaçador
+    expect(sections.map((s) => s['name']), ['title', 'ContactItem']); // dentro do `content`, sem espaçador e anotação
     expect(sections.last['structure'], contains('componente local **ContactItem**'));
 
     // Sem captura: diz qual teste escrever (o figma_connect já está nas dev_dependencies: nada a adicionar).
     final missing = review(ws, 'T');
     expect(missing['capture'], isFalse);
-    expect(missing['testFile'], 'test/telas/t_figma_test.dart');
+    expect(missing['testFile'], '${ws.app}/test/telas/t_figma_test.dart');
     expect(missing['test'], contains("task: 't'"));
     expect(missing.containsKey('devDependency'), isFalse);
 
@@ -152,5 +158,28 @@ void main() {
     expect(md, contains('Base obrigatória'));
     expect(md, contains('- Texto fora da ordem do Figma: "Ana"')); // o que subiu
     expect(md, contains('### 2. `ContactItem` → `sections/02-contact_item.png`'));
+    expect(md, contains('## Só do Figma (não implementar)'));
+    expect(md, contains('_Nota'));
+
+    // PNG do Figma maior que o frame (sombra): as caixas não batem com ele; só a tela inteira.
+    File('${task['dir']}/images/screens/T.png').writeAsBytesSync(img.encodePng(img.Image(width: 240, height: 220)));
+    final shadow = review(ws, 'T');
+    expect(shadow['sections'], isEmpty);
+    expect(File(shadow['review'] as String).readAsStringSync(), contains('**Sem recorte por seção:**'));
+  });
+
+  test('review acha a tarefa pelo nome exato da tela, não pelo nome base (07 · Sucesso ≠ 05 · Sucesso)', () {
+    final app = tempApp();
+    File(
+      '${app.path}/pubspec.yaml',
+    ).writeAsStringSync('name: app\ndev_dependencies:\n  figma_connect:\n    path: ../fc\n');
+    final ws = Workspace.find(app.path);
+    for (final (folder, screen) in [('sucesso', '05 · Sucesso'), ('sucesso_9_999', '07 · Sucesso')]) {
+      File('${ws.tasks}/$folder/review.json')
+        ..createSync(recursive: true)
+        ..writeAsStringSync(jsonEncode({'screen': screen}));
+    }
+    expect(review(ws, '07 · Sucesso')['task'], 'sucesso_9_999');
+    expect(review(ws, '05 · Sucesso')['task'], 'sucesso');
   });
 }

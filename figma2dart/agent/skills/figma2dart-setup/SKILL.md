@@ -27,13 +27,14 @@ componente de outra biblioteca do Figma sai como `gap` (DS sem mapeamento) em ve
 `library` do `doctor` mostra as páginas do retrato e a data: se o usuário disser que o DS mudou, peça para exportar de
 novo as páginas que mudaram (plugin sem seleção) e rode `figma2dart library <zips> --json`.
 
-O `figma2dart.yaml` só tem três chaves, todas opcionais:
+O `figma2dart.yaml` tem quatro chaves, todas opcionais:
 
 ```yaml
 mappings: ../design_system/carteira_ds_figma   # pacote com lib/connect/*.figma.dart
 exports: ~/Downloads                            # onde o plugin salva os figma2dart-*.zip
 screens: lib/features/transferencia             # telas geradas; widgets novos em <screens>/widgets/
+connect: figma/connect                          # onde o `link` grava os @FigmaLocal (padrão: figma/connect)
 ```
 
 Depois disso, todos os caminhos de que você precisa vêm nas respostas `--json` (`brief`, `screenFile`,
-`widgetFile`, `image`). Não monte caminhos à mão.
+`widgetFile`, `image`, `testFile`), sempre absolutos. Não monte caminhos à mão.

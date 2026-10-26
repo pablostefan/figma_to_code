@@ -48,4 +48,10 @@ void main() {
     expect((text['x'], text['y']), (0, 0));
     expect(layout['errors'], [contains('overflowed by 50')]);
   });
+
+  testWidgets('sem a tarefa (CI, outra máquina): não captura nem reprova', (tester) async {
+    final tasks = Directory.systemTemp.createTempSync('figma_capture').path;
+    await figmaCapture(tester, const SizedBox(), task: 'nao_existe', tasks: tasks);
+    expect(Directory('$tasks/nao_existe').existsSync(), isFalse);
+  });
 }

@@ -107,7 +107,7 @@ void main() {
     final dup = await resolveTasks(ws, json, screens: ['05 · Sucesso', '07 · Sucesso'], mappings: mappingsDir);
     expect(
       [for (final t in (dup['tasks'] as List).cast<Json>()) t['screenFile']],
-      ['lib/telas/sucesso_page.dart', 'lib/telas/sucesso_9_999_page.dart'],
+      ['${ws.app}/lib/telas/sucesso_page.dart', '${ws.app}/lib/telas/sucesso_9_999_page.dart'],
     );
     expect(
       [for (final t in (dup['tasks'] as List).cast<Json>()) Directory(t['dir']! as String).existsSync()],
@@ -118,10 +118,10 @@ void main() {
     await resolveTasks(ws, zip, screens: ['04 · Confirmar'], mappings: mappingsDir);
     expect(stale.existsSync(), isFalse);
     expect(r['dir'], '${app.path}/.figma2dart/tasks/confirmar');
-    expect(r['screenFile'], 'lib/telas/confirmar_page.dart');
+    expect(r['screenFile'], '${ws.app}/lib/telas/confirmar_page.dart');
     expect(File(r['image']! as String).existsSync(), isTrue);
     final components = (r['components'] as List).cast<Json>();
-    expect(components.map((c) => c['widgetFile']), contains('lib/telas/widgets/summary_row.dart'));
+    expect(components.map((c) => c['widgetFile']), contains('${ws.app}/lib/telas/widgets/summary_row.dart'));
     expect(File(components.first['brief']! as String).existsSync(), isTrue);
     final md = File(r['brief']! as String).readAsStringSync();
     expect(md, contains('## Estrutura da tela'));
@@ -141,6 +141,11 @@ void main() {
     expect(r['blocking'], 2);
     expect(r['inferred'], 1);
     expect((r['analyze'] as List).cast<Json>().single['code'], 'invalid_assignment');
+
+    // Caminho relativo à pasta de onde se chama (a raiz do monorepo), não à do pacote: o analyze ainda vê o erro.
+    final up = '../' * Directory.current.uri.pathSegments.where((s) => s.isNotEmpty).length;
+    final relative = await check(Workspace.find(app.path), ['$up${file.absolute.path.substring(1)}']);
+    expect((relative['analyze'] as List).cast<Json>().single['code'], 'invalid_assignment');
 
     // TODO(f2d) é pendência do dev: conta, mas não reprova.
     file.writeAsStringSync('int a = 1; // f2d:inferred G1 — teste\nint b = /* TODO(f2d): ícone */ 0;\n');

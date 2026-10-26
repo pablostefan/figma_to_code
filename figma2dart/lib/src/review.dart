@@ -6,6 +6,7 @@ import 'package:image/image.dart' as img;
 
 import 'brief.dart';
 import 'commands.dart' show ensureFigmaConnect;
+import 'crop.dart';
 import 'mappings.dart' show ResolveError;
 import 'names.dart';
 import 'resolve.dart';
@@ -20,6 +21,9 @@ import 'workspace.dart';
 Json reviewInput(ResolvedScreen s, {required Set<String> images}) {
   final size = s.tree['size'] as Json? ?? const {};
   final resolved = {for (final i in s.instances) i.id: i};
+  // Instância que o resolvedor pulou (anotação do designer, `_`/`.`, ignorada pela política): não entra no código,
+  // então não entra nos fatos nem nas seções; o REVIEW.md a lista para o revisor não cobrar.
+  bool ignored(Json n) => n['instance'] != null && !resolved.containsKey(n['id']);
   String link(ResolvedInstance i) => '../components/${taskOf(s, i)?.folder}/BRIEF.md';
   String structure(Json node) {
     final out = StringBuffer();
@@ -32,9 +36,10 @@ Json reviewInput(ResolvedScreen s, {required Set<String> images}) {
     'frame': {'width': size['width'], 'height': size['height']},
     'imageScale': s.imageScale,
     'image': images.contains(s.image) ? s.image : null,
-    'texts': figmaTexts(s.tree),
+    'texts': figmaTexts(s.tree, skip: ignored),
+    'ignored': [for (final i in s.ignored) '${i['path']} (${i['component']})'],
     'sections': [
-      for (final node in sections(s.tree))
+      for (final node in sections(s.tree, skip: ignored))
         {'name': node['name'], 'id': node['id'], 'bounds': ?node['bounds'], 'structure': structure(node)},
     ],
   };
@@ -42,20 +47,21 @@ Json reviewInput(ResolvedScreen s, {required Set<String> images}) {
 
 /// Textos visíveis da tela na ordem das camadas (a de leitura num layout automático), com os de dentro das
 /// instâncias (`content`, IR 1.3).
-List<String> figmaTexts(Json node) => [
-  if (node['visible'] != false) ...[
+List<String> figmaTexts(Json node, {bool Function(Json node)? skip}) => [
+  if (node['visible'] != false && !(skip?.call(node) ?? false)) ...[
     if (node['text'] case {'characters': final String text}) text,
     for (final item in ((node['instance'] as Json?)?['content'] as List? ?? const []).cast<Json>())
       if (item['text'] case final String text) text,
-    for (final child in (node['children'] as List? ?? const []).cast<Json>()) ...figmaTexts(child),
+    for (final child in (node['children'] as List? ?? const []).cast<Json>()) ...figmaTexts(child, skip: skip),
   ],
 ];
 
-/// Seções da tela: os filhos visíveis do frame (ou do frame único que embrulha tudo), sem os vazios (espaçador).
-List<Json> sections(Json root) {
+/// Seções da tela: os filhos visíveis do frame (ou do frame único que embrulha tudo), sem os vazios (espaçador) e
+/// sem o que [skip] diz.
+List<Json> sections(Json root, {bool Function(Json node)? skip}) {
   List<Json> visible(Json n) => [
     for (final c in (n['children'] as List? ?? const []).cast<Json>())
-      if (c['visible'] != false) c,
+      if (c['visible'] != false && !(skip?.call(c) ?? false)) c,
   ];
   var node = root;
   for (var kids = visible(node); kids.length == 1 && kids.single['instance'] == null; kids = visible(node)) {
@@ -71,13 +77,25 @@ List<Json> sections(Json root) {
 /// `figma2dart review --screen <tela>`: lê a tarefa (`review.json`, o PNG do Figma) e a captura (`capture/`), grava
 /// `review/` com `screen.png` (Figma | Flutter), um par por seção, `facts.json` e o `REVIEW.md` com o critério.
 Json review(Workspace ws, String screen) {
-  final dir = ['${ws.tasks}/${screenSlug(screen)}', '${ws.tasks}/$screen']
-      .map(Directory.new)
-      .firstWhere(
-        (d) => d.existsSync(),
-        orElse: () =>
-            throw ResolveError('Tarefa "$screen" não encontrada em ${ws.tasks}: rode `figma2dart resolve` desta tela.'),
-      );
+  // Pelo nome exato da tela primeiro: "07 · Sucesso" resolvida junto com "05 · Sucesso" fica em `sucesso_<id>`, e
+  // pelo nome base cairia na tarefa da outra.
+  String? screenOf(Directory d) => switch (File('${d.path}/review.json')) {
+    final f when f.existsSync() => (jsonDecode(f.readAsStringSync()) as Json)['screen'] as String?,
+    _ => null,
+  };
+  final tasks = Directory(ws.tasks);
+  final dir =
+      (tasks.existsSync() ? tasks.listSync().whereType<Directory>() : const <Directory>[])
+          .where((d) => screenOf(d) == screen)
+          .firstOrNull ??
+      ['${ws.tasks}/${screenSlug(screen)}', '${ws.tasks}/$screen']
+          .map(Directory.new)
+          .firstWhere(
+            (d) => d.existsSync(),
+            orElse: () => throw ResolveError(
+              'Tarefa "$screen" não encontrada em ${ws.tasks}: rode `figma2dart resolve` desta tela.',
+            ),
+          );
   final inputFile = File('${dir.path}/review.json');
   if (!inputFile.existsSync()) throw ResolveError('${inputFile.path} não existe: rode o `resolve` desta tela de novo.');
   final input = jsonDecode(inputFile.readAsStringSync()) as Json;
@@ -90,7 +108,7 @@ Json review(Workspace ws, String screen) {
     return {
       'capture': false,
       'task': task,
-      'testFile': 'test/${screens.isEmpty ? '' : '$screens/'}${task}_figma_test.dart',
+      'testFile': '${ws.app}/test/${screens.isEmpty ? '' : '$screens/'}${task}_figma_test.dart',
       'test': captureTest(input['screen'] as String, task),
       'devDependency': ?ensureFigmaConnect(ws, ws.app),
     };
@@ -117,16 +135,18 @@ Json review(Workspace ws, String screen) {
 
   final figmaScale = input['imageScale'] as num? ?? 2;
   final flutterScale = layout['scale'] as num? ?? figmaScale;
+  // PNG do Figma maior que o frame (sombra, filho para fora sem recorte): a caixa da seção não bate com os pixels
+  // dele; par deslocado gera achado falso. Fica só a tela inteira.
+  final aligned = coversFrame(figmaPng, frame, figmaScale);
   final sectionFiles = <String?>[];
-  final sectionList = (input['sections'] as List).cast<Json>();
-  for (final (n, section) in sectionList.indexed) {
+  for (final (n, section) in (input['sections'] as List).cast<Json>().indexed) {
     final bounds = section['bounds'] as Json?;
-    if (bounds == null) {
+    final a = bounds == null || !aligned ? null : cropBox(figmaPng, bounds, figmaScale, margin: 8);
+    var b = a == null ? null : cropBox(flutterPng, bounds!, flutterScale, margin: 8);
+    if (a == null || b == null) {
       sectionFiles.add(null);
       continue;
     }
-    final a = _crop(figmaPng, bounds, figmaScale);
-    var b = _crop(flutterPng, bounds, flutterScale);
     if (b.width != a.width || b.height != a.height) b = img.copyResize(b, width: a.width, height: a.height);
     final name = 'sections/${'${n + 1}'.padLeft(2, '0')}-${snakeCase('${section['name']}')}.png';
     File('${out.path}/$name').writeAsBytesSync(img.encodePng(sideBySide(a, b)));
@@ -140,7 +160,7 @@ Json review(Workspace ws, String screen) {
   );
   const json = JsonEncoder.withIndent('  ');
   File('${out.path}/facts.json').writeAsStringSync(json.convert(facts));
-  File('${out.path}/REVIEW.md').writeAsStringSync(reviewMarkdown(input, facts, sectionFiles));
+  File('${out.path}/REVIEW.md').writeAsStringSync(reviewMarkdown(input, facts, sectionFiles, aligned: aligned));
   return {
     'dir': out.absolute.path,
     'review': '${out.absolute.path}/REVIEW.md',
@@ -174,17 +194,6 @@ img.Image sideBySide(img.Image figma, img.Image flutter) {
   img.compositeImage(out, figma, dstX: 0, dstY: header);
   img.compositeImage(out, flutter, dstX: figma.width + gap, dstY: header);
   return out;
-}
-
-/// A caixa da seção (unidades do Figma) com 8 de margem, na escala da imagem.
-img.Image _crop(img.Image image, Json bounds, num scale) {
-  int px(num v) => (v * scale).round();
-  const margin = 8;
-  final x = px(max(0, (bounds['x'] as num) - margin)).clamp(0, image.width - 1);
-  final y = px(max(0, (bounds['y'] as num) - margin)).clamp(0, image.height - 1);
-  final w = min(px((bounds['width'] as num) + 2 * margin), image.width - x);
-  final h = min(px((bounds['height'] as num) + 2 * margin), image.height - y);
-  return img.copyCrop(image, x: x, y: y, width: max(1, w), height: max(1, h));
 }
 
 /// Fatos que não dependem de pixel, como pista para o revisor (ele confirma na imagem): textos do Figma que não
@@ -302,7 +311,7 @@ List<String> outOfOrder(List<(String, Json)> matched) {
 
 /// O `REVIEW.md`: o critério (o que importa, o que ignorar), as regras do revisor, os fatos e cada seção com a
 /// estrutura do brief (a base dos achados).
-String reviewMarkdown(Json input, Json facts, List<String?> sectionFiles) {
+String reviewMarkdown(Json input, Json facts, List<String?> sectionFiles, {bool aligned = true}) {
   final out = StringBuffer()
     ..writeln('# Revisão visual: ${input['screen']}')
     ..writeln()
@@ -317,6 +326,12 @@ String reviewMarkdown(Json input, Json facts, List<String?> sectionFiles) {
     )
     ..writeln('  recorte do lado direito mostra outra coisa: confira na tela inteira antes de concluir.')
     ..writeln()
+    ..write(
+      aligned
+          ? ''
+          : '**Sem recorte por seção:** o PNG do Figma é maior que o frame (sombra ou conteúdo para fora), as caixas não '
+                'batem com ele. Compare pela tela inteira.\n\n',
+    )
     ..writeln('## Critério')
     ..writeln()
     ..writeln('| Nível | O quê |')
@@ -373,6 +388,17 @@ String reviewMarkdown(Json input, Json facts, List<String?> sectionFiles) {
   fact('onlyFlutter', 'Texto só no Flutter (dado de exemplo?)');
   fact('cut', 'Texto cortado no Flutter');
   fact('errors', 'Erro de layout na captura');
+  if ((input['ignored'] as List? ?? const []).cast<String>() case final ignored when ignored.isNotEmpty) {
+    out
+      ..writeln()
+      ..writeln('## Só do Figma (não implementar)')
+      ..writeln()
+      ..writeln('Aparecem no PNG do Figma e não entram no código (anotação, marcação): não são "elemento faltando".')
+      ..writeln();
+    for (final i in ignored) {
+      out.writeln('- `$i`');
+    }
+  }
   out
     ..writeln()
     ..writeln('## Seções')
