@@ -35,6 +35,9 @@ as escolhas do usuário sobre os componentes fora do DS.
   de quem o usa. `(sem Dart, valor)` é token sem correspondência: use o mais próximo e marque `f2d:inferred`. Sem
   tabela, a estrutura traz o nome do Figma (`Spacing/md`): ache a constante com `search` no pacote do DS (o nome do
   Figma costuma estar no comentário). Nunca número ou cor solta.
+- **Textos:** `texto → <código>` já é o widget e a tipografia do DS (`AcmeText('Entrar', type: …)`): use como está,
+  nunca `Text`/`TextStyle` do Flutter. Sem o `→`, o texto vem descrito (estilo e cor): use o widget de texto do DS,
+  se houver, com esse estilo.
 - **Instâncias do DS:** copie o código da seção Componentes como está. Só mude o que tem marcador.
 - **`/* f2d:guided Gn parte */ valor`:** decida com o norte, a navegação e as regras. Troque o valor e **apague o
   marcador**. Se decidiu sem base no brief, deixe `// f2d:inferred Gn — <motivo>` na linha.

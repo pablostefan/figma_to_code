@@ -153,7 +153,7 @@ Ninguém passa caminho para a CLI. Tudo parte da pasta de onde ela é chamada.
 | Pacote de mapeamentos | `mappings:` no config; senão, a dependência do pacote com `lib/figma_policy.dart`; senão, o único pacote do repositório com ela |
 | Anotações | todo `lib/**/*.figma.dart` do pacote de mapeamentos, carregado com o analyzer (tipos e constantes resolvidos) |
 | Exports | o `figma2dart-*.zip` mais novo em `exports:` (padrão `~/Downloads`) |
-| Telas | `screens:` (relativo ao pacote); widgets novos em `<screens>/widgets/` |
+| Telas | `screens:` do config mais próximo: `.figma2dart/local.yaml` (o `--screens-dir`, fora do git), o do pacote ou o do repositório; relativo ao pacote. Widgets novos em `<screens>/widgets/` |
 | Tarefas | `.figma2dart/tasks/<tela>/` no pacote (fora do git) |
 
 Pacote sem `package_config` ganha `pub get` sozinho. O `doctor` mostra tudo o que foi achado e, para o que falta,

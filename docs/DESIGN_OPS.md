@@ -27,13 +27,13 @@ Tudo vai para o git: a CLI acha config, mapeamentos e retrato pelo índice do gi
 ```yaml
 # libraries/design_ops/packages/figma_to_code/figma_to_dart.yaml
 mappings: acme_figma        # pacote dos mapeamentos, relativo a este arquivo
-screens: lib/figma          # onde as telas geradas ficam em cada pacote (relativo ao pacote)
 # exports: ~/Downloads      # onde o plugin salva os zips (padrão)
 # connect: figma/connect    # onde ficam os @FigmaLocal dos times (padrão)
 ```
 
-Um pacote de setor pode ter o próprio `figma_to_dart.yaml` só com `screens:`. Não ponha `mappings:` em outro arquivo:
-dois configs com `mappings:` é erro.
+A pasta das telas fica de fora: cada pacote escolhe a sua na primeira tela (`resolve --screens-dir`), guardada fora
+do git ([MONOREPO.md](MONOREPO.md#config)). Não ponha `mappings:` em outro arquivo: dois configs com `mappings:` é
+erro.
 
 **Conferir:** `figma2dart doctor --json` de dentro de um pacote de setor mostra o config em `configs` e o
 `acme_figma` em `mappings`.
@@ -87,6 +87,32 @@ const figmaPolicy = FigmaPolicy(
 `policy.textStyles`, quantos tokens do retrato têm código Dart e os grupos que faltam, com o que fazer. Numa tela, procure `(sem Dart` nos `BRIEF.md`. Cada ocorrência
 (`Spacing/2xs (sem Dart, 2)`) é um token sem correspondência: falta a coleção (ou o caminho) na tabela, ou o membro
 tem outro nome e não tem o comentário nem está em `names`.
+
+**Texto e tipografia.** O Acme não usa o `Text` do Flutter: todo texto é `AcmeText`, com a tipografia no enum
+`AcmeTypographyType` (`type:`); texto com trechos em estilos diferentes é `AcmeRichText` com um `TextSpan` por trecho.
+São três coisas no pacote de mapeamentos:
+
+```dart
+// a tipografia: estilo de texto do Figma → valor do enum (title4 → AcmeTypographyType.title4)
+textStyles: TokenSource(AcmeTypographyType),
+
+// o widget: uma vez para o pacote
+@FigmaText()
+Widget text(FigmaTextProps t) => AcmeText(t.text(), type: t.style());
+
+// o texto em trechos: um TextSpan por trecho
+@FigmaText.rich()
+Widget richText(BuildContext context, FigmaRichTextProps t) => AcmeRichText(
+  text: TextSpan(children: t.spans((s) => TextSpan(
+    text: s.text(),
+    style: s.style<AcmeTypographyType>().styleOf(context).copyWith(color: s.color()),
+  ))),
+);
+```
+
+Cada texto do brief sai com o código pronto (`` texto → `AcmeText('Entrar', type: AcmeTypographyType.title4)` ``), e o
+"Não fazer" proíbe o `Text`/`TextStyle`. Estilo sem valor no enum aparece em `policy.textStyles.missing` do doctor
+(resolva com `names`, como nos tokens). Detalhes: [FIGMA_CONNECT.md §8.1](FIGMA_CONNECT.md#81-widget-de-texto-do-ds-figmatext).
 
 ## 3. Tabela de ícones
 

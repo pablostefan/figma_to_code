@@ -40,7 +40,6 @@ Quem exporta é o usuário, no Figma: você pede e espera o zip.
      existir, pergunte onde criar e crie seguindo `docs/FIGMA_CONNECT.md` (seções 1 e 7):
      - `pubspec.yaml` com o DS e o `figma_connect`;
      - `lib/figma_policy.dart` e `test/mappings_test.dart`; as anotações vão em pastas de `lib/` que espelham o DS.
-   - Ponha `.figma2dart/` no `.gitignore` do pacote, se faltar.
    - **`figma2dart doctor --json`** de dentro do pacote (comando não encontrado: skill
      [figma2dart-setup](../../skills/figma2dart-setup/SKILL.md)). Se `mappings` vier `null`, crie o `figma_to_dart.yaml` no
      pacote com `mappings: .`.

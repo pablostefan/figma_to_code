@@ -75,7 +75,7 @@ String brief(ResolvedScreen s, {Set<String>? images}) {
       ..writeln()
       ..writeln('## Estrutura da tela')
       ..writeln()
-      ..writeln('Layout do frame, de fora para dentro. ${structureLegend(s.tokens)}')
+      ..writeln('Layout do frame, de fora para dentro. ${structureLegend(s.tokens, text: s.text != null)}')
       ..writeln();
     writeStructure(out, s.tree, {for (final i in s.instances) i.id: i}, brief, inline: false);
   }
@@ -199,6 +199,9 @@ String brief(ResolvedScreen s, {Set<String>? images}) {
     ..writeln()
     ..writeln('- Não alterar widgets do DS nem criar variações deles; não usar cor ou espaçamento solto (só tokens).')
     ..writeln('- Não trocar placeholder de componente que o usuário não escolheu construir; não criar outros widgets.');
+  if (s.text case final text?) {
+    out.writeln('- Não usar `Text`/`TextStyle` do Flutter: texto é o widget do DS (`${oneLine(text)}`).');
+  }
   for (final i in s.ignored) {
     out.writeln('- Não implementar `${i['path']}` (${i['component']}): ${i['reason']}.');
   }

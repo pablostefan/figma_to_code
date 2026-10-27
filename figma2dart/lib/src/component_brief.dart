@@ -20,6 +20,7 @@ String componentBrief(
   String? references,
   String? screenImage,
   Tokens? tokens,
+  String? text,
   Map<String, String> crops = const {},
 }) {
   if (c.sketch != null) return _sketchBrief(c, references: references, screenImage: screenImage, crops: crops);
@@ -100,7 +101,7 @@ String componentBrief(
       ..writeln()
       ..writeln('## Estrutura${variants.length > 1 ? ' (base: `${variants.first['name']}`)' : ''}')
       ..writeln()
-      ..writeln(structureLegend(tokens))
+      ..writeln(structureLegend(tokens, text: text != null))
       ..writeln();
     for (final l in base) {
       out.writeln('${'  ' * l.depth}- `${l.name}`: ${l.parts.join(' · ')}');
@@ -170,6 +171,9 @@ String componentBrief(
     ..writeln('- Texto ligado a uma prop (`← prop`) vira parâmetro; texto sem ligação é fixo no componente.')
     ..writeln('- Componente local dentro deste: construa o dele antes (link na estrutura).')
     ..writeln('- Um teste de widget por variant; o que você decidiu sem o Figma, marque com `f2d:inferred`.');
+  if (text != null) {
+    out.writeln('- Não usar `Text`/`TextStyle` do Flutter: texto é o widget do DS (a linha `texto →` da estrutura).');
+  }
   for (final MapEntry(key: component, value: notes) in c.devNotes.entries) {
     for (final note in notes) {
       out.writeln('- $component: $note');

@@ -121,6 +121,24 @@ class ContactItem {
     ); // dica não conta
   });
 
+  test('DS com widget de texto (@FigmaText): Text e TextStyle do Flutter viram dica; o widget do DS, não', () {
+    const widget = 'AcmeText(t.text(), type: t.style())';
+    const source = '''
+const a = AcmeText('Oi', type: AcmeTextType.bodySm);
+const b = Text('Oi');
+final c = Text.rich(TextSpan(text: 'x', style: TextStyle(height: 0)));
+const d = Text('Ok'); // f2d:inferred texto de depuração
+''';
+    expect(messages(source, expect: {'textWidget': widget}), [
+      '2 `Text` do Flutter: texto do DS é `$widget` (linha `texto →` do brief)',
+      '3 `Text.rich` do Flutter: texto do DS é `$widget` (linha `texto →` do brief)',
+      '3 `TextStyle` do Flutter: texto do DS é `$widget` (linha `texto →` do brief)',
+    ]);
+    // Sem @FigmaText, ou com um modelo que é o próprio Text do Flutter: nenhuma dica.
+    expect(messages(source, expect: const {}), isEmpty);
+    expect(messages(source, expect: {'textWidget': 'Text(t.text(), style: t.style())'}), isEmpty);
+  });
+
   test('texto escrito certo em Dart (com escape) não vira dica; texto repetido no Figma vira uma dica só', () {
     final task = {
       'texts': [r'R$ 150,00', "Olá d'água", 'Linha 1\nLinha 2', 'Falta', 'Falta'],

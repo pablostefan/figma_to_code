@@ -13,12 +13,11 @@ Esta pasta inteira fica ao lado do Acme:
 
 ```
 <monorepo>/
-  .gitignore                              + `.figma2dart/`
   rakelib/figma2dart.rake                 cópia de figma2dart/tool/figma2dart.rake (opcional)
   libraries/design_ops/packages/
     acme/  acme_templates/                o DS: não muda
     figma_to_code/                        esta pasta (o nome pode ser outro)
-      figma_to_dart.yaml                  config do repositório: mappings: acme_figma, screens: lib/figma
+      figma_to_dart.yaml                  config do repositório: mappings: acme_figma
       acme_figma/                         anotações e política do Acme, retrato do Figma
       figma2dart/                         CLI
       figma_connect/                      API das anotações e captura da revisão
@@ -57,12 +56,17 @@ skills de `copilot_plugin/skills/` servem como estão.
 
 ```yaml
 mappings: acme_figma     # relativo a este arquivo
-screens: lib/figma       # pasta das telas geradas, relativa a cada pacote
 # exports: ~/Downloads   # onde o plugin do Figma salva os zips (padrão)
 ```
 
-Um pacote de setor pode ter o próprio `figma_to_dart.yaml` (só `screens:`, por exemplo); ele vence o do repositório.
 `mappings:` fica só no do repositório: dois configs com `mappings:` é erro.
+
+**Pasta das telas, por pacote.** Cada pacote guarda as telas num lugar (`lib/templates`, `lib/features/…`), então o
+config do repositório não fixa uma. Na primeira tela de um pacote, o agente procura onde ficam as telas dele,
+confirma com você e passa `figma2dart resolve --screens-dir <pasta>`. A CLI guarda a escolha em
+`<pacote>/.figma2dart/local.yaml`: vale só na sua máquina, só naquele pacote, e não vai para o git (a pasta
+`.figma2dart/` tem um `.gitignore` próprio). Nenhum arquivo versionado muda para implementar uma tela. Um padrão do
+time para um pacote pode ir no `figma_to_dart.yaml` dele (`screens:`), mas é decisão de vocês, não do agente.
 
 ## Conferir
 

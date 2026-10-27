@@ -170,7 +170,7 @@ serve para isso: ele não dá a key e converte os nomes das props (`Show icon` v
 |---|---|---|
 | Agentes e skills | plugin do Copilot ([copilot_plugin/](../copilot_plugin/README.md)) | uma vez por máquina; vale em todos os pacotes |
 | Instalar a CLI | `<pasta da CLI>/tool/figma2dart setup` | põe o comando `figma2dart` no PATH (uma vez por máquina) |
-| Preparar o app | `figma2dart init` | só num app fora do monorepo: cria o `figma_to_dart.yaml` e põe `.figma2dart/` no `.gitignore` |
+| Preparar o app | `figma2dart init` | só num app fora do monorepo: cria o `figma_to_dart.yaml` (a `.figma2dart/` se ignora sozinha) |
 | Conferir | `figma2dart doctor` | mostra o que a CLI achou (pacote, mapeamentos, retrato, exports, pasta das telas) e o que falta, com a correção |
 
 O `figma_to_dart.yaml` é opcional; tudo o que falta a CLI descobre (pacote de mapeamentos pelas dependências, exports

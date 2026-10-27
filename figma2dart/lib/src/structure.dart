@@ -1,10 +1,13 @@
 import 'dart:convert';
 
+import 'mappings.dart';
+import 'names.dart';
 import 'resolve.dart';
 import 'tokens.dart';
 
-/// Legenda da estrutura, para o brief escrever antes dela. Com [tokens], os tokens já estão em Dart.
-String structureLegend(Tokens? tokens) => [
+/// Legenda da estrutura, para o brief escrever antes dela. Com [tokens], os tokens já estão em Dart; com [text], os
+/// textos trazem o código do widget de texto do DS (`@FigmaText`).
+String structureLegend(Tokens? tokens, {bool text = false}) => [
   if (tokens == null)
     'Tokens pelo nome do Figma: use o token do DS correspondente, nunca o valor solto.'
   else ...[
@@ -14,7 +17,70 @@ String structureLegend(Tokens? tokens) => [
       'Token do tema (`context.…`) precisa de `BuildContext` (dentro do `build`) e tira o `const` de quem o usa.',
   ],
   'Tamanho `L×A`: número (ou token) = fixo, `HUG` = do tamanho do conteúdo, `FILL` = ocupa o espaço do pai.',
+  if (text)
+    '`texto → código`: o texto já no widget e na tipografia do DS; use como está.',
 ].join(' ');
+
+/// A árvore com o código de cada texto (`text.code`) pela função `@FigmaText` do DS. Depois dos tokens em Dart: o
+/// estilo e a cor entram já traduzidos. Texto com trechos usa [rich] (`@FigmaText.rich`), um item por trecho; sem ela,
+/// ou com o texto ligado a uma prop (os trechos dependem do valor), [template] com "estilo de cada trecho".
+Object? withTextCode(Object? node, TextTemplate? template, TextTemplate? rich) => switch (node) {
+  final Json n => {
+    for (final MapEntry(:key, :value) in n.entries) key: withTextCode(value, template, rich),
+    if (n['text'] case final Json text)
+      if (_textCode(n, text, template, rich) case final code?) 'text': {...text, 'code': code},
+  },
+  final List<Object?> list => [for (final item in list) withTextCode(item, template, rich)],
+  _ => node,
+};
+
+/// Sem estilo do DS (fonte solta) ou com vários estilos, o lugar do estilo diz isso: a LLM usa o mais próximo e
+/// marca `f2d:inferred`.
+String? _textCode(Json node, Json text, TextTemplate? template, TextTemplate? rich) {
+  final bound = (node['bindings'] as Json?)?['characters'] as String?;
+  final segments = (text['segments'] as List? ?? const []).cast<Json>();
+  // O texto inteiro sem `style` tem trechos; um trecho sem `style` está sem estilo do DS.
+  TextValues values(Json t, String characters, {String noStyle = 'estilo de cada trecho'}) => (
+    text: characters,
+    style: t['style'] as String? ?? noStyle,
+    color: _color(t) ?? 'cor do estilo',
+  );
+  if (rich != null && segments.isNotEmpty && bound == null) {
+    return oneLine(
+      rich.render(
+        values(text, dartString(text['characters'] as String? ?? '')),
+        spans: [
+          for (final s in segments)
+            values(s, dartString(s['characters'] as String? ?? ''), noStyle: 'sem estilo do DS'),
+        ],
+      ),
+    );
+  }
+  if (template == null) return null;
+  final font = text['font'] as Json?;
+  final v = values(text, bound == null ? dartString(text['characters'] as String? ?? '') : identifier(bound));
+  return oneLine(
+    template.render((
+      text: v.text,
+      style: font == null || text['style'] != null
+          ? v.style
+          : 'fonte ${font['family']} ${font['style']} ${_num(font['size'])} (sem estilo do DS)',
+      color: v.color,
+    )),
+  );
+}
+
+/// Código de várias linhas numa linha só, sem a vírgula do fim: `AcmeText(\n  'x',\n)` → `AcmeText('x')`.
+String oneLine(String code) => code
+    .replaceAll(RegExp(r'\(\s*\n\s*'), '(')
+    .replaceAll(RegExp(r',?\s*\n\s*\)'), ')')
+    .replaceAll(RegExp(r'\s*\n\s*'), ' ');
+
+/// O código já tem cada trecho (`@FigmaText.rich`): a lista de trechos não se repete.
+bool _spansIn(String? code, List<Object?> segments) =>
+    code != null && segments.cast<Json>().every((s) => code.contains(dartString(s['characters'] as String? ?? '')));
+
+String? _color(Json text) => text['colorStyle'] as String? ?? (text['color'] == null ? null : _value(text['color']));
 
 /// Uma camada da estrutura: [path] é o caminho a partir da raiz (`.` é a raiz; compara variantes) e [parts] o que
 /// ela tem, já escrito.
@@ -121,17 +187,24 @@ List<String>? _text(Json node) {
     'TRUNCATE' => 'corta na caixa',
     _ => null,
   };
+  final code = text['code'] as String?;
   return [
-    'texto ${bound == null ? jsonEncode(text['characters']) : '← prop `$bound`'}',
-    [
-      text['style'] ?? (font == null ? null : 'fonte ${font['family']} ${font['style']} ${_num(font['size'])}'),
-      text['colorStyle'] ?? (text['color'] == null ? null : _value(text['color'])),
-    ].whereType<Object>().join(' '),
+    if (code != null)
+      'texto ${bound == null ? '' : '← prop `$bound` '}→ `$code`'
+    else
+      'texto ${bound == null ? jsonEncode(text['characters']) : '← prop `$bound`'}',
+    // O que já está no código não se repete.
+    if ([
+          text['style'] ?? (font == null ? null : 'fonte ${font['family']} ${font['style']} ${_num(font['size'])}'),
+          _color(text),
+        ].whereType<String>().where((part) => code == null || !code.contains(part)).join(' ').nullIfEmpty
+        case final styleAndColor?)
+      styleAndColor,
     if (text['align'] case final String align when align != 'LEFT') 'alinhado $align',
     if (text['maxLines'] case final int lines) 'máx $lines ${lines == 1 ? 'linha' : 'linhas'}',
     if (text['truncation'] == 'ENDING') 'reticências',
     if (resize != null) resize,
-    if (text['segments'] case final List<Object?> segments when segments.isNotEmpty)
+    if (text['segments'] case final List<Object?> segments when segments.isNotEmpty && !_spansIn(code, segments))
       'trechos: ${[
         for (final s in segments.cast<Json>()) [jsonEncode(s['characters']), s['style'], s['colorStyle'] ?? (s['color'] == null ? null : _value(s['color']))].whereType<Object>().join(' '),
       ].join(', ')}',

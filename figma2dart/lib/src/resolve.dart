@@ -9,6 +9,7 @@ import 'mappings.dart';
 import 'tokens.dart';
 import 'names.dart';
 import 'references.dart';
+import 'structure.dart';
 
 typedef Json = Map<String, Object?>;
 
@@ -110,10 +111,14 @@ class ResolvedScreen {
     this.ignored = const [],
     this.skeleton,
     this.tokens,
+    this.text,
   });
 
   /// Tabela de tokens do DS (os da árvore já estão em Dart); null sem tabela.
   final Tokens? tokens;
+
+  /// O widget de texto do DS (corpo do `@FigmaText`); os textos da árvore já têm o código. Null sem a função.
+  final String? text;
 
   final String screen;
   final String state;
@@ -268,6 +273,12 @@ class Resolver {
         for (final key in ['screens', 'components']) key: withDartTokens(ir[key], tokens),
       };
     }
+    if (maps.text != null || maps.richText != null) {
+      ir = {
+        ...ir,
+        for (final key in ['screens', 'components']) key: withTextCode(ir[key], maps.text, maps.richText),
+      };
+    }
     _guided.clear();
     _used.clear();
     _ignored.clear();
@@ -309,6 +320,7 @@ class Resolver {
       used: _used.values.toList(),
       references: _references(),
       tokens: maps.policy.tokens,
+      text: maps.text?.source,
     );
   }
 
@@ -674,7 +686,7 @@ class _Eval {
     String name() => _string(args.first);
     switch (m.methodName.name) {
       case 'text':
-        return _literal(s.prop(name()) as String);
+        return dartString(s.prop(name()) as String);
       case 'boolean':
         return '${s.prop(name()) as bool}';
       case 'variant':
@@ -743,7 +755,4 @@ class _Eval {
     StringLiteral(:final stringValue?) => stringValue,
     _ => throw ResolveError('${mapping.functionName}: esperava um texto literal em "$e"'),
   };
-
-  static String _literal(String s) =>
-      "'${s.replaceAll(r'\', r'\\').replaceAll("'", r"\'").replaceAll(r'$', r'\$').replaceAll('\n', r'\n')}'";
 }

@@ -44,7 +44,7 @@ O comando instalado não é uma cópia da CLI: em cada chamada ele usa a CLI do 
 sozinho depois de um `git pull`) e escreve o "Building…" no stderr: o stdout fica só com o JSON. O `pub get` da CLI
 roda sozinho quando falta.
 
-Num app só: `figma2dart init` cria o `figma_to_dart.yaml` e põe `.figma2dart/` no `.gitignore`; o
+Num app só: `figma2dart init` cria o `figma_to_dart.yaml` (a `.figma2dart/` se ignora sozinha); o
 pacote de mapeamentos do DS entra como `dev_dependency` do app e a CLI o acha sozinha.
 
 ## Monorepo
@@ -69,17 +69,19 @@ Todos aceitam `--json` e `--package <pasta>`; erro com `--json` sai como `{"erro
 | `review --screen <tela>` | revisão visual, depois do `check`. Sem captura: põe o `figma_connect` nas dev_dependencies e devolve `capture: false` com `testFile` e o modelo do teste (`figmaCapture`, [FIGMA_CONNECT §10.1](../docs/FIGMA_CONNECT.md#101-captura-para-a-revisão-visual-figmacapture)). Com captura: grava `review/` na tarefa com `screen.png` (Figma \| Flutter), um par por seção (pela caixa do Figma), `facts.json` (texto ausente, fora de ordem, só no Flutter, cortado, overflow; nada em pixel) e o `REVIEW.md` com o critério (importa / talvez / ignorar) e a estrutura de cada seção como base. Não dá veredito: quem revisa é o subagente `figma-visual-reviewer` |
 | `library [<zip>…]` | grava o retrato do DS (`figma_library.json`: key e nome de cada componente e os ícones, por página; nomes dos tokens e estilos de texto, por arquivo) no pacote de mapeamentos, a partir de exports do plugin em modo biblioteca; uma página por export, a mesma página de novo substitui. Sem zip: o `figma2dart-library-*.zip` mais novo |
 | `link <key> <arquivo.dart>[#Classe] [--name <nome>]` | liga um componente do Figma (key inteira, 40 caracteres: a do `components[].key` do `resolve`) a um widget do app que já existe: escreve o `@FigmaLocal` em `figma/connect/` do pacote do widget e põe o `figma_connect` nas dev_dependencies, se faltar. O widget tem que estar no pacote da tela ou numa dependência direta dele (é onde o `resolve` procura) |
-| `init` | app só: config e `.gitignore` (não sobrescreve o config); agentes e skills vêm do plugin |
+| `init` | app só: o config (não sobrescreve); agentes e skills vêm do plugin |
 
 Sem `<zip>`, usa o `figma2dart-*.zip` mais novo da pasta de exports. Opções de `resolve`: `--state`, `--out`,
-`--mappings` (passam por cima do que a CLI descobre).
+`--mappings` (passam por cima do que a CLI descobre) e `--screens-dir <pasta>`: a pasta das telas do pacote, guardada
+em `.figma2dart/local.yaml` (fora do git, só nesta máquina) para as próximas chamadas. Sem pasta definida, o
+`resolve` para e pede essa opção.
 
 `figma_to_dart.yaml` (tudo opcional; caminhos relativos ao arquivo, menos `screens`, relativo ao pacote):
 
 ```yaml
 mappings: ../design_system/carteira_ds_figma   # senão: veja Monorepo
 exports: ~/Downloads                            # onde o plugin salva os zips
-screens: lib/figma                              # telas geradas; componentes novos em <screens>/widgets/
+screens: lib/figma                              # padrão para as telas (senão, --screens-dir por pacote)
 ```
 
 Saída:

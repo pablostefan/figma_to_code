@@ -42,3 +42,23 @@ abstract interface class FigmaScreenProps {
   /// O resto da árvore gerada.
   Widget body();
 }
+
+/// O que a função anotada com `FigmaText` pode ler de um texto do Figma. Os métodos genéricos tiram o tipo do
+/// contexto: `type: t.style()` resolve `T` pelo parâmetro do widget.
+abstract interface class FigmaTextProps {
+  /// O texto: literal na tela; num componente a construir, o parâmetro da prop ligada a ele.
+  String text();
+
+  /// O estilo de texto do Figma pelo `TokenTable.textStyles` da política (`AcmeTextType.bodySm`).
+  T style<T>();
+
+  /// A cor do texto pelo token (`context.acmeColors.textPrimary`).
+  T color<T>();
+}
+
+/// O que a função anotada com `FigmaText.rich` pode ler de um texto com trechos em estilos diferentes.
+abstract interface class FigmaRichTextProps {
+  /// Um item por trecho do Figma, na ordem: [span] recebe o texto, o estilo e a cor daquele trecho.
+  List<T> spans<T>(T Function(FigmaTextProps s) span);
+}
+

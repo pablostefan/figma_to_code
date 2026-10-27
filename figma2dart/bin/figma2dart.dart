@@ -16,12 +16,13 @@ Uso: figma2dart <comando> [opções] [--json]   (de dentro do pacote, ou --packa
   screens [<export.zip>]       telas do export (padrão: o figma2dart-*.zip mais novo)
   resolve [<export.zip>]       resolve uma tela e escreve a pasta da tarefa (BRIEF.md + briefs de componentes)
       --screen <nome> (repetível) --state <estado> --out <dir> --mappings <pacote>
+      --screens-dir <pasta>    pasta das telas deste pacote (fica em .figma2dart/local.yaml, fora do git)
   check <arquivo.dart>...      marcadores f2d que sobraram + dart analyze
   review --screen <tela>       revisão visual: Figma | Flutter (da captura figmaCapture), fatos e critério
   library [<export.zip>...]    grava o retrato do DS (exports do plugin em modo biblioteca) no pacote de mapeamentos
   link <key> <arquivo.dart>[#Classe] [--name <nome no Figma>]
                                liga um componente do Figma a um widget do app que já existe (@FigmaLocal)
-  init                         figma_to_dart.yaml e .gitignore (agentes e skills: copilot_plugin/)''';
+  init                         figma_to_dart.yaml do app (agentes e skills: copilot_plugin/)''';
 
 Future<void> main(List<String> argv) async {
   final parser = ArgParser()
@@ -31,7 +32,8 @@ Future<void> main(List<String> argv) async {
     ..addMultiOption('screen', help: 'Nome da tela ou do frame no export (repita para várias).', splitCommas: false)
     ..addOption('name', help: 'link: nome do componente no Figma (padrão: o da classe).')
     ..addOption('state', help: 'Estado da tela (padrão: o do frame, ou o primeiro).')
-    ..addOption('out', help: 'Pasta da tarefa (padrão: .figma2dart/tasks/<tela> no app).');
+    ..addOption('out', help: 'Pasta da tarefa (padrão: .figma2dart/tasks/<tela> no app).')
+    ..addOption('screens-dir', help: 'resolve: pasta das telas do pacote; fica em .figma2dart/local.yaml.');
   // O script `tool/figma2dart` roda de dentro da pasta da CLI (cache do `dart run`); volta para onde foi chamado.
   if (Platform.environment['FIGMA2DART_CWD'] case final cwd?) Directory.current = cwd;
   var json = argv.contains('--json');
@@ -54,6 +56,7 @@ Future<void> main(List<String> argv) async {
         state: args.option('state'),
         out: args.option('out'),
         mappings: args.option('mappings'),
+        screensDir: args.option('screens-dir'),
       ),
       'check' when rest.isNotEmpty => await check(ws, rest),
       'review' when args.multiOption('screen').length == 1 => review(ws, args.multiOption('screen').single),

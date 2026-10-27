@@ -122,3 +122,32 @@ class FigmaScreen {
   /// Ver `docs/FIGMA_CONNECT.md`, seção 8.
   const FigmaScreen();
 }
+
+/// O widget de texto do DS: como um texto do Figma vira código. Vai numa função do pacote de mapeamentos (o
+/// `figma_policy.dart` é um bom lugar), avaliada pela CLI para cada texto da tela:
+///
+/// ```dart
+/// @FigmaText()
+/// Widget text(FigmaTextProps t) => AcmeText(t.text(), type: t.style());
+/// ```
+///
+/// O brief passa a trazer o código pronto de cada texto (`AcmeText('Entrar', type: AcmeTextType.bodySm)`), e não o
+/// `Text` do Flutter. Texto com trechos em estilos diferentes (`72% de chance de **Alta**`) usa a função
+/// [FigmaText.rich], quando o pacote tem uma:
+///
+/// ```dart
+/// @FigmaText.rich()
+/// Widget richText(BuildContext context, FigmaRichTextProps t) => AcmeRichText(
+///   text: TextSpan(children: t.spans((s) => TextSpan(text: s.text(), style: s.style<AcmeTypographyType>().styleOf(context)))),
+/// );
+/// ```
+class FigmaText {
+  /// Ver `docs/FIGMA_CONNECT.md`, seção 8.1.
+  const FigmaText() : rich = false;
+
+  /// O texto com trechos em estilos diferentes. Ver `docs/FIGMA_CONNECT.md`, seção 8.1.
+  const FigmaText.rich() : rich = true;
+
+  /// A função monta o texto com trechos.
+  final bool rich;
+}

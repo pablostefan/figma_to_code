@@ -58,6 +58,30 @@ void main() {
     expect(ws.dsPackages(), {'acme'});
   });
 
+  test('pasta das telas por pacote, só na máquina de quem usa: nada novo no git, outros pacotes iguais', () async {
+    final repo = monorepo({...base, '$ops/figma2dart/figma_to_dart.yaml': 'mappings: ../acme_figma\n'});
+    final core = Workspace.find('${repo.path}/libraries/pix/pix_core');
+    expect(core.screens, isNull);
+    // Sem a pasta, o resolve para antes de ler o export e diz o que fazer.
+    await expectLater(
+      resolveTasks(core, File('nao_existe.zip')),
+      throwsA(isA<ResolveError>().having((e) => e.message, 'message', contains('--screens-dir'))),
+    );
+    final doc = await doctor(core);
+    expect((doc['problems'] as List).cast<Json>().map((p) => p['what']), isNot(contains('nenhum figma_to_dart.yaml')));
+    final warnings = (doc['warnings'] as List).cast<Json>().map((w) => w['what']);
+    expect(warnings, contains('pasta das telas não definida neste pacote'));
+
+    core.rememberScreens('${core.app}/lib/templates/');
+    expect(core.screens, 'lib/templates');
+    expect(Workspace.find(core.app).screens, 'lib/templates'); // na próxima chamada também
+    expect(Workspace.find('${repo.path}/libraries/pix/pix_ui').screens, 'lib/telas'); // outro pacote: o dele
+    expect(() => core.rememberScreens('../fora'), throwsA(isA<ResolveError>()));
+    expect(() => core.rememberScreens('.'), throwsA(isA<ResolveError>())); // a raiz do pacote não é pasta de telas
+    final status = Process.runSync('git', ['status', '--porcelain', '--untracked-files=all'], workingDirectory: repo.path);
+    expect((status.stdout as String).split('\n').where((l) => l.startsWith('??')), isEmpty); // se ignora sozinha
+  });
+
   test('da raiz: pede --package; com ele, ou para `packages`, funciona', () {
     final repo = monorepo(base);
     expect(() => Workspace.find(repo.path), throwsA(isA<ResolveError>()));

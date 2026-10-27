@@ -18,6 +18,7 @@ import 'hints.dart';
 import 'mappings.dart';
 import 'names.dart';
 import 'resolve.dart';
+import 'structure.dart';
 import 'workspace.dart';
 
 /// O que o agente precisa saber antes de começar: onde está cada coisa e o que falta, com a correção.
@@ -46,6 +47,15 @@ Future<Json> doctor(Workspace ws) async {
         warnings.add({
           'what': '@FigmaLocal ignorado: $w',
           'fix': 'corrigir ou apagar o arquivo; até lá o componente volta a ser "a construir"',
+        });
+      }
+      if (set.text == null) {
+        warnings.add({
+          'what': 'sem função @FigmaText: os textos saem descritos no brief, e a LLM escolhe o widget de texto',
+          'fix':
+              'anotar no pacote de mapeamentos a função que monta um texto: o widget do DS '
+              '(`@FigmaText() Widget text(FigmaTextProps t) => AcmeText(t.text(), type: t.style());`) ou, se o DS '
+              'usa o do Flutter, `Text(t.text(), style: t.style())`',
         });
       }
       final snapshot = File('${m.path}/$libraryFile');
@@ -84,13 +94,13 @@ Future<Json> doctor(Workspace ws) async {
   } on Object catch (e) {
     problems.add({'what': 'mapeamentos com erro: ${e is ArgumentError ? e.message : e}', 'fix': 'corrigir o pacote'});
   }
-  if (ws.configs.isEmpty) {
-    final legacy = ws.legacyConfigs;
+  // Sem config nenhum, a CLI ainda acha os mapeamentos pelas dependências: só o nome antigo é problema.
+  if (ws.configs.isEmpty && ws.legacyConfigs.isNotEmpty) {
     problems.add({
       'what': 'nenhum ${Workspace.configName}',
-      'fix': legacy.isNotEmpty
-          ? 'renomear ${legacy.join(', ')} para ${Workspace.configName} (o nome antigo não é mais lido) e versionar'
-          : 'no monorepo: versionar (git add) o config com `mappings:`; num app só: rodar `figma2dart init`',
+      'fix':
+          'renomear ${ws.legacyConfigs.join(', ')} para ${Workspace.configName} (o nome antigo não é mais lido) e '
+          'versionar',
     });
   }
   final exports = ws.exports();
@@ -101,9 +111,11 @@ Future<Json> doctor(Workspace ws) async {
     });
   }
   if (ws.screens == null) {
-    problems.add({
-      'what': 'pasta das telas não definida',
-      'fix': 'ver onde o app guarda as telas, confirmar com o usuário e gravar `screens:` no ${Workspace.configName}',
+    warnings.add({
+      'what': 'pasta das telas não definida neste pacote',
+      'fix':
+          'ver onde o pacote guarda as telas, confirmar com o usuário e passar `--screens-dir <pasta>` no `resolve` '
+          '(fica em .figma2dart/${Workspace.localConfig}, só nesta máquina); não criar ${Workspace.configName}',
     });
   }
   return {
@@ -180,8 +192,17 @@ Future<Json> resolveTasks(
   String? state,
   String? out,
   String? mappings,
+  String? screensDir,
 }) async {
   if (out != null && screens.length > 1) throw ResolveError('--out vale para uma tela só.');
+  if (screensDir != null) ws.rememberScreens(screensDir);
+  if (ws.screens == null) {
+    throw ResolveError(
+      'Pasta das telas não definida neste pacote: veja onde ele guarda as telas, confirme com o usuário e rode de '
+      'novo com `--screens-dir <pasta>` (fica em .figma2dart/${Workspace.localConfig}, fora do git; não crie '
+      '${Workspace.configName}).',
+    );
+  }
   final export = Export.read(file.path);
   final maps = await ws.loadMappingsOrFail(override: mappings);
   final taken = <String>{};
@@ -210,6 +231,7 @@ Json _task(
   final base = screenSlug(s.screen);
   final slug = taken.add(base) ? base : '${base}_${s.frameId.replaceAll(RegExp('[^0-9]+'), '_')}';
   taken.add(slug);
+  ws.ensureLocal();
   final dir = Directory(out ?? '${ws.tasks}/$slug');
   // A pasta padrão é só da ferramenta: recomeça do zero, para não sobrar brief de componente que saiu da tela.
   if (out == null && dir.existsSync()) dir.deleteSync(recursive: true);
@@ -222,11 +244,17 @@ Json _task(
   // parâmetros e textos.
   final builds = {for (final c in s.components.where((c) => c.sketch == null)) c.name: c};
   String? widgetFile(ComponentTask c) => ws.screens == null ? null : '${ws.screens}/widgets/${c.folder}.dart';
+  final textWidget = s.text == null ? null : oneLine(s.text!);
   final files = <String, Json>{
-    if (screenFile != null) screenFile: {'texts': staticTexts(s.tree).toSet().toList()},
+    if (screenFile != null)
+      screenFile: {
+        'texts': staticTexts(s.tree).toSet().toList(),
+        if (textWidget != null) 'textWidget': textWidget,
+      },
     for (final c in builds.values)
       if (widgetFile(c) case final file?) file: {
         'params': apiParams(c),
+        if (textWidget != null) 'textWidget': textWidget,
         'texts': {
           for (final v in (c.definition?['variants'] as List? ?? const []).cast<Json>())
             ...staticTexts(v['tree'] as Json),
@@ -289,6 +317,7 @@ Json _task(
       references: s.references[c.name],
       screenImage: images.contains(s.image) ? s.image : null,
       tokens: s.tokens,
+      text: s.text,
       crops: crops,
     );
     File('${cdir.path}/BRIEF.md').writeAsStringSync(md);
@@ -656,12 +685,6 @@ Json init(Workspace ws) {
   } else {
     config.writeAsStringSync(_configTemplate);
     written.add(Workspace.configName);
-  }
-  final gitignore = File('${ws.app}/.gitignore');
-  final ignored = gitignore.existsSync() ? gitignore.readAsStringSync() : '';
-  if (!ignored.split('\n').contains('.figma2dart/')) {
-    gitignore.writeAsStringSync('${ignored.isEmpty || ignored.endsWith('\n') ? ignored : '$ignored\n'}.figma2dart/\n');
-    written.add('.gitignore');
   }
   return {'app': ws.app, 'written': written, 'skipped': skipped};
 }

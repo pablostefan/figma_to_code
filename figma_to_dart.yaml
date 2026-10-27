@@ -3,8 +3,9 @@
 # Pacote de mapeamentos do Acme, relativo a este arquivo.
 mappings: acme_figma
 
-# Pasta das telas geradas, relativa a cada pacote (um pacote pode ter o próprio figma_to_dart.yaml com `screens:`).
-screens: lib/figma
+# A pasta das telas fica de fora: cada pacote guarda as telas num lugar (lib/templates, lib/features/…). O agente
+# pergunta uma vez por pacote e passa `--screens-dir` no resolve, que guarda em <pacote>/.figma2dart/local.yaml (fora
+# do git). Um padrão para o repositório inteiro seria `screens: <pasta>` aqui.
 
 # Onde o plugin do Figma salva os figma2dart-*.zip (padrão: ~/Downloads).
 # exports: ~/Downloads

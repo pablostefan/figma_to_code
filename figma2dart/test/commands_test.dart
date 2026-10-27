@@ -153,12 +153,12 @@ void main() {
     expect((ok['ok'], ok['todos']), (true, 1));
   });
 
-  test('init: config e .gitignore; segunda vez não sobrescreve', () {
+  test('init: só o config (a .figma2dart/ se ignora sozinha); segunda vez não sobrescreve', () {
     final app = tempApp();
     File('${app.path}/.gitignore').writeAsStringSync('build/');
     final ws = Workspace.find(app.path);
-    expect(init(ws)['written'], [Workspace.configName, '.gitignore']);
-    expect(File('${app.path}/.gitignore').readAsStringSync(), 'build/\n.figma2dart/\n');
+    expect(init(ws)['written'], [Workspace.configName]);
+    expect(File('${app.path}/.gitignore').readAsStringSync(), 'build/');
     File('${app.path}/${Workspace.configName}').writeAsStringSync('screens: lib/telas\n');
     final second = init(ws);
     expect(second['written'], isEmpty);

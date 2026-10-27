@@ -1,0 +1,749 @@
+{
+ "irVersion": "1.4.0",
+ "kind": "screen",
+ "source": {
+  "via": "mcp-extractor",
+  "extractor": "0.5.0",
+  "fileKey": "1meYjTskBd3JSKuHxeQ9A2",
+  "fileName": "Document",
+  "pageName": "Flow",
+  "exportedAt": "2026-10-27T14:05:18.917Z"
+ },
+ "tokens": {
+  "Spacing/2xl": {
+   "name": "2xl",
+   "collection": "Spacing",
+   "type": "FLOAT",
+   "value": 32,
+   "codeSyntax": {
+    "WEB": "var(--spacing-2xl)"
+   },
+   "id": "VariableID:152376691c4b36a21bd4bf5cfe21a83e9d63b8a5/1:112",
+   "key": "152376691c4b36a21bd4bf5cfe21a83e9d63b8a5",
+   "remote": true
+  },
+  "Spacing/xl": {
+   "name": "xl",
+   "collection": "Spacing",
+   "type": "FLOAT",
+   "value": 24,
+   "codeSyntax": {
+    "WEB": "var(--spacing-xl)"
+   },
+   "id": "VariableID:0009348576d3e5dd7a392fae74a80fbef754810c/1:108",
+   "key": "0009348576d3e5dd7a392fae74a80fbef754810c",
+   "remote": true
+  },
+  "Primitives/gray/50": {
+   "name": "gray/50",
+   "collection": "Primitives",
+   "type": "COLOR",
+   "value": "#F8FAFC",
+   "codeSyntax": {
+    "WEB": "var(--gray-50)"
+   },
+   "id": "VariableID:6d8d55eda023ce1fc06d85f1ffa9e2c6ad1bfebe/1:16",
+   "key": "6d8d55eda023ce1fc06d85f1ffa9e2c6ad1bfebe",
+   "remote": true
+  },
+  "Color/bg": {
+   "name": "bg",
+   "collection": "Color",
+   "type": "COLOR",
+   "value": "#F8FAFC",
+   "aliasOf": "Primitives/gray/50",
+   "codeSyntax": {
+    "WEB": "var(--color-bg)"
+   },
+   "id": "VariableID:65d47c5218dfbb887ef0e54d4c25e33fcd3048d0/1:46",
+   "key": "65d47c5218dfbb887ef0e54d4c25e33fcd3048d0",
+   "remote": true
+  },
+  "Primitives/gray/900": {
+   "name": "gray/900",
+   "collection": "Primitives",
+   "type": "COLOR",
+   "value": "#0F172A",
+   "codeSyntax": {
+    "WEB": "var(--gray-900)"
+   },
+   "id": "VariableID:31a14f2413132cf865d7b4b637570bae2c6550b5/1:28",
+   "key": "31a14f2413132cf865d7b4b637570bae2c6550b5",
+   "remote": true
+  },
+  "Color/text/primary": {
+   "name": "text/primary",
+   "collection": "Color",
+   "type": "COLOR",
+   "value": "#0F172A",
+   "aliasOf": "Primitives/gray/900",
+   "codeSyntax": {
+    "WEB": "var(--color-text-primary)"
+   },
+   "id": "VariableID:57821f5234d13875833a2fd6896b29fdf1e3bfd5/1:58",
+   "key": "57821f5234d13875833a2fd6896b29fdf1e3bfd5",
+   "remote": true
+  },
+  "Primitives/gray/500": {
+   "name": "gray/500",
+   "collection": "Primitives",
+   "type": "COLOR",
+   "value": "#64748B",
+   "codeSyntax": {
+    "WEB": "var(--gray-500)"
+   },
+   "id": "VariableID:6ff00148d4352090ab5e3694ef9c77d6fb78d7dc/1:24",
+   "key": "6ff00148d4352090ab5e3694ef9c77d6fb78d7dc",
+   "remote": true
+  },
+  "Color/text/secondary": {
+   "name": "text/secondary",
+   "collection": "Color",
+   "type": "COLOR",
+   "value": "#64748B",
+   "aliasOf": "Primitives/gray/500",
+   "codeSyntax": {
+    "WEB": "var(--color-text-secondary)"
+   },
+   "id": "VariableID:015a8a916d03ae25b323035d581578b11b57af2b/1:62",
+   "key": "015a8a916d03ae25b323035d581578b11b57af2b",
+   "remote": true
+  },
+  "Primitives/blue/500": {
+   "name": "blue/500",
+   "collection": "Primitives",
+   "type": "COLOR",
+   "value": "#2563EB",
+   "codeSyntax": {
+    "WEB": "var(--blue-500)"
+   },
+   "id": "VariableID:7d5c8de9629937530204473f05b49d5a691b13b6/1:5",
+   "key": "7d5c8de9629937530204473f05b49d5a691b13b6",
+   "remote": true
+  },
+  "Color/primary": {
+   "name": "primary",
+   "collection": "Color",
+   "type": "COLOR",
+   "value": "#2563EB",
+   "aliasOf": "Primitives/blue/500",
+   "codeSyntax": {
+    "WEB": "var(--color-primary)"
+   },
+   "id": "VariableID:80691c0e4d785051d2238bb0616af880d0726602/1:70",
+   "key": "80691c0e4d785051d2238bb0616af880d0726602",
+   "remote": true
+  },
+  "Spacing/md": {
+   "name": "md",
+   "collection": "Spacing",
+   "type": "FLOAT",
+   "value": 12,
+   "codeSyntax": {
+    "WEB": "var(--spacing-md)"
+   },
+   "id": "VariableID:8acb93300e6e2c9946f13d9cbafcdc31790c93eb/1:100",
+   "key": "8acb93300e6e2c9946f13d9cbafcdc31790c93eb",
+   "remote": true
+  }
+ },
+ "textStyles": {
+  "heading/md": {
+   "name": "heading/md",
+   "fontFamily": "Inter",
+   "fontStyle": "Semi Bold",
+   "fontSize": 18,
+   "lineHeight": 24,
+   "letterSpacing": {
+    "percent": 0
+   },
+   "id": "S:569c7a6ddf9f62488641610c6cdb2e1a7816efae,1:139",
+   "key": "569c7a6ddf9f62488641610c6cdb2e1a7816efae",
+   "remote": true
+  },
+  "body/md": {
+   "name": "body/md",
+   "fontFamily": "Inter",
+   "fontStyle": "Regular",
+   "fontSize": 16,
+   "lineHeight": 24,
+   "letterSpacing": {
+    "percent": 0
+   },
+   "id": "S:a10a528fd97ddec29d56c01c1ce14c9147a0d438,1:144",
+   "key": "a10a528fd97ddec29d56c01c1ce14c9147a0d438",
+   "remote": true
+  },
+  "label": {
+   "name": "label",
+   "fontFamily": "Inter",
+   "fontStyle": "Medium",
+   "fontSize": 14,
+   "lineHeight": 20,
+   "letterSpacing": {
+    "percent": 0
+   },
+   "id": "S:22bdad2cb496ea5ac10e19155fdd06d381bba857,1:154",
+   "key": "22bdad2cb496ea5ac10e19155fdd06d381bba857",
+   "remote": true
+  },
+  "body/sm": {
+   "name": "body/sm",
+   "fontFamily": "Inter",
+   "fontStyle": "Regular",
+   "fontSize": 14,
+   "lineHeight": 20,
+   "letterSpacing": {
+    "percent": 0
+   },
+   "id": "S:cc29a992faf9d6bd93c35d717c400a54ec3ecaeb,1:149",
+   "key": "cc29a992faf9d6bd93c35d717c400a54ec3ecaeb",
+   "remote": true
+  }
+ },
+ "componentRefs": {
+  "b3cd73804ed3c4db33054223112fbd35101248b4": {
+   "key": "b3cd73804ed3c4db33054223112fbd35101248b4",
+   "name": "ChanceCard",
+   "remote": false,
+   "description": "Local (teste). Card de chance: título (prop), texto fixo em trechos com estilos diferentes e Button do DS.",
+   "props": {
+    "title": {
+     "type": "TEXT",
+     "default": "Chance de aprovação"
+    }
+   }
+  },
+  "cc4d255d4c889786852f8ba4b57a714a4efd07ca": {
+   "key": "cc4d255d4c889786852f8ba4b57a714a4efd07ca",
+   "name": "Button",
+   "remote": true,
+   "description": "Action button. variant primary/secondary/ghost, size md(48)/sm(36), state default/disabled. Props: label, showLeftIcon, leftIcon (Icon swap).",
+   "props": {
+    "label": {
+     "type": "TEXT",
+     "default": "Button"
+    },
+    "showLeftIcon": {
+     "type": "BOOLEAN",
+     "default": false
+    },
+    "leftIcon": {
+     "type": "INSTANCE_SWAP",
+     "default": "6:11"
+    },
+    "variant": {
+     "type": "VARIANT",
+     "default": "primary",
+     "options": [
+      "primary",
+      "secondary",
+      "ghost"
+     ]
+    },
+    "size": {
+     "type": "VARIANT",
+     "default": "md",
+     "options": [
+      "md",
+      "sm"
+     ]
+    },
+    "state": {
+     "type": "VARIANT",
+     "default": "default",
+     "options": [
+      "default",
+      "disabled"
+     ]
+    }
+   }
+  },
+  "087dbe9c98e6051c256534179685020be15d04ba": {
+   "key": "087dbe9c98e6051c256534179685020be15d04ba",
+   "name": "Icon",
+   "remote": true,
+   "description": "Outline icon set, 24px, stroke 2. Color comes from the vector stroke bound to a Color variable (default text/primary). Use as INSTANCE_SWAP in other components.",
+   "props": {
+    "name": {
+     "type": "VARIANT",
+     "default": "home",
+     "options": [
+      "home",
+      "search",
+      "bell",
+      "plus",
+      "arrow-up-right",
+      "arrow-down-left",
+      "eye",
+      "eye-off",
+      "check",
+      "chevron-right",
+      "mail",
+      "lock"
+     ]
+    }
+   }
+  }
+ },
+ "components": [
+  {
+   "id": "57:226",
+   "key": "b3cd73804ed3c4db33054223112fbd35101248b4",
+   "name": "ChanceCard",
+   "role": "dependency",
+   "description": "Local (teste). Card de chance: título (prop), texto fixo em trechos com estilos diferentes e Button do DS.",
+   "props": {
+    "title": {
+     "type": "TEXT",
+     "default": "Chance de aprovação"
+    }
+   },
+   "variants": [
+    {
+     "id": "57:226",
+     "key": "b3cd73804ed3c4db33054223112fbd35101248b4",
+     "name": "ChanceCard",
+     "props": {},
+     "tree": {
+      "id": "57:226",
+      "type": "COMPONENT",
+      "name": "ChanceCard",
+      "fidelity": "exact",
+      "size": {
+       "width": 342,
+       "height": 140
+      },
+      "sizing": {
+       "horizontal": "FIXED",
+       "vertical": "HUG"
+      },
+      "layout": {
+       "direction": "VERTICAL",
+       "gap": {
+        "value": 12,
+        "token": "Spacing/md"
+       },
+       "padding": {
+        "top": {
+         "value": 12,
+         "token": "Spacing/md"
+        },
+        "right": {
+         "value": 0
+        },
+        "bottom": {
+         "value": 12,
+         "token": "Spacing/md"
+        },
+        "left": {
+         "value": 0
+        }
+       },
+       "align": {
+        "main": "MIN",
+        "cross": "MIN"
+       },
+       "wrap": false
+      },
+      "children": [
+       {
+        "id": "57:227",
+        "type": "TEXT",
+        "name": "title",
+        "fidelity": "exact",
+        "size": {
+         "width": 342,
+         "height": 24
+        },
+        "sizing": {
+         "horizontal": "FILL",
+         "vertical": "HUG"
+        },
+        "bindings": {
+         "characters": "title"
+        },
+        "text": {
+         "characters": "Chance de aprovação",
+         "autoResize": "HEIGHT",
+         "style": "heading/md",
+         "color": {
+          "value": "#0F172A",
+          "token": "Color/text/primary"
+         }
+        }
+       },
+       {
+        "id": "57:228",
+        "type": "TEXT",
+        "name": "risco",
+        "fidelity": "exact",
+        "size": {
+         "width": 342,
+         "height": 20
+        },
+        "sizing": {
+         "horizontal": "FILL",
+         "vertical": "HUG"
+        },
+        "text": {
+         "characters": "Risco baixo neste mês",
+         "autoResize": "HEIGHT",
+         "segments": [
+          {
+           "characters": "Risco ",
+           "style": "body/sm",
+           "color": {
+            "value": "#64748B",
+            "token": "Color/text/secondary"
+           }
+          },
+          {
+           "characters": "baixo",
+           "style": "label",
+           "color": {
+            "value": "#2563EB",
+            "token": "Color/primary"
+           }
+          },
+          {
+           "characters": " neste mês",
+           "style": "body/sm",
+           "color": {
+            "value": "#64748B",
+            "token": "Color/text/secondary"
+           }
+          }
+         ]
+        }
+       },
+       {
+        "id": "57:229",
+        "type": "INSTANCE",
+        "name": "Button/Ver detalhes",
+        "fidelity": "exact",
+        "size": {
+         "width": 342,
+         "height": 48
+        },
+        "sizing": {
+         "horizontal": "FILL",
+         "vertical": "FIXED"
+        },
+        "instance": {
+         "componentKey": "cc4d255d4c889786852f8ba4b57a714a4efd07ca",
+         "mainComponentKey": "06d16f5e231c2133b5f15830df51dd16439abe72",
+         "componentName": "Button",
+         "remote": true,
+         "props": {
+          "leftIcon": {
+           "componentKey": "087dbe9c98e6051c256534179685020be15d04ba",
+           "mainComponentKey": "918e51fc70f1b6d40c0b3b301460a8818eb1b392",
+           "componentName": "Icon",
+           "variant": {
+            "name": "plus"
+           }
+          },
+          "showLeftIcon": false,
+          "label": "Ver detalhes",
+          "variant": "primary",
+          "size": "md",
+          "state": "default"
+         },
+         "exposed": [],
+         "overrides": [
+          {
+           "id": "57:229",
+           "node": ".",
+           "fields": [
+            "height",
+            "primaryAxisSizingMode",
+            "width"
+           ]
+          }
+         ]
+        }
+       }
+      ]
+     }
+    }
+   ]
+  }
+ ],
+ "screens": [
+  {
+   "name": "06 · Teste textos",
+   "states": [
+    {
+     "state": "default",
+     "id": "57:234",
+     "frameName": "06 · Teste textos",
+     "tree": {
+      "id": "57:234",
+      "type": "FRAME",
+      "name": "06 · Teste textos",
+      "fidelity": "exact",
+      "size": {
+       "width": 390,
+       "height": 844
+      },
+      "sizing": {
+       "horizontal": "FIXED",
+       "vertical": "FIXED"
+      },
+      "layout": {
+       "direction": "VERTICAL",
+       "gap": {
+        "value": 24,
+        "token": "Spacing/xl"
+       },
+       "padding": {
+        "top": {
+         "value": 32,
+         "token": "Spacing/2xl"
+        },
+        "right": {
+         "value": 24,
+         "token": "Spacing/xl"
+        },
+        "bottom": {
+         "value": 32,
+         "token": "Spacing/2xl"
+        },
+        "left": {
+         "value": 24,
+         "token": "Spacing/xl"
+        }
+       },
+       "align": {
+        "main": "MIN",
+        "cross": "MIN"
+       },
+       "wrap": false
+      },
+      "style": {
+       "fills": [
+        {
+         "type": "SOLID",
+         "color": {
+          "value": "#F8FAFC",
+          "token": "Color/bg"
+         }
+        }
+       ],
+       "clipsContent": true
+      },
+      "children": [
+       {
+        "id": "57:235",
+        "type": "TEXT",
+        "name": "Chance de aprovação",
+        "fidelity": "exact",
+        "size": {
+         "width": 189,
+         "height": 24
+        },
+        "bounds": {
+         "x": 24,
+         "y": 32,
+         "width": 189,
+         "height": 24
+        },
+        "sizing": {
+         "horizontal": "HUG",
+         "vertical": "HUG"
+        },
+        "text": {
+         "characters": "Chance de aprovação",
+         "style": "heading/md",
+         "color": {
+          "value": "#0F172A",
+          "token": "Color/text/primary"
+         }
+        }
+       },
+       {
+        "id": "57:236",
+        "type": "TEXT",
+        "name": "chance",
+        "fidelity": "exact",
+        "size": {
+         "width": 175,
+         "height": 24
+        },
+        "bounds": {
+         "x": 24,
+         "y": 80,
+         "width": 175,
+         "height": 24
+        },
+        "sizing": {
+         "horizontal": "HUG",
+         "vertical": "HUG"
+        },
+        "text": {
+         "characters": "72% de chance de Alta",
+         "segments": [
+          {
+           "characters": "72% ",
+           "style": "heading/md",
+           "color": {
+            "value": "#0F172A",
+            "token": "Color/text/primary"
+           }
+          },
+          {
+           "characters": "de chance de ",
+           "style": "body/md",
+           "color": {
+            "value": "#64748B",
+            "token": "Color/text/secondary"
+           }
+          },
+          {
+           "characters": "Alta",
+           "style": "label",
+           "color": {
+            "value": "#2563EB",
+            "token": "Color/primary"
+           }
+          }
+         ]
+        }
+       },
+       {
+        "id": "57:237",
+        "type": "INSTANCE",
+        "name": "ChanceCard",
+        "fidelity": "exact",
+        "size": {
+         "width": 342,
+         "height": 140
+        },
+        "bounds": {
+         "x": 24,
+         "y": 128,
+         "width": 342,
+         "height": 140
+        },
+        "sizing": {
+         "horizontal": "FILL",
+         "vertical": "HUG"
+        },
+        "instance": {
+         "componentKey": "b3cd73804ed3c4db33054223112fbd35101248b4",
+         "mainComponentKey": "b3cd73804ed3c4db33054223112fbd35101248b4",
+         "componentName": "ChanceCard",
+         "remote": false,
+         "props": {
+          "title": "Seu empréstimo"
+         },
+         "exposed": [],
+         "overrides": [],
+         "content": [
+          {
+           "path": "title",
+           "text": "Seu empréstimo"
+          },
+          {
+           "path": "risco",
+           "text": "Risco baixo neste mês"
+          },
+          {
+           "path": "Button/Ver detalhes",
+           "component": "Button",
+           "props": {
+            "showLeftIcon": false,
+            "label": "Ver detalhes",
+            "variant": "primary",
+            "size": "md",
+            "state": "default"
+           }
+          },
+          {
+           "path": "Button/Ver detalhes/label",
+           "text": "Ver detalhes"
+          }
+         ]
+        }
+       },
+       {
+        "id": "57:244",
+        "type": "INSTANCE",
+        "name": "Button/Simular",
+        "fidelity": "exact",
+        "size": {
+         "width": 342,
+         "height": 48
+        },
+        "bounds": {
+         "x": 24,
+         "y": 292,
+         "width": 342,
+         "height": 48
+        },
+        "sizing": {
+         "horizontal": "FILL",
+         "vertical": "FIXED"
+        },
+        "instance": {
+         "componentKey": "cc4d255d4c889786852f8ba4b57a714a4efd07ca",
+         "mainComponentKey": "06d16f5e231c2133b5f15830df51dd16439abe72",
+         "componentName": "Button",
+         "remote": true,
+         "props": {
+          "leftIcon": {
+           "componentKey": "087dbe9c98e6051c256534179685020be15d04ba",
+           "mainComponentKey": "918e51fc70f1b6d40c0b3b301460a8818eb1b392",
+           "componentName": "Icon",
+           "variant": {
+            "name": "plus"
+           }
+          },
+          "showLeftIcon": false,
+          "label": "Simular empréstimo",
+          "variant": "primary",
+          "size": "md",
+          "state": "default"
+         },
+         "exposed": [],
+         "overrides": [
+          {
+           "id": "57:244",
+           "node": ".",
+           "fields": [
+            "height",
+            "primaryAxisSizingMode",
+            "width"
+           ]
+          }
+         ],
+         "content": [
+          {
+           "path": "label",
+           "text": "Simular empréstimo"
+          }
+         ]
+        }
+       }
+      ]
+     }
+    }
+   ]
+  }
+ ],
+ "lint": [
+  {
+   "node": "57:244",
+   "name": "Button/Simular",
+   "rule": "renamed-instance",
+   "detail": "instância renomeada; componente \"Button\""
+  },
+  {
+   "node": "57:229",
+   "name": "Button/Ver detalhes",
+   "rule": "renamed-instance",
+   "detail": "instância renomeada; componente \"Button\""
+  }
+ ]
+}

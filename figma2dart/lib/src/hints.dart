@@ -7,11 +7,17 @@ import 'tokens.dart';
 /// O `resolve` grava em cada tarefa (`check.json`) o que a tela e os componentes esperam; o `check` compara com os
 /// arquivos.
 
-/// Textos fixos de uma árvore (TEXT sem prop ligada): o que a tela ou o componente mostra como está no Figma.
+/// Textos fixos de uma árvore (TEXT sem prop ligada): o que a tela ou o componente mostra como está no Figma. Texto
+/// com trechos em estilos diferentes vai trecho a trecho: no código, cada um é um `TextSpan`.
 List<String> staticTexts(Json node) => [
   if (node['visible'] != false) ...[
     if (node['text'] case final Json text when (node['bindings'] as Json?)?['characters'] == null)
-      text['characters'] as String,
+      ...switch (text['segments']) {
+        final List<Object?> segments when segments.isNotEmpty => [
+          for (final s in segments.cast<Json>()) s['characters'] as String,
+        ],
+        _ => [text['characters'] as String],
+      },
     for (final child in (node['children'] as List? ?? const []).cast<Json>()) ...staticTexts(child),
   ],
 ];
@@ -36,7 +42,8 @@ String _key(Object? value) => switch (value) {
 };
 
 /// Dicas de um arquivo: valor solto (com o token do mesmo valor, quando há) e, conforme [expect], widget a montar
-/// ausente, parâmetro proposto ausente e texto do Figma ausente.
+/// ausente, parâmetro proposto ausente, texto do Figma ausente e `Text`/`TextStyle` do Flutter num DS com widget de
+/// texto próprio (`@FigmaText`).
 List<Json> hintsFor(String file, String source, {Json? expect, Map<String, List<Json>> tokens = const {}}) {
   final hints = <Json>[];
   void add(int line, String kind, String message) =>
@@ -97,6 +104,14 @@ List<Json> hintsFor(String file, String source, {Json? expect, Map<String, List<
         add(0, 'text', 'texto do Figma não aparece: "$text" (se vem de dados ou de tradução, ignore)');
       }
     }
+    // Modelo que já é o `Text` do Flutter (DS sem widget próprio): não há o que trocar.
+    if (expect['textWidget'] case final String widget when !_flutterText.hasMatch(widget)) {
+      for (final m in _flutterText.allMatches(source)) {
+        final line = lineOf(m.start);
+        if (silenced(line)) continue;
+        add(line, 'text', '`${m[1]}` do Flutter: texto do DS é `$widget` (linha `texto →` do brief)');
+      }
+    }
   }
   // Na ordem do arquivo; as dicas sem linha (o que falta no arquivo todo) no fim.
   return hints..sort((a, b) => ((a['line'] as int?) ?? 1 << 30).compareTo((b['line'] as int?) ?? 1 << 30));
@@ -115,6 +130,7 @@ int _primitive(Json token) => (token['token'] as String).toLowerCase().contains(
 final _color = RegExp(r'\bColor\(\s*0x([0-9A-Fa-f]{8})\s*\)');
 final _material = RegExp(r'\bColors\.\w+');
 final _number = RegExp(r'\b\d+(?:\.\d+)?\b');
+final _flutterText = RegExp(r'(?<![\w.$])(Text(?:\.rich)?|TextStyle)\(');
 
 /// Onde número solto é valor de layout, qual coleção de token combina com ele e se só vale dar dica quando há
 /// token dessa coleção com o valor (`size:` de ícone sem token de tamanho é o tamanho do Figma que o brief manda

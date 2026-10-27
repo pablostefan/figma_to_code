@@ -624,6 +624,57 @@ Widget screen(FigmaScreenProps s) => AcmeContext(
 - **Template desanexado** (o designer desanexou a instância): sem instância nem props, a anotação não roda. O plugin
   aponta no lint (`detached-instance`), e a tela sai como camadas.
 
+### 8.1 Widget de texto do DS: `@FigmaText`
+
+No Figma, um texto é só uma camada com um estilo de texto. Quando o DS tem widget próprio (`AcmeText`), uma função
+diz como cada texto vira código, uma vez para o pacote todo:
+
+```dart
+// acme_figma/lib/figma_policy.dart
+const figmaPolicy = FigmaPolicy(
+  tokens: TokenTable(textStyles: TokenSource(AcmeTextType)), // a tipografia é um enum: body/sm → AcmeTextType.bodySm
+);
+
+@FigmaText()
+Widget text(FigmaTextProps t) => AcmeText(t.text(), type: t.style());
+```
+
+| `FigmaTextProps` | Vira |
+|---|---|
+| `t.text()` | o texto entre aspas; num componente a construir, o parâmetro da prop ligada (`label`) |
+| `t.style()` | o estilo de texto pelo `textStyles` da política (§7.3) |
+| `t.color()` | a cor pelo token (`context.acmeColors.textPrimary`), se o widget recebe cor |
+
+- Na estrutura do brief, cada texto sai com o código pronto: `` texto → `AcmeText('Entrar', type: AcmeTextType.bodySm)` ``.
+  O "Não fazer" do brief proíbe o `Text`/`TextStyle` do Flutter, e o `figma2dart check` dá uma dica em cada linha
+  da tela ou do componente construído que usa um deles.
+- **Texto sem estilo do DS** (fonte solta; o plugin aponta no lint `text-without-style`): no lugar do estilo sai
+  `fonte Inter Bold 14 (sem estilo do DS)`. Estilo do Figma sem membro no enum: `body/xl (sem Dart)`. Nos dois casos
+  a LLM usa o mais próximo e marca `f2d:inferred`.
+- **Texto com trechos em estilos diferentes** (`72% de chance de **Alta**`): com uma função `@FigmaText.rich`, sai
+  o código com um item por trecho; sem ela, sai o widget simples com `estilo de cada trecho` e a lista de trechos.
+
+  ```dart
+  @FigmaText.rich()
+  Widget richText(BuildContext context, FigmaRichTextProps t) => AcmeRichText(
+    text: TextSpan(
+      children: t.spans((s) => TextSpan(
+        text: s.text(),
+        style: s.style<AcmeTypographyType>().styleOf(context).copyWith(color: s.color()),
+      )),
+    ),
+  );
+  ```
+
+  `t.spans` repete a função para cada trecho, com o texto, o estilo e a cor dele; o `context` vai como está (é o do
+  `build` da tela). O `check` procura cada trecho no código, não a frase inteira. Texto em trechos ligado a uma prop
+  (num componente a construir) sai com o widget simples: os trechos dependem do valor.
+- Vale para o texto solto da tela e para o dos componentes a construir. Dentro de um componente do DS, o texto é
+  atributo dele (`f.text('label')` → `'Entrar'`), e a função não entra.
+- Uma função `@FigmaText` por pacote, de expressão (`=>`), em qualquer arquivo de `lib/`. O código dela vai para o
+  brief como está: escreva sem prefixo de import (`AcmeText`, não `acme.AcmeText`). Sem ela, os textos saem
+  descritos, e o `doctor` avisa; num DS que usa o `Text` do Flutter, `Text(t.text(), style: t.style())` resolve.
+
 ---
 
 ## 9. Como cada campo chega à LLM

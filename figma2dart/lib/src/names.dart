@@ -18,6 +18,10 @@ String identifier(String name) {
   return _reserved.contains(id) ? '${id}Value' : id;
 }
 
+/// Literal de texto Dart: `it's` → `'it\'s'`.
+String dartString(String s) =>
+    "'${s.replaceAll(r'\', r'\\').replaceAll("'", r"\'").replaceAll(r'$', r'\$').replaceAll('\n', r'\n')}'";
+
 String _capitalize(String w) => w[0].toUpperCase() + w.substring(1);
 
 /// Vazio vira [empty]; começando com número ganha [prefix] (identificador Dart não começa com dígito).

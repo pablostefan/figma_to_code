@@ -17,7 +17,8 @@ class Workspace {
   /// Raiz do repositório git; null fora de um.
   final String? repo;
 
-  /// Configs lidos, do menos para o mais próximo do pacote (o do repo, depois o do pacote): arquivo → conteúdo.
+  /// Configs lidos, do menos para o mais próximo do pacote (o do repo, o do pacote e o local, de quem usa):
+  /// arquivo → conteúdo.
   final Map<String, Map<String, Object?>> configs;
 
   static const configName = 'figma_to_dart.yaml';
@@ -61,13 +62,40 @@ class Workspace {
     final own = File('$app/$configName');
     // O do pacote pode ser o próprio config do repo (já lido, com o caminho real que o git devolve).
     if (own.existsSync() && !configs.containsKey(_real(own.path))) configs[own.path] = _read(own.path);
+    final local = File('$app/.figma2dart/$localConfig');
+    if (local.existsSync()) configs[local.path] = _read(local.path);
     return Workspace._(app, repo, configs);
   }
 
-  String get tasks => '$app/.figma2dart/tasks';
+  /// O que é só de quem usa, neste pacote (tarefas e escolhas como a pasta das telas): fora do git, porque a pasta
+  /// se ignora sozinha ([ensureLocal]).
+  String get local => '$app/.figma2dart';
+
+  String get tasks => '$local/tasks';
+
+  /// Config local, em [local]: o mais próximo de todos; não vai para o git.
+  static const localConfig = 'local.yaml';
+
+  /// Cria [local] com um `.gitignore` que ignora tudo: num monorepo, nenhum pacote precisa listar a pasta.
+  void ensureLocal() {
+    final ignore = File('$local/.gitignore');
+    if (!ignore.existsSync()) (ignore..createSync(recursive: true)).writeAsStringSync('*\n');
+  }
 
   /// Pasta das telas geradas (`screens:`), relativa ao pacote; null enquanto ninguém decidiu.
   String? get screens => _value('screens')?.value as String?;
+
+  /// Guarda [dir] como a pasta das telas deste pacote só para quem usa (`.figma2dart/local.yaml`), sem criar config
+  /// versionado: num monorepo, cada pacote tem a sua. Absoluta ou relativa ao pacote; fora dele é erro.
+  void rememberScreens(String dir) {
+    final full = File(dir.startsWith('/') ? dir : '$app/$dir').absolute.uri.normalizePath().toFilePath();
+    final relative = full.startsWith('$app/') ? full.substring(app.length + 1).replaceFirst(RegExp(r'/$'), '') : '';
+    if (relative.isEmpty) throw ResolveError('A pasta das telas ($dir) precisa ser uma pasta dentro de $app.');
+    ensureLocal();
+    final file = File('$local/$localConfig');
+    file.writeAsStringSync('screens: ${jsonEncode(relative)}\n');
+    configs[file.path] = {'screens': relative};
+  }
 
   /// Pacote de mapeamentos, sem carregar: `mappings:` no config, a dependência do pacote que tem
   /// `lib/figma_policy.dart` ou, no repositório, o único pacote com ela. [packageConfig] é

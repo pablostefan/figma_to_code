@@ -6,6 +6,7 @@ import 'dart:io';
 
 import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/dart/ast/ast.dart';
+import 'package:analyzer/dart/ast/visitor.dart';
 import 'package:analyzer/dart/constant/value.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/diagnostic/diagnostic.dart';
@@ -93,6 +94,8 @@ class MappingSet {
     this.components, {
     this.root,
     this.screen,
+    this.text,
+    this.richText,
     this.policy = const Policy(),
     this.library,
     this.warnings = const [],
@@ -134,6 +137,8 @@ class MappingSet {
       [...components, ...kept],
       root: root,
       screen: screen,
+      text: text,
+      richText: richText,
       policy: policy,
       library: library,
       warnings: skipped,
@@ -142,6 +147,12 @@ class MappingSet {
 
   /// Código da função `@FigmaScreen` (o esqueleto de toda tela), se o pacote tiver.
   final String? screen;
+
+  /// A função `@FigmaText` do pacote (o widget de texto do DS); null: os textos saem descritos.
+  final TextTemplate? text;
+
+  /// A função `@FigmaText.rich` (texto com trechos em estilos diferentes); null: os trechos saem listados.
+  final TextTemplate? richText;
   final Policy policy;
 
   /// Pasta do pacote; docs e exemplos são procurados a partir dela. Null: brief sem docs.
@@ -164,6 +175,97 @@ class MappingSet {
       if (candidates.isNotEmpty) return candidates.first;
     }
     return null;
+  }
+}
+
+/// Texto, estilo e cor de um texto do Figma (ou de um trecho dele), já como código.
+typedef TextValues = ({String text, String style, String color});
+
+/// O corpo de uma função `@FigmaText` (`AcmeText(t.text(), type: t.style())`), com as chamadas no parâmetro marcadas
+/// para [render] trocar pelos valores de cada texto. `t.spans((s) => …)` (`@FigmaText.rich`) guarda o modelo de um
+/// trecho, repetido por trecho.
+class TextTemplate {
+  TextTemplate(this.source, this.calls);
+
+  final String source;
+
+  /// `text`, `style`, `color` ou `spans` (com o modelo do trecho), com a posição em [source], em ordem.
+  final List<({int start, int end, String method, TextTemplate? span})> calls;
+
+  String render(TextValues v, {List<TextValues> spans = const []}) {
+    final out = StringBuffer();
+    var pos = 0;
+    for (final c in calls) {
+      out
+        ..write(source.substring(pos, c.start))
+        ..write(switch (c.method) {
+          'text' => v.text,
+          'style' => v.style,
+          'spans' => '[${spans.map(c.span!.render).join(', ')}]',
+          _ => v.color,
+        });
+      pos = c.end;
+    }
+    return (out..write(source.substring(pos))).toString();
+  }
+}
+
+/// A função anotada: o parâmetro `FigmaTextProps`/`FigmaRichTextProps` é o que o modelo lê (o `context` do rich
+/// passa como está).
+TextTemplate _textTemplate(CompilationUnitMember declaration, ResolvedUnitResult result) {
+  final fn = declaration is FunctionDeclaration ? declaration.functionExpression : null;
+  final body = fn?.body;
+  if (body is! ExpressionFunctionBody) {
+    throw StateError('${result.path}: a função @FigmaText precisa ser de expressão (=>).');
+  }
+  final param = fn!.parameters!.parameters
+      .where((p) => '${p.declaredElement?.type}'.startsWith('Figma'))
+      .lastOrNull
+      ?.name!
+      .lexeme;
+  if (param == null) {
+    throw StateError(
+      '${result.path}: a função @FigmaText precisa de um parâmetro FigmaTextProps (ou FigmaRichTextProps).',
+    );
+  }
+  return _template(body.expression, param, result.content, result.path);
+}
+
+TextTemplate _template(Expression expression, String param, String content, String path) {
+  final calls = <({int start, int end, String method, TextTemplate? span})>[];
+  expression.accept(
+    _ParamCalls(param, (m) {
+      TextTemplate? span;
+      if (m.methodName.name == 'spans') {
+        final fn = m.argumentList.arguments.firstOrNull;
+        if (fn is! FunctionExpression || fn.body is! ExpressionFunctionBody) {
+          throw StateError('$path: `t.spans` precisa de uma função de expressão no lugar: `(s) => TextSpan(…)`.');
+        }
+        span = _template(
+          (fn.body as ExpressionFunctionBody).expression,
+          fn.parameters!.parameters.first.name!.lexeme,
+          content,
+          path,
+        );
+      }
+      final start = m.offset - expression.offset;
+      calls.add((start: start, end: start + m.length, method: m.methodName.name, span: span));
+    }),
+  );
+  return TextTemplate(content.substring(expression.offset, expression.end), calls);
+}
+
+/// As chamadas `t.metodo()` no parâmetro [param], em ordem.
+class _ParamCalls extends RecursiveAstVisitor<void> {
+  _ParamCalls(this.param, this.found);
+
+  final String param;
+  final void Function(MethodInvocation) found;
+
+  @override
+  void visitMethodInvocation(MethodInvocation node) {
+    if (node.target case SimpleIdentifier(:final name) when name == param) return found(node);
+    super.visitMethodInvocation(node);
   }
 }
 
@@ -229,6 +331,8 @@ Future<MappingSet> loadMappings(String packageDir, {String? packageConfig}) asyn
 
   final components = <Mapping>[];
   String? screen;
+  TextTemplate? text;
+  TextTemplate? richText;
   for (final result in units) {
     for (final declaration in result.unit.declarations.whereType<CompilationUnitMember>()) {
       for (final annotation in declaration.metadata) {
@@ -238,6 +342,12 @@ Future<MappingSet> loadMappings(String packageDir, {String? packageConfig}) asyn
             components.add(_mapping(value!, declaration, result.path, result, kindNotes));
           case 'FigmaScreen':
             screen = result.content.substring(declaration.offset, declaration.end);
+          case 'FigmaText' when value!.getField('rich')?.toBoolValue() == true:
+            if (richText != null) throw StateError('${result.path}: o pacote já tem uma função @FigmaText.rich.');
+            richText = _textTemplate(declaration, result);
+          case 'FigmaText':
+            if (text != null) throw StateError('${result.path}: o pacote já tem uma função @FigmaText.');
+            text = _textTemplate(declaration, result);
           case 'FigmaLocal':
             throw StateError(
               '${result.path}: @FigmaLocal é de componente do app; fica em figma/connect/ do pacote dele.',
@@ -251,6 +361,8 @@ Future<MappingSet> loadMappings(String packageDir, {String? packageConfig}) asyn
     components,
     root: root,
     screen: screen,
+    text: text,
+    richText: richText,
     policy: policy,
     library: snapshot.existsSync()
         ? libraryKeys(jsonDecode(snapshot.readAsStringSync()) as Map<String, Object?>)
@@ -297,7 +409,7 @@ Future<({List<Mapping> locals, List<String> warnings})> loadLocalMappings(
             } on StateError catch (e) {
               warnings.add(e.message);
             }
-          case 'FigmaConnect' || 'FigmaScreen':
+          case 'FigmaConnect' || 'FigmaScreen' || 'FigmaText':
             warnings.add('${result.path}: mapeamento do DS fica no pacote de mapeamentos (lib/), não no app.');
         }
       }

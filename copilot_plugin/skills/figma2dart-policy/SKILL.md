@@ -76,7 +76,31 @@ texto) e as páginas de ícones.
 4. **Nomes que não batem** (`02` → `two`): `names: {'02': 'two'}` no `TokenSource`. Não mude a classe do DS. Ponha
    em `names` só o que o doctor apontar em "a classe não tem o membro", e só com o membro que existe de verdade na
    classe; se não houver par, deixe de fora e relate.
-5. **Estilos de texto:** `textStyles: TokenSource(<classe>, via: …)`, achados do mesmo jeito.
+5. **Estilos de texto:** `textStyles: TokenSource(<classe>, via: …)`, achados do mesmo jeito. Se o widget de texto
+   do DS recebe a tipografia num enum (`AcmeText(…, type: AcmeTextType.bodySm)`), aponte para o enum, sem `via`.
+   - **O widget de texto:** se o DS não usa o `Text` do Flutter, ache o widget próprio (`grep -rn "class \w*Text\b"
+     <DS>/lib`) e anote no `lib/figma_policy.dart` uma função que o monta, com os parâmetros que ele tem de verdade:
+
+     ```dart
+     @FigmaText()
+     Widget text(FigmaTextProps t) => AcmeText(t.text(), type: t.style());
+     ```
+
+     `t.color()` só se o widget recebe cor. O doctor avisa enquanto a função não existe.
+   - **Texto em trechos** (estilos diferentes no mesmo texto): se o DS tem widget para isso (`AcmeRichText`), anote
+     também a função `@FigmaText.rich`, com um item por trecho:
+
+     ```dart
+     @FigmaText.rich()
+     Widget richText(BuildContext context, FigmaRichTextProps t) => AcmeRichText(
+       text: TextSpan(children: t.spans((s) => TextSpan(
+         text: s.text(),
+         style: s.style<AcmeTypographyType>().styleOf(context).copyWith(color: s.color()),
+       ))),
+     );
+     ```
+
+     Escreva as duas sem prefixo de import: o código vai para o brief como está.
 6. Rode o doctor. `missing` com "nenhuma classe" é um grupo que falta em `collections`/`scopes`; com "a classe não tem
    o membro", falta `names` ou o membro não existe.
 

@@ -2,6 +2,11 @@
 
 ## Não lançado
 
+- `@FigmaText` e `FigmaTextProps`: o widget de texto do DS (`AcmeText(t.text(), type: t.style())`). Com ele, cada
+  texto do brief vem com o código pronto, no widget e na tipografia do DS, em vez do `Text` do Flutter.
+  `@FigmaText.rich` e `FigmaRichTextProps.spans`: o texto com trechos em estilos diferentes (`AcmeRichText`), um
+  `TextSpan` por trecho.
+
 - **Removido** (a CLI nunca leu): `tags`, `owner` e `status` (`Status`) do `@FigmaConnect`; `require`,
   `expectedCoverage` e `brief` do `KindPolicy`, com os enums `Field` e `BriefDepth`. O `KindPolicy` fica só com
   `devNotes`. Quem usava: apagar esses argumentos.

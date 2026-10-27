@@ -30,8 +30,10 @@ CLI, pergunta ao usuário o que só ele decide, constrói e confere.
 3. **Escolher as telas** — `figma2dart screens <zip> --json`. Pergunte quais implementar (múltipla escolha). Siga a
    ordem do fluxo (`start` primeiro).
 4. **Resolver todas as telas escolhidas de uma vez** (os mapeamentos são carregados uma vez só):
-   `figma2dart resolve <zip> --screen "<tela 1>" --screen "<tela 2>" --json`. Cada item de `tasks` é uma tela, com
-   `brief`, `screenFile` e `components`. **Para cada tela, na ordem:**
+   `figma2dart resolve <zip> --screen "<tela 1>" --screen "<tela 2>" --json`. Se o `doctor` disse que a pasta das
+   telas não está definida, acrescente `--screens-dir <pasta>` (veja a skill de setup): a escolha fica só nesta
+   máquina, para este pacote. Cada item de `tasks` é uma tela, com `brief`, `screenFile` e `components`. **Para cada
+   tela, na ordem:**
    1. Leia o item dela em `tasks`. Se o resultado tiver `warnings` (`@FigmaLocal` que ficou de fora: widget
       renomeado, key do DS…), conte ao usuário uma vez: aquele componente voltou a ser "a construir".
    2. **Componentes fora do DS** (`components` com `"kind": "build"`, já em ordem de dependência). Pergunte,
