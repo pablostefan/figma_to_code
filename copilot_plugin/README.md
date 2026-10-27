@@ -15,7 +15,7 @@ copilot_plugin/
 │   └── figma2dart-policy/              montar e conferir o FigmaPolicy (tokens, ícones)
 └── com.github.copilot/                 só Copilot
     ├── lsp.json                        LSP do Dart (Copilot CLI)
-    ├── hooks/                          doctor e dart analyze depois de editar; confirmação para editar o Acme
+    ├── hooks/                          doctor e dart analyze depois de editar; confirmação para editar o DS
     └── agents/
         ├── figma-to-flutter.agent.md   telas do Figma → Flutter
         ├── figma-component-builder.agent.md
@@ -49,7 +49,7 @@ você esquecer, a skill `figma2dart-setup` encontra o script e roda o setup depo
 
 O plugin traz o servidor `dart` (`dart language-server`), e a Copilot CLI passa a usá-lo no lugar da busca por texto:
 definição, referências, hover, símbolos e rename vêm do analyzer. Ajuda a ler construtores, factories e classes de
-tokens do Acme sem abrir os arquivos inteiros.
+tokens do DS sem abrir os arquivos inteiros.
 
 - Precisa do `dart` no `PATH` (o do Flutter serve) e de uma Copilot CLI recente (`copilot update`): o formato Agent
   Plugins (`com.github.copilot/`) é das versões novas.
@@ -68,11 +68,13 @@ nunca bloqueia sozinho:
 
 | Quando | O que faz |
 |---|---|
-| antes de editar algo em `acme/` ou `acme_templates/` | pede confirmação ao usuário (`ask`): um componente do DS não muda por causa de uma tela |
+| antes de editar algo numa pasta do DS (`FIGMA2DART_DS_DIRS`) | pede confirmação ao usuário (`ask`): um componente do DS não muda por causa de uma tela |
 | depois de editar um `*.figma.dart` ou o `figma_policy.dart` | roda `figma2dart doctor --json` e devolve ao agente `mappings`, `problems` e `warnings` |
 | depois de editar um `.dart` em `lib/figma/` | roda `dart analyze` no arquivo e devolve os erros (o LSP não traz erros) |
 
 - Precisa de `jq` (já vem no macOS) e, para o doctor, do `figma2dart` no `PATH`; sem eles, o hook não faz nada.
+- As pastas do DS vêm de `FIGMA2DART_DS_DIRS`, um regex dos nomes das pastas (`export FIGMA2DART_DS_DIRS='ds|ds_templates'` no
+  seu shell). Sem ela, o hook não pede confirmação.
 - O doctor leva alguns segundos (o analyzer carrega as anotações). Passou de 120 s, o hook desiste sem travar o agente.
 - Telas numa pasta que não seja `lib/figma/` não disparam o `dart analyze`.
 - Sem ninguém para confirmar (`copilot -p`), o `ask` vira recusa.

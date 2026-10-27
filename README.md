@@ -45,9 +45,7 @@ figma_to_code/
   figma_plugin/     plugin do Figma (TypeScript): exporta tela, fluxo, componente ou biblioteca no formato IR
   figma_connect/    pacote Flutter: a anotação @FigmaConnect e a captura para a revisão
   figma2dart/       CLI Dart: lê o export e os mapeamentos e escreve os briefs
-  acme_figma/       anotações e política do Acme (pacote de mapeamentos do monorepo)
   copilot_plugin/   plugin do Copilot (Agent Plugins 1.0): agentes e skills, instalado uma vez por máquina
-  figma_to_dart.yaml config: aponta para o acme_figma e define a pasta das telas
   docs/             como funciona, arquitetura, referência das anotações e guias
 ```
 

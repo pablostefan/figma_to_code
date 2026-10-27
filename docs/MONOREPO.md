@@ -18,7 +18,7 @@ Esta pasta inteira fica ao lado do Acme:
     acme/  acme_templates/                o DS: não muda
     figma_to_code/                        esta pasta (o nome pode ser outro)
       figma_to_dart.yaml                  config do repositório: mappings: acme_figma
-      acme_figma/                         anotações e política do Acme, retrato do Figma
+      acme_figma/                         anotações e política do DS, retrato do Figma (o time do DS cria)
       figma2dart/                         CLI
       figma_connect/                      API das anotações e captura da revisão
       copilot_plugin/                     agentes e skills

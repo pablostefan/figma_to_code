@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Hooks do figma2dart. Só informam: devolvem contexto ao agente ou pedem confirmação ao usuário, nunca negam.
-#   pre:  editar o Acme (acme/, acme_templates/) → pede confirmação.
+#   pre:  editar uma pasta do DS (FIGMA2DART_DS_DIRS, ex.: `ds|ds_templates`) → pede confirmação.
 #   post: editou *.figma.dart ou figma_policy.dart → `figma2dart doctor`; editou lib/figma/**.dart → `dart analyze`.
 # Entrada no stdin: Copilot CLI (`toolArgs`) ou formato do VS Code (`tool_input`).
 mode=$1
@@ -22,8 +22,9 @@ context() {
 }
 
 if [ "$mode" = pre ]; then
-  acme=$(grep -E '/(acme|acme_templates)/' <<<"$paths")
-  [ -n "$acme" ] && ask "Edição no Design System (Acme): $acme. Componentes do DS não mudam por uma tela; confirme se é isso mesmo."
+  [ -n "$FIGMA2DART_DS_DIRS" ] || exit 0
+  ds=$(grep -E "/($FIGMA2DART_DS_DIRS)/" <<<"$paths")
+  [ -n "$ds" ] && ask "Edição no Design System: $ds. Componentes do DS não mudam por uma tela; confirme se é isso mesmo."
   exit 0
 fi
 

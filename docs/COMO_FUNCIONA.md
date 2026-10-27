@@ -84,7 +84,7 @@ Feito pelo time do DS, no **pacote de mapeamentos** (no POC, `design_system/cart
 | **Entrada** | o pacote do DS e o `figma_connect` |
 | **Saída** | `pubspec.yaml` (DS + `figma_connect`), `lib/figma_policy.dart`, `test/mappings_test.dart` |
 
-No monorepo, o `acme_figma` já vem pronto ([MONOREPO.md](MONOREPO.md)).
+No monorepo, o pacote fica ao lado da CLI ([MONOREPO.md](MONOREPO.md)).
 
 ### A2 · Retrato da biblioteca
 
