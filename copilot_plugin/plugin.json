@@ -1,0 +1,7 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "figma2dart",
+  "version": "0.1.0",
+  "description": "Telas do Figma em Flutter com o Design System: agentes e skills que usam a CLI figma2dart para implementar telas, construir componentes, revisar e anotar o DS (@FigmaConnect e FigmaPolicy).",
+  "keywords": ["figma", "flutter", "design-system", "figma2dart"]
+}

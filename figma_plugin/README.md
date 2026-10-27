@@ -6,8 +6,7 @@ O mesmo extrator roda em dois lugares e gera o mesmo JSON:
 - **Plugin do Figma:** para designers, sem Dev Mode. Gera um `.zip` com `export.json` + imagens.
 - **MCP (`use_figma`):** para agentes e CI. Devolve o JSON (paginado quando passa de 48 KB).
 
-Arquitetura e decisões: [docs/ARCHITECTURE.md](../docs/ARCHITECTURE.md), seções 4 a 6.
-Histórico de mudanças: [docs/CHANGELOG.md](../docs/CHANGELOG.md).
+O formato (IR), os tipos de export e a profundidade de cada nó: [docs/ARQUITETURA.md §2](../docs/ARQUITETURA.md#2-o-ir-o-contrato-com-o-figma).
 
 ## Build
 
@@ -101,24 +100,17 @@ Gerados via MCP a partir dos arquivos do POC:
   `overrides[].values` existir: os overrides dele não trazem valores.
 - `examples/flow-transferencia.ir.json` — `kind: flow` (5 telas, 4 componentes locais, 7 navegações, lint).
 
-Os dois saíram do extrator 0.1 (IR 1.0.0). IR 1.1, 1.2, 1.3 e 1.4 só acrescentam campos opcionais, então continuam
-válidos.
-
-**IR 1.3 (extrator 0.4):** instância numa tela traz `bounds` (caixa relativa ao frame) e `instance.content` (textos e
-instâncias visíveis de dentro, até 200 itens, com `contentTruncated` se passar); o estado da tela traz `imageScale`
-(escala do PNG, 2); texto traz `maxLines`, `truncation: 'ENDING'` e `autoResize` (quando não é o padrão). A CLI usa
-`bounds` + `imageScale` para recortar cada instância do PNG da tela. Extrator 0.4.1: nó girado traz `rotation`
-(graus, anti-horário como no Figma; o "voltar" costuma ser o `chevron-right` a 180°); o `content` deixa de fora a
-troca de instância de camada oculta; o zip do fluxo leva o nome da section ou da página.
-
-**IR 1.4 (extrator 0.5):** todo nó numa tela traz `bounds` (não só as instâncias), para a revisão visual recortar
-cada seção da tela nos dois lados (Figma e Flutter).
+O IR só ganha campos opcionais entre versões, então exports antigos continuam válidos.
 
 ## DS maiores
 
-O extrator não depende do DS do POC: cobre modos de variável, estilos de cor, nomes repetidos entre bibliotecas,
-texto e camadas alterados sem prop, templates dentro do arquivo do DS, sections aninhadas e grid. O que ainda é
-convenção está em [ARCHITECTURE.md, seção 5.8](../docs/ARCHITECTURE.md).
+O extrator não depende de nenhum DS: lê só a Plugin API. Cobre modos de variável (temas e marcas), estilos de cor,
+nomes repetidos entre bibliotecas, alias para variável de outra biblioteca, texto e camadas alterados sem prop,
+templates dentro do arquivo do DS, sections aninhadas e grid.
+
+Continuam sendo convenção (afetam só agrupamento e lint, sem perder dados): estados por `Tela / estado` no nome do
+frame, biblioteca por página, e variável de tipografia direto no texto sem text style (sai como fonte solta, com o
+lint `text-without-style`).
 
 ## Limitações conhecidas
 
@@ -129,5 +121,3 @@ convenção está em [ARCHITECTURE.md, seção 5.8](../docs/ARCHITECTURE.md).
   `nodeIds` em vez de paginar um IR só.
 - **`fileKey` no plugin:** só vem quando o plugin é publicado como privado da organização. Importado como plugin de
   desenvolvimento, o export traz `fileName`, mas não `fileKey`.
-- **Teste:** plugin rodado no Figma desktop (tela e fluxo do POC). O IR saiu igual ao do MCP, exceto `source.via`,
-  `fileKey` e as imagens.

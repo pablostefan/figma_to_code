@@ -10,6 +10,7 @@ import 'package:yaml/yaml.dart';
 
 import 'brief.dart';
 import 'component_brief.dart';
+import 'coverage.dart';
 import 'crop.dart';
 import 'review.dart';
 import 'export.dart';
@@ -26,6 +27,7 @@ Future<Json> doctor(Workspace ws) async {
   final warnings = <Json>[];
   Json? mappings;
   Json? library;
+  Json? policy;
   try {
     final m = ws.mappings();
     if (m == null) {
@@ -48,11 +50,30 @@ Future<Json> doctor(Workspace ws) async {
       }
       final snapshot = File('${m.path}/$libraryFile');
       if (snapshot.existsSync()) {
-        final pages = ((jsonDecode(snapshot.readAsStringSync()) as Json)['pages'] as Map).cast<String, Json>();
+        final json = jsonDecode(snapshot.readAsStringSync()) as Json;
+        final pages = (json['pages'] as Map).cast<String, Json>();
         library = {
           for (final MapEntry(:key, value: page) in pages.entries)
             key: {'exportedAt': page['exportedAt'], 'components': (page['components'] as Map).length},
         };
+        policy = policyCoverage(json, set.policy);
+        if (json['files'] == null) {
+          warnings.add({
+            'what': 'retrato sem tokens nem ícones (feito por uma versão antiga): o doctor não confere a política',
+            'fix': 'exportar de novo as páginas do DS no plugin e rodar `figma2dart library`',
+          });
+        }
+        for (final MapEntry(key: what, value: report as Json) in policy.entries) {
+          final missing = (report['total'] as int) - (report['withDart'] as int);
+          if (missing == 0) continue;
+          warnings.add({
+            'what':
+                '$missing de ${report['total']} '
+                '${const {'tokens': 'tokens', 'textStyles': 'estilos de texto', 'icons': 'ícones'}[what]} '
+                'do Figma sem código Dart na política',
+            'fix': 'ajustar o lib/figma_policy.dart pelo `policy.$what.missing` e rodar o doctor de novo',
+          });
+        }
       } else {
         warnings.add({
           'what': 'sem retrato do DS ($libraryFile): componente de outra biblioteca do Figma sai como gap do DS',
@@ -64,9 +85,12 @@ Future<Json> doctor(Workspace ws) async {
     problems.add({'what': 'mapeamentos com erro: ${e is ArgumentError ? e.message : e}', 'fix': 'corrigir o pacote'});
   }
   if (ws.configs.isEmpty) {
+    final legacy = ws.legacyConfigs;
     problems.add({
       'what': 'nenhum ${Workspace.configName}',
-      'fix': 'no monorepo: versionar (git add) o config com `mappings:`; num app só: rodar `figma2dart init`',
+      'fix': legacy.isNotEmpty
+          ? 'renomear ${legacy.join(', ')} para ${Workspace.configName} (o nome antigo não é mais lido) e versionar'
+          : 'no monorepo: versionar (git add) o config com `mappings:`; num app só: rodar `figma2dart init`',
     });
   }
   final exports = ws.exports();
@@ -94,6 +118,7 @@ Future<Json> doctor(Workspace ws) async {
       for (final f in exports.take(5)) {'path': f.path, 'modified': f.lastModifiedSync().toIso8601String()},
     ],
     'library': library,
+    'policy': policy,
     'ok': problems.isEmpty,
     'problems': problems,
     'warnings': warnings,
@@ -405,8 +430,9 @@ Future<Json> check(Workspace ws, List<String> paths) async {
   };
 }
 
-/// Grava o retrato do DS (key e nome de cada componente) no pacote de mapeamentos, a partir de exports do plugin em
-/// modo biblioteca: um por página; exportar a mesma página de novo substitui a anterior. Sem [files], o
+/// Grava o retrato do DS no pacote de mapeamentos, a partir de exports do plugin em modo biblioteca: key e nome de cada
+/// componente e os ícones, por página (exportar a mesma página de novo substitui a anterior); os nomes dos tokens e
+/// dos estilos de texto, por arquivo. O `doctor` usa o retrato para conferir a política. Sem [files], o
 /// `figma2dart-library-*.zip` mais novo da pasta de exports.
 Json library(Workspace ws, List<String> files) {
   final m = ws.mappings() ?? (throw ResolveError('Pacote de mapeamentos não encontrado: rode `figma2dart doctor`.'));
@@ -417,6 +443,8 @@ Json library(Workspace ws, List<String> files) {
   final file = File('${m.path}/$libraryFile');
   final snapshot = file.existsSync() ? jsonDecode(file.readAsStringSync()) as Json : <String, Object?>{};
   final pages = (snapshot['pages'] as Map?)?.cast<String, Object?>() ?? {};
+  // Variáveis e estilos de texto são do arquivo, não da página: o último export de cada arquivo vale.
+  final byFile = (snapshot['files'] as Map?)?.cast<String, Object?>() ?? {};
   final updated = <String, int>{};
   for (final path in files) {
     final ir = Export.read(path).ir;
@@ -427,13 +455,23 @@ Json library(Workspace ws, List<String> files) {
     }
     final source = ir['source'] as Json;
     final page = '${source['fileName']} / ${source['pageName']}';
-    final components = {
-      for (final c in (ir['components'] as List).cast<Json>()) c['key'] as String: c['name'] as String,
+    final defs = (ir['components'] as List).cast<Json>();
+    final components = {for (final c in defs) c['key'] as String: c['name'] as String};
+    final icons = libraryIcons(source['pageName'] as String, defs);
+    pages[page] = {
+      'fileKey': source['fileKey'],
+      'exportedAt': source['exportedAt'],
+      'components': components,
+      if (icons.isNotEmpty) 'icons': icons,
     };
-    pages[page] = {'fileKey': source['fileKey'], 'exportedAt': source['exportedAt'], 'components': components};
+    byFile[source['fileName'] as String] = {
+      'exportedAt': source['exportedAt'],
+      'tokens': ((ir['tokens'] as Map?) ?? const {}).keys.toList()..sort(),
+      'textStyles': ((ir['textStyles'] as Map?) ?? const {}).keys.toList()..sort(),
+    };
     updated[page] = components.length;
   }
-  file.writeAsStringSync('${const JsonEncoder.withIndent('  ').convert({'pages': pages})}\n');
+  file.writeAsStringSync('${const JsonEncoder.withIndent('  ').convert({'pages': pages, 'files': byFile})}\n');
   return {
     'file': file.path,
     'updated': updated,
@@ -607,43 +645,26 @@ Future<Json> setup({String? bin}) async {
   };
 }
 
-/// Prepara o app: `figma2dart.yaml`, `.figma2dart/` no `.gitignore`, agente e skills do Copilot. [force] atualiza
-/// agente e skills; o config é do app e nunca é sobrescrito.
-Future<Json> init(Workspace ws, {bool force = false}) async {
+/// Prepara o app: `figma_to_dart.yaml` e `.figma2dart/` no `.gitignore`. O config é do app e nunca é sobrescrito.
+/// Agentes e skills vêm do plugin do Copilot (`copilot_plugin/`), não são copiados para o app.
+Json init(Workspace ws) {
   final written = <String>[];
   final skipped = <String>[];
-  void write(String relative, String content, {bool overwrite = false}) {
-    final file = File('${ws.app}/$relative');
-    if (file.existsSync() && !overwrite) {
-      skipped.add(relative);
-      return;
-    }
-    file
-      ..createSync(recursive: true)
-      ..writeAsStringSync(content);
-    written.add(relative);
+  final config = File('${ws.app}/${Workspace.configName}');
+  if (config.existsSync()) {
+    skipped.add(Workspace.configName);
+  } else {
+    config.writeAsStringSync(_configTemplate);
+    written.add(Workspace.configName);
   }
-
-  write(Workspace.configName, _configTemplate);
   final gitignore = File('${ws.app}/.gitignore');
   final ignored = gitignore.existsSync() ? gitignore.readAsStringSync() : '';
   if (!ignored.split('\n').contains('.figma2dart/')) {
     gitignore.writeAsStringSync('${ignored.isEmpty || ignored.endsWith('\n') ? ignored : '$ignored\n'}.figma2dart/\n');
     written.add('.gitignore');
   }
-
-  final templates = await _templates();
-  for (final file in templates.listSync(recursive: true).whereType<File>()) {
-    final relative = file.path.substring(templates.path.length + 1);
-    // agents/x.agent.md → .github/agents/; skills/x/SKILL.md → .agents/skills/ (Copilot e opencode leem os dois).
-    final target = relative.startsWith('agents/') ? '.github/$relative' : '.agents/$relative';
-    write(target, file.readAsStringSync(), overwrite: force);
-  }
-  return {'app': ws.app, 'written': written, 'skipped': skipped, 'force': force};
+  return {'app': ws.app, 'written': written, 'skipped': skipped};
 }
-
-/// `agent/` do pacote figma2dart: a fonte do agente e das skills que o `init` instala.
-Future<Directory> _templates() async => Directory.fromUri((await _package()).resolve('agent'));
 
 /// Pasta do pacote figma2dart (com `/` no fim).
 Future<Uri> _package() async {
@@ -656,7 +677,7 @@ Future<Uri> _package() async {
 const _configTemplate = '''
 # figma2dart: onde ficam as coisas neste app. Tudo é opcional; o que faltar, `figma2dart doctor` aponta.
 
-# Pacote com lib/connect/*.figma.dart. Sem isso, a CLI procura nas dependências do app.
+# Pacote com lib/figma_policy.dart e as anotações (lib/**/*.figma.dart). Sem isso, a CLI procura nas dependências do app.
 # mappings: ../design_system/carteira_ds_figma
 
 # Pasta onde o plugin do Figma salva os figma2dart-*.zip (padrão: ~/Downloads).

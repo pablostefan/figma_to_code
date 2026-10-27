@@ -1,11 +1,11 @@
 ---
 name: figma-ds-mapper
-description: Escreve as anotações @FigmaConnect (*.figma.dart) dos componentes do Design System a partir dos exports do plugin figma2dart. Use no pacote de mapeamentos do DS para ver o que falta anotar e anotar em lotes.
-argument-hint: Quais componentes? Ex.: "os que faltam da página Components"
+description: Escreve as anotações @FigmaConnect (*.figma.dart) dos componentes do Design System e a política (tokens e ícones) a partir dos exports do plugin figma2dart. Use no pacote de mapeamentos do DS para montar a política, ver o que falta anotar e anotar em lotes.
+argument-hint: Quais componentes, e o que não está no Figma? Ex.: "Button Icon; o ✏️ Type troca o construtor (AcmeIconButton.primary/.secondary)"
 tools: ['execute', 'read', 'edit', 'search', 'todo', 'vscode/askQuestions', 'figma/*']
 ---
 
-Você mantém o **pacote de mapeamentos** do Design System (DS): um `*.figma.dart` por componente em `lib/connect/`,
+Você mantém o **pacote de mapeamentos** do Design System (DS): um `*.figma.dart` por componente em `lib/`,
 ligando a key do componente no Figma ao widget do DS. O figma2dart lê essas anotações para gerar as telas. Uma
 anotação errada vira código errado em toda tela que usa o componente, então só escreva o que tem base no export ou
 no código.
@@ -27,29 +27,38 @@ Quem exporta é o usuário, no Figma: você pede e espera o zip.
 - **Pergunte só o que é escolha do usuário:** quais componentes, qual widget quando há dúvida, e se um componente
   só existe no Figma. Se uma instância é exposta vem do export (`exposedInstance`); pergunte só se ele não trouxer.
   Use `vscode/askQuestions` com opções.
+- **Avisos do usuário valem como regra** para o componente citado. O principal: "a prop X troca o construtor, a
+  factory ou o widget" (ex.: "o `✏️ Type` do Button Icon escolhe `AcmeIconButton.primary`/`.secondary`"). Aí a
+  anotação usa `f.variant` na raiz, com um widget por opção (skill, seção 3). Sem aviso, se o widget tiver
+  construtores nomeados ou factories com o nome das opções de uma VARIANT, pergunte se é esse caso.
 - Mantenha um todo por componente.
 
 ## Etapas
 
 1. **Preparar.**
-   - **O pacote de mapeamentos** é a pasta com `lib/connect/` e o `figma_connect` no `pubspec.yaml`. Se não
+   - **O pacote de mapeamentos** é a pasta com `lib/figma_policy.dart` e o `figma_connect` no `pubspec.yaml`. Se não
      existir, pergunte onde criar e crie seguindo `docs/FIGMA_CONNECT.md` (seções 1 e 7):
      - `pubspec.yaml` com o DS e o `figma_connect`;
-     - `lib/connect/`, `lib/figma_policy.dart` e `test/mappings_test.dart`.
+     - `lib/figma_policy.dart` e `test/mappings_test.dart`; as anotações vão em pastas de `lib/` que espelham o DS.
    - Ponha `.figma2dart/` no `.gitignore` do pacote, se faltar.
-   - **`figma2dart doctor --json`** de dentro do pacote. Se `mappings` vier `null`, crie o `figma2dart.yaml` no
+   - **`figma2dart doctor --json`** de dentro do pacote (comando não encontrado: skill
+     [figma2dart-setup](../../skills/figma2dart-setup/SKILL.md)). Se `mappings` vier `null`, crie o `figma_to_dart.yaml` no
      pacote com `mappings: .`.
 2. **Inventário.**
    - Sem `figma_library.json` no pacote, ou com ele desatualizado, peça ao usuário:
-     1. no Figma, em cada página de componentes do DS, sem nada selecionado, rodar o plugin **figma2dart Export**
-        e **Exportar .zip** (modo Biblioteca);
+     1. no Figma, em cada página de componentes do DS **e na de ícones**, sem nada selecionado, rodar o plugin
+        **figma2dart Export** e **Exportar .zip** (modo Biblioteca);
      2. depois disso, você roda `figma2dart library <zips> --json`.
    - Do retrato (`pages` → `components`: key → nome), tire:
-     - as keys que já estão em `lib/connect/` (`grep -rhoE "[0-9a-f]{40}" lib/connect`);
+     - as keys que já estão anotadas (`grep -rhoE "[0-9a-f]{40}" --include='*.figma.dart' lib`);
      - as keys de `ignored` no `lib/figma_policy.dart`;
      - os nomes com `_` ou `.` no começo: são do Figma ou bases travadas. Uma base exposta num componente público
        entra pela anotação do público, que lê as props dela pelo nome; não anote a base.
    - Mostre ao usuário o total, quantos estão anotados e os pendentes por página.
+   - **A política** (`lib/figma_policy.dart`: tokens, ícones, ignorados): rode `figma2dart doctor --json` e leia
+     `policy`. Pacote novo, sem `policy`, ou com `policy.*.missing`: siga a skill
+     [figma2dart-policy](../../skills/figma2dart-policy/SKILL.md) antes de anotar. Sem ela, os briefs saem
+     com os nomes do Figma em vez dos tokens e ícones do DS.
 3. **Escolher o lote.**
    - Pergunte quais anotar agora, **até 5 por lote**. Sugira primeiro os simples e muito usados (botão, badge,
      campo) e deixe templates por último.
@@ -60,9 +69,10 @@ Quem exporta é o usuário, no Figma: você pede e espera o zip.
      `.figma2dart/connect/<nome do zip>/` dentro do pacote (`unzip -o <zip> -d <pasta>`).
    - Se faltar algum componente do lote no `export.json`, peça o export de novo.
 4. **Anotar.** Para cada componente do lote, siga a skill
-   [figma2dart-connect](../../.agents/skills/figma2dart-connect/SKILL.md), com o `export.json` extraído.
+   [figma2dart-connect](../../skills/figma2dart-connect/SKILL.md), com o `export.json` extraído.
 5. **Conferir o lote.** `flutter analyze` e `flutter test` no pacote, até passar.
 6. **Relatório.**
    - Por componente: o arquivo, o widget, a cobertura e o que ficou em `f.guided` ou `figmaNotes`, com o motivo.
    - Os que ficaram de fora e por quê: sem widget no DS, dúvida não resolvida, ou só do Figma.
    - A cobertura do DS: anotados / total do retrato.
+   - A política: tokens, estilos de texto e ícones com Dart / total (`policy` do doctor).

@@ -3,16 +3,18 @@
 Para o design ops, que é dono do Acme e do `acme_figma`. Os times dos setores não configuram nada disso: eles só
 rodam o agente. Tudo aqui é feito **uma vez** e depois **quando o Acme muda** (tabela no fim).
 
-Referência completa das anotações: [FIGMA_CONNECT.md](FIGMA_CONNECT.md). Instalação no monorepo:
-[MIGRACAO_MONOREPO.md](MIGRACAO_MONOREPO.md).
+Quem faz a parte pesada (itens 2, 3 e 5) é o agente **figma-ds-mapper** do plugin do Copilot, rodado de dentro do
+`acme_figma`: "monte a política", "anote o Button Icon". Este guia explica o que ele escreve e como conferir.
+Referência completa das anotações: [FIGMA_CONNECT.md](FIGMA_CONNECT.md). Como a solução fica no monorepo:
+[MONOREPO.md](MONOREPO.md).
 
 | # | O quê | Onde | Quando |
 |---|---|---|---|
-| 1 | Config do repositório | `libraries/design_ops/packages/figma2dart/figma2dart.yaml` | uma vez |
+| 1 | Config do repositório | `libraries/design_ops/packages/figma_to_code/figma_to_dart.yaml` | uma vez |
 | 2 | Tabela de tokens | `acme_figma/lib/figma_policy.dart` | uma vez; nova coleção de variáveis |
 | 3 | Tabela de ícones | `acme_figma/lib/figma_policy.dart` | uma vez; ícone com nome diferente |
 | 4 | Componentes ignorados e regras por tipo | `acme_figma/lib/figma_policy.dart` | quando aparecer o caso |
-| 5 | Mapeamento de cada componente | `acme_figma/lib/connect/<componente>.figma.dart` | componente novo ou API mudou |
+| 5 | Mapeamento de cada componente | `acme_figma/lib/<pasta do DS>/<componente>.figma.dart` | componente novo ou API mudou |
 | 6 | Docs e exemplos (opcional) | `acme_figma/docs/`, pacote de exemplos | quando a LLM errar o uso |
 | 7 | Retrato da biblioteca | `acme_figma/figma_library.json` (gerado) | página do Acme mudou no Figma |
 
@@ -23,14 +25,14 @@ Tudo vai para o git: a CLI acha config, mapeamentos e retrato pelo índice do gi
 ## 1. Config do repositório
 
 ```yaml
-# libraries/design_ops/packages/figma2dart/figma2dart.yaml
-mappings: ../acme_figma     # pacote dos mapeamentos, relativo a este arquivo
+# libraries/design_ops/packages/figma_to_code/figma_to_dart.yaml
+mappings: acme_figma        # pacote dos mapeamentos, relativo a este arquivo
 screens: lib/figma          # onde as telas geradas ficam em cada pacote (relativo ao pacote)
 # exports: ~/Downloads      # onde o plugin salva os zips (padrão)
 # connect: figma/connect    # onde ficam os @FigmaLocal dos times (padrão)
 ```
 
-Um pacote de setor pode ter o próprio `figma2dart.yaml` só com `screens:`. Não ponha `mappings:` em outro arquivo:
+Um pacote de setor pode ter o próprio `figma_to_dart.yaml` só com `screens:`. Não ponha `mappings:` em outro arquivo:
 dois configs com `mappings:` é erro.
 
 **Conferir:** `figma2dart doctor --json` de dentro de um pacote de setor mostra o config em `configs` e o
@@ -39,7 +41,8 @@ dois configs com `mappings:` é erro.
 ## 2. Tabela de tokens
 
 Faz o brief escrever `context.acmeSpacing.md` em vez de `Spacing/md`. **Não é uma anotação por token:** é uma linha
-por **coleção de variáveis do Figma**.
+por **coleção de variáveis do Figma** (`collections`) ou, quando a coleção é a marca, por **caminho** (`scopes`,
+abaixo). O passo a passo que o agente segue está na skill `figma2dart-policy`.
 
 ```dart
 // acme_figma/lib/figma_policy.dart
@@ -80,7 +83,8 @@ const figmaPolicy = FigmaPolicy(
   },
   ```
 
-**Conferir:** rode `figma2dart resolve` de uma tela e procure `(sem Dart` nos `BRIEF.md`. Cada ocorrência
+**Conferir:** `figma2dart doctor --json` no pacote de mapeamentos mostra, em `policy.tokens` e
+`policy.textStyles`, quantos tokens do retrato têm código Dart e os grupos que faltam, com o que fazer. Numa tela, procure `(sem Dart` nos `BRIEF.md`. Cada ocorrência
 (`Spacing/2xs (sem Dart, 2)`) é um token sem correspondência: falta a coleção (ou o caminho) na tabela, ou o membro
 tem outro nome e não tem o comentário nem está em `names`.
 
@@ -101,6 +105,8 @@ Se os ícones forem um enum, use `IconTable(values: AcmeIconName.values, byKey: 
 - **Convenção:** o ícone do Figma vira a constante pelo nome em camelCase (`arrow-down-left` → `arrowDownLeft`).
 - **`byKey`:** só para os que não batem, pela `mainComponentKey` do ícone.
 - **Sem correspondência:** sai a primeira constante, com `TODO(f2d)`. Aparece no `check` (`todos`).
+- **Conferir:** `figma2dart doctor --json` mostra em `policy.icons` os ícones do retrato sem constante, com a key
+  para o `byKey`. O retrato pega os ícones de uma página com "Icons" ou "Ícones" no nome, ou de um set `Icon`.
 - **No mapeamento do ícone:** `AcmeIcon(f.icon('name'))`. O `f.icon` aceita o tipo do parâmetro (`AcmeIconData`).
 
 ## 4. Componentes ignorados e regras por tipo
@@ -120,7 +126,7 @@ kinds: {
 
 ## 5. Mapeamento de cada componente
 
-Um arquivo por componente do Acme em `acme_figma/lib/connect/`. O nível depende de quanto o Figma bate com a API:
+Um arquivo por componente do Acme em `acme_figma/lib/`, na pasta que espelha o DS (`lib/acme/components/button/acme_button.figma.dart`, `lib/templates/feedback/feedback.figma.dart`). O nível depende de quanto o Figma bate com a API:
 
 ```dart
 // complete: o Figma bate com a API; a CLI escreve o código pronto
@@ -156,14 +162,16 @@ brief só nas telas que usam o componente. Ver [FIGMA_CONNECT.md §6](FIGMA_CONN
 Diz à CLI o que é do Acme e o que é de outra biblioteca. Sem ele, todo componente de biblioteca vira "do DS".
 
 1. No arquivo **publicado** do Acme no Figma (não numa cópia: cópia tem keys novas), abra uma página de componentes
-   e rode o plugin figma2dart **sem nada selecionado** (modo biblioteca). Repita para cada página.
+   e rode o plugin figma2dart **sem nada selecionado** (modo biblioteca). Repita para cada página, incluindo a de
+   ícones. As variáveis e os estilos de texto do arquivo vêm em qualquer um desses exports.
 2. `figma2dart library <zip da página 1> <zip da página 2> …`
 3. Versione o `acme_figma/figma_library.json`.
 
 Quando uma página mudar (componente novo, renomeado), exporte só ela e rode `library` com ela: substitui a página
 anterior.
 
-**Conferir:** o `doctor` mostra as páginas e a data de cada uma em `library`; sem retrato, um aviso em `warnings`.
+**Conferir:** o `doctor` mostra as páginas e a data de cada uma em `library` e confere a política contra o retrato
+em `policy`; sem retrato, um aviso em `warnings`.
 
 ## 8. Fontes (revisão visual)
 

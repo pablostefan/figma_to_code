@@ -1,51 +1,10 @@
 import 'annotation.dart';
 import 'guidance.dart';
 
-/// Campos que a política de um tipo pode exigir na anotação.
-enum Field {
-  /// `guide`.
-  guide,
-
-  /// Ao menos um `Doc`.
-  docs,
-
-  /// Ao menos um `Example.code`.
-  exampleCode,
-}
-
-/// Quanto do componente entra no brief.
-enum BriefDepth {
-  /// Nunca aparece.
-  none,
-
-  /// Só as lacunas.
-  gaps,
-
-  /// Lacunas e exemplos.
-  gapsAndExamples,
-
-  /// `guide`, docs e exemplos inteiros.
-  full,
-}
-
 /// Regras que valem para todos os componentes de um tipo.
 class KindPolicy {
   /// Ver `docs/FIGMA_CONNECT.md`, seção 7.
-  const KindPolicy({
-    this.require = const {},
-    this.expectedCoverage,
-    this.brief = BriefDepth.gaps,
-    this.devNotes = const [],
-  });
-
-  /// Campos obrigatórios na anotação.
-  final Set<Field> require;
-
-  /// Cobertura esperada; outra dá aviso.
-  final Coverage? expectedCoverage;
-
-  /// Profundidade no brief.
-  final BriefDepth brief;
+  const KindPolicy({this.devNotes = const []});
 
   /// Regras comuns ao tipo; entram no brief uma vez.
   final List<DevNote> devNotes;

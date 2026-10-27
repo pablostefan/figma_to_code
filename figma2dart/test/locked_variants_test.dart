@@ -14,7 +14,8 @@ Future<MappingSet> loadLockedVariants() async {
   final dir = Directory.systemTemp.createTempSync('f2d_locked');
   addTearDown(() => dir.deleteSync(recursive: true));
   File('${dir.path}/pubspec.yaml').writeAsStringSync('name: x\n');
-  File('${dir.path}/lib/connect/icon_button.figma.dart')
+  // Layout do acme_figma: as anotações espelham as pastas do DS em `lib/`, fora de `lib/connect/`.
+  File('${dir.path}/lib/acme/components/button/icon_button.figma.dart')
     ..createSync(recursive: true)
     ..writeAsStringSync('''
 import 'package:figma_connect/figma_connect.dart';
@@ -60,7 +61,7 @@ Widget iconButtonMedium(FigmaProps f) => AcmeIconButton(icon: f.icon('🔄 Icon'
   File('${dir.path}/lib/figma_policy.dart').writeAsStringSync('''
 import 'package:figma_connect/figma_connect.dart';
 
-import 'connect/icon_button.figma.dart';
+import 'acme/components/button/icon_button.figma.dart';
 
 const figmaPolicy = FigmaPolicy(icons: IconTable(values: AcmeIconName.values));
 ''');

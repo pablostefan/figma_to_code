@@ -7,7 +7,7 @@ import 'mappings.dart';
 
 /// O pacote onde a tela vai ser escrita e tudo que a CLI descobre a partir dele, para ninguém passar caminho à mão:
 /// config, pacote de mapeamentos, pasta dos exports do plugin, pasta das telas e das tarefas. Num monorepo, o config
-/// do repositório (o `figma2dart.yaml` com `mappings:`) é achado pelo índice do git, esteja onde estiver.
+/// do repositório (o `figma_to_dart.yaml` com `mappings:`) é achado pelo índice do git, esteja onde estiver.
 class Workspace {
   Workspace._(this.app, this.repo, this.configs);
 
@@ -20,7 +20,16 @@ class Workspace {
   /// Configs lidos, do menos para o mais próximo do pacote (o do repo, depois o do pacote): arquivo → conteúdo.
   final Map<String, Map<String, Object?>> configs;
 
-  static const configName = 'figma2dart.yaml';
+  static const configName = 'figma_to_dart.yaml';
+
+  /// O nome antigo do config: a CLI não lê mais, e o `doctor` pede para renomear.
+  static const legacyConfigName = 'figma2dart.yaml';
+
+  /// Configs com o nome antigo ([legacyConfigName]) no repositório ou no pacote.
+  List<String> get legacyConfigs => {
+    if (repo case final repo?) ..._tracked(repo, '**/$legacyConfigName'),
+    if (File('$app/$legacyConfigName').existsSync()) '$app/$legacyConfigName',
+  }.toList();
 
   /// [package] escolhe o pacote alvo; sem ele, o mais próximo de [from], subindo. O `pubspec.yaml` da raiz do repo
   /// sem `lib/` (o do melos) não conta como pacote. Com [anywhere] (comandos que não escrevem num pacote, como
@@ -61,7 +70,7 @@ class Workspace {
   String? get screens => _value('screens')?.value as String?;
 
   /// Pacote de mapeamentos, sem carregar: `mappings:` no config, a dependência do pacote que tem
-  /// `lib/connect/**/*.figma.dart` ou, no repositório, o único pacote com `lib/figma_policy.dart`. [packageConfig] é
+  /// `lib/figma_policy.dart` ou, no repositório, o único pacote com ela. [packageConfig] é
   /// o do pacote alvo quando os mapeamentos vieram das dependências dele (é com ele que os imports resolvem).
   ({String path, String? packageConfig, String via})? mappings() => _mappings;
 
@@ -270,11 +279,8 @@ class Workspace {
   static String _dir(Uri base, String rootUri) =>
       base.resolve(rootUri.endsWith('/') ? rootUri : '$rootUri/').toFilePath().replaceFirst(RegExp(r'/+$'), '');
 
-  static bool _hasMappings(String dir) {
-    final connect = Directory('$dir/lib/connect');
-    return connect.existsSync() &&
-        connect.listSync(recursive: true).any((f) => f is File && f.path.endsWith('.figma.dart'));
-  }
+  // Pela política, sem varrer o `lib/` de cada dependência.
+  static bool _hasMappings(String dir) => File('$dir/lib/figma_policy.dart').existsSync();
 }
 
 /// `pub get` no pacote quando falta o `package_config.json` ou o `pubspec.yaml` mudou depois dele (num monorepo,

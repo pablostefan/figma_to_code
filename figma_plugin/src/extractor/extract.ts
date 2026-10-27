@@ -180,6 +180,7 @@ async function componentDef(owner: ComponentOwner, role: ComponentDef['role'], c
   for (const member of members) {
     const variant: VariantDef = {
       id: member.id,
+      key: member.key,
       name: member.name,
       props: member.variantProperties ? { ...member.variantProperties } : {},
       tree: await serializeNode(member, ctx, { root: true, inAutoLayout: false, inComponent: true }),

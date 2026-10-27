@@ -167,6 +167,8 @@ void main() {
       'components': [
         for (final MapEntry(:key, :value) in components.entries) {'key': key, 'name': value},
       ],
+      'tokens': {'Spacing/md': <String, Object?>{}},
+      'textStyles': {'body/sm': <String, Object?>{}},
     };
 
     String export(String name, Json ir) {
@@ -182,6 +184,10 @@ void main() {
       expect(library(ws, [again])['components'], 2);
       final snapshot = jsonDecode(File('${repo.path}/ds_figma/$libraryFile').readAsStringSync()) as Json;
       expect(libraryKeys(snapshot), {'b1': 'Button', 'l1': 'List'});
+      // Tokens e estilos são do arquivo: o doctor confere a política contra eles.
+      expect(snapshot['files'], {
+        'Acme': {'exportedAt': '2026-10-25', 'tokens': ['Spacing/md'], 'textStyles': ['body/sm']},
+      });
 
       final screen = export('d.json', {'kind': 'screen', 'source': <String, Object?>{}, 'components': <Object>[]});
       expect(() => library(ws, [screen]), throwsA(isA<ResolveError>()));

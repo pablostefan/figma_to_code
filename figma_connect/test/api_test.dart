@@ -82,9 +82,6 @@ const listConnect = FigmaConnect(
   key: '9f2c',
   name: 'Template / Lista com filtro',
   kind: FigmaKind.template,
-  tags: {'list'},
-  owner: 'time-ds-core',
-  status: Status.deprecated(replacement: 'Template / Lista v2'),
   coverage: Coverage.partial,
   guide: 'Lista paginada.',
   figmaNotes: {
@@ -148,12 +145,7 @@ Widget screen(FigmaScreenProps s) => Column(children: [if (s.instance(badge) cas
 
 const policy = FigmaPolicy(
   kinds: {
-    FigmaKind.template: KindPolicy(
-      require: {Field.guide, Field.docs, Field.exampleCode},
-      brief: BriefDepth.full,
-      devNotes: [DevNote.must('Sempre dentro de um contexto.')],
-    ),
-    FigmaKind.icon: KindPolicy(expectedCoverage: Coverage.complete, brief: BriefDepth.none),
+    FigmaKind.template: KindPolicy(devNotes: [DevNote.must('Sempre dentro de um contexto.')]),
   },
   icons: IconTable(values: DsIconName.values, byKey: {'c983': DsIconName.mail}),
   tokens: TokenTable(
@@ -169,15 +161,10 @@ void main() {
   test('padrões do FigmaConnect', () {
     expect(badgeConnect.kind, FigmaKind.component);
     expect(badgeConnect.coverage, Coverage.complete);
-    expect(badgeConnect.status, Status.stable);
     expect(badgeConnect.figmaNotes, isEmpty);
   });
 
   test('template parcial guarda o norte tipado', () {
-    expect(
-      listConnect.status,
-      isA<DeprecatedStatus>().having((s) => s.replacement, 'replacement', 'Template / Lista v2'),
-    );
     expect(listConnect.figmaNotes['state'], isA<DeriveNote>());
     expect(listConnect.figmaNotes['Collapse'], isA<IgnoreNote>());
     expect(listConnect.figmaNotes['Currency'], isA<MapNote>().having((n) => n.values['Global'], 'Global', isNull));
@@ -201,8 +188,7 @@ void main() {
 
   test('política por tipo e tabela de ícones', () {
     expect(policy.tokens!.collections['Color']!.via, 'context.dsColors');
-    expect(policy.kinds[FigmaKind.template]!.require, contains(Field.exampleCode));
-    expect(policy.kinds[FigmaKind.icon]!.brief, BriefDepth.none);
+    expect(policy.kinds[FigmaKind.template]!.devNotes.single, isA<MustNote>());
     expect(policy.icons!.byKey['c983'], DsIconName.mail);
     expect(policy.icons!.values, DsIconName.values);
     expect((acmeIcons.constants, acmeIcons.values), (AcmeIcons, null));

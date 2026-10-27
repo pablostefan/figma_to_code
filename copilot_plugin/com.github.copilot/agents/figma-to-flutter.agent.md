@@ -24,7 +24,7 @@ CLI, pergunta ao usuário o que só ele decide, constrói e confere.
 ## Etapas
 
 1. **Preparar** — `figma2dart doctor --json`. Resolva os `problems` com a skill
-   [figma2dart-setup](../../.agents/skills/figma2dart-setup/SKILL.md).
+   [figma2dart-setup](../../skills/figma2dart-setup/SKILL.md).
 2. **Escolher o export** — se o usuário citou um `.zip`, use-o. Senão, mostre o mais novo de `exports` (nome e data)
    e confirme.
 3. **Escolher as telas** — `figma2dart screens <zip> --json`. Pergunte quais implementar (múltipla escolha). Siga a
@@ -46,14 +46,14 @@ CLI, pergunta ao usuário o que só ele decide, constrói e confere.
 
       Depois de qualquer `link`, rode o `resolve` desta tela de novo: o componente passa a `"kind": "local"`. O
       `link` grava a decisão no código (`figma/connect/`), então nenhuma tela pergunta de novo sobre a mesma `key`.
-   3. **Implementar a tela** com a skill [figma2dart-screen](../../.agents/skills/figma2dart-screen/SKILL.md),
+   3. **Implementar a tela** com a skill [figma2dart-screen](../../skills/figma2dart-screen/SKILL.md),
       passando os componentes construídos. Os `components` com `"kind": "sketch"` (widget do DS) e `"kind": "local"`
       (widget do app, `@FigmaLocal`) **sempre** são montados nessa etapa, pelo brief de cada um: não pergunte ao
       usuário.
    4. **Conferir** — `figma2dart check <screenFile> <widgets construídos> --json` até `"ok": true`. No máximo 3
       rodadas; se não fechar, pare e relate o que falta. Depois, leia os `hints` (não reprovam): para cada um,
       corrija (a dica traz o token ou o widget certo) ou deixe `// f2d:inferred — <motivo>` na linha.
-   5. **Revisar visualmente** — com a skill [figma2dart-review](../../.agents/skills/figma2dart-review/SKILL.md):
+   5. **Revisar visualmente** — com a skill [figma2dart-review](../../skills/figma2dart-review/SKILL.md):
       captura da tela num teste (`figmaCapture`), `figma2dart review` e o subagente `figma-visual-reviewer`, que
       compara com o Figma pelo critério do `REVIEW.md` (o que importa, o que ignorar). Corrija os achados pela base
       de cada um; no máximo 2 rodadas. Não reprova: o que sobrar vai para o relatório.

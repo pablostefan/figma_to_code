@@ -153,43 +153,16 @@ void main() {
     expect((ok['ok'], ok['todos']), (true, 1));
   });
 
-  test('init: config, .gitignore, agente e skills; segunda vez não sobrescreve', () async {
+  test('init: config e .gitignore; segunda vez não sobrescreve', () {
     final app = tempApp();
     File('${app.path}/.gitignore').writeAsStringSync('build/');
     final ws = Workspace.find(app.path);
-    final first = await init(ws);
-    expect(
-      first['written'],
-      containsAll([
-        Workspace.configName,
-        '.gitignore',
-        '.github/agents/figma-to-flutter.agent.md',
-        '.github/agents/figma-component-builder.agent.md',
-        '.github/agents/figma-visual-reviewer.agent.md',
-        '.agents/skills/figma2dart-setup/SKILL.md',
-        '.agents/skills/figma2dart-screen/SKILL.md',
-        '.agents/skills/figma2dart-component/SKILL.md',
-        '.agents/skills/figma2dart-review/SKILL.md',
-      ]),
-    );
+    expect(init(ws)['written'], [Workspace.configName, '.gitignore']);
     expect(File('${app.path}/.gitignore').readAsStringSync(), 'build/\n.figma2dart/\n');
-    final second = await init(ws);
-    expect(second['written'], isEmpty);
-    expect(second['skipped'], hasLength(8));
-
     File('${app.path}/${Workspace.configName}').writeAsStringSync('screens: lib/telas\n');
-    final forced = await init(ws, force: true);
-    expect(forced['written'], hasLength(7)); // agentes e skills
+    final second = init(ws);
+    expect(second['written'], isEmpty);
+    expect(second['skipped'], [Workspace.configName]);
     expect(Workspace.find(app.path).screens, 'lib/telas');
-  });
-
-  test('links do agente para as skills batem com onde o init instala', () {
-    final agents = Directory('agent/agents').listSync().whereType<File>();
-    for (final agent in agents) {
-      for (final link in RegExp(r'\]\((\.\./\.\./\.agents/skills/[^)]+)\)').allMatches(agent.readAsStringSync())) {
-        final installed = link[1]!.replaceFirst('../../.agents/', 'agent/');
-        expect(File(installed).existsSync(), isTrue, reason: '${agent.path} → ${link[1]}');
-      }
-    }
   });
 }

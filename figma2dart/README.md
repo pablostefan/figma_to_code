@@ -1,28 +1,31 @@
 # figma2dart
 
-CLI que liga o export do plugin do Figma (IR) aos mapeamentos `@FigmaConnect` e entrega à LLM o código de cada
-instância do DS já resolvido. Arquitetura: [docs/ARCHITECTURE.md](../docs/ARCHITECTURE.md), seções 9 e 10.
+CLI que liga o export do plugin do Figma (IR) às anotações `@FigmaConnect` do DS e escreve, para cada tela, o brief
+que a LLM usa para implementar: o código de cada instância do DS já resolvido, a estrutura com os tokens, as decisões
+e os componentes a construir. Não escreve a tela. Como funciona por dentro:
+[docs/ARQUITETURA.md](../docs/ARQUITETURA.md).
 
-**Fase 1 (atual): `resolve`.** Para cada instância da tela, acha o mapeamento (pela `mainComponentKey`, depois pela
-`componentKey` e pelo `when`) e reescreve o corpo da função trocando cada `f.*` pelo valor do Figma. O resto do
-código do mapeamento fica igual. Partes guiadas viram `/* f2d:guided Gn parte */ <valor provisório>`, componentes
-locais viram placeholder. A escrita da tela inteira (layout, `@FigmaScreen`) é a fase 2.
+Para cada instância da tela, a CLI acha a anotação (pela `mainComponentKey`, depois pela `componentKey` e pelo
+`when`) e reescreve o corpo da função trocando cada `f.*` pelo valor do Figma. O resto do código fica igual. Partes
+guiadas viram `/* f2d:guided Gn parte */ <valor provisório>`; componentes fora do DS viram placeholder e brief de
+construção.
 
 ## Quem usa: o agente
 
 Quem opera a CLI é o agente `figma-to-flutter` (Copilot), não a pessoa. Ela pede "implementa a tela X do Figma";
 o agente roda os comandos com `--json`, pergunta só o que é escolha dela (tela, construir ou não cada componente
-fora do DS) e confere com `check`. Agente e skills ficam em [agent/](agent/) e o `init` instala no app.
+fora do DS) e confere com `check`. Agentes e skills ficam no plugin do Copilot
+[copilot_plugin/](../copilot_plugin/), instalado uma vez por máquina (veja o README dele):
 
 ```
-agent/
-  agents/figma-to-flutter.agent.md         orquestrador: etapas, quando perguntar, relatório
-  agents/figma-component-builder.agent.md  subagente: constrói um componente fora do DS
-  agents/figma-visual-reviewer.agent.md    subagente: revisa a tela contra o Figma (não edita código)
-  skills/figma2dart-setup/                 descobrir caminhos e resolver o que o doctor apontar
-  skills/figma2dart-screen/                escrever a tela a partir do BRIEF.md
-  skills/figma2dart-component/             construir um componente a partir do brief de construção
-  skills/figma2dart-review/                revisão visual depois do check: captura, review, revisor, correções
+copilot_plugin/
+  com.github.copilot/agents/figma-to-flutter.agent.md         orquestrador: etapas, quando perguntar, relatório
+  com.github.copilot/agents/figma-component-builder.agent.md  subagente: constrói um componente fora do DS
+  com.github.copilot/agents/figma-visual-reviewer.agent.md    subagente: revisa a tela contra o Figma
+  skills/figma2dart-setup/        descobrir caminhos, instalar a CLI e resolver o que o doctor apontar
+  skills/figma2dart-screen/       escrever a tela a partir do BRIEF.md
+  skills/figma2dart-component/    construir um componente a partir do brief de construção
+  skills/figma2dart-review/       revisão visual depois do check: captura, review, revisor, correções
 ```
 
 ## Instalar
@@ -41,26 +44,15 @@ O comando instalado não é uma cópia da CLI: em cada chamada ele usa a CLI do 
 sozinho depois de um `git pull`) e escreve o "Building…" no stderr: o stdout fica só com o JSON. O `pub get` da CLI
 roda sozinho quando falta.
 
-Num app só: `figma2dart init` cria o `figma2dart.yaml`, `.figma2dart/` no `.gitignore` e instala agente e skills; o
+Num app só: `figma2dart init` cria o `figma_to_dart.yaml` e põe `.figma2dart/` no `.gitignore`; o
 pacote de mapeamentos do DS entra como `dev_dependency` do app e a CLI o acha sozinha.
 
 ## Monorepo
 
-Nenhum caminho fixo. De qualquer pasta do repositório, a CLI acha:
-
-| O quê | Como |
-|---|---|
-| Pacote alvo | `--package <pasta>`, ou o `pubspec.yaml` mais próximo (o da raiz sem `lib/`, do melos, não conta) |
-| Config do repo | o `figma2dart.yaml` versionado que tem `mappings:` (pelo índice do git: precisa de `git add`) |
-| Config do pacote | `figma2dart.yaml` no pacote, opcional; vence o do repo |
-| Mapeamentos | `mappings:` (relativo ao config), a dependência do pacote com `lib/connect`, ou o único pacote do repo com `lib/figma_policy.dart` |
-| `pub get` | roda sozinho no pacote alvo e no de mapeamentos quando falta o `package_config` ou o pubspec mudou (saída no stderr) |
-
-```yaml
-# config do repo, ex.: libraries/design_ops/packages/figma2dart/figma2dart.yaml
-mappings: ../acme_figma   # relativo a este arquivo
-screens: lib/figma        # padrão para todo pacote; relativo ao pacote
-```
+Nenhum caminho fixo: de qualquer pasta do repositório, a CLI acha o pacote alvo, o config versionado com
+`mappings:` (pelo índice do git), o pacote de mapeamentos, os exports e a pasta das telas
+([ARQUITETURA.md §3](../docs/ARQUITETURA.md#3-como-a-cli-acha-as-coisas)). Como a solução fica no monorepo:
+[MONOREPO.md](../docs/MONOREPO.md).
 
 ## Comandos
 
@@ -69,20 +61,20 @@ Todos aceitam `--json` e `--package <pasta>`; erro com `--json` sai como `{"erro
 | Comando | Faz |
 |---|---|
 | `setup` | põe o comando `figma2dart` no PATH (veja Instalar) |
-| `doctor` | pacote, repositório, configs lidos, mapeamentos (validados, com os `@FigmaLocal` do app em `local`), retrato do DS (páginas e data), exports, pasta das telas; `problems` com a correção e `warnings` (sem retrato, `@FigmaLocal` ignorado) |
+| `doctor` | pacote, repositório, configs lidos, mapeamentos (validados, com os `@FigmaLocal` do app em `local`), retrato do DS (páginas e data), `policy` (tokens, estilos de texto e ícones do retrato com e sem código Dart na política, agrupados com o que fazer), exports, pasta das telas; `problems` com a correção e `warnings` (sem retrato, `@FigmaLocal` ignorado, política incompleta) |
 | `packages [<texto>]` | pacotes do repositório cujo caminho ou nome contém o texto, os que usam o DS primeiro (`ds`), sem `example/`; até 30 |
 | `screens [<zip>]` | telas e estados do export, ordem do fluxo, quantas instâncias ficam fora do DS |
 | `resolve [<zip>] --screen <nome>…` | `--screen` repetível: carrega os mapeamentos uma vez e escreve uma pasta de tarefa por tela (a pasta padrão recomeça do zero). Devolve `tasks`, cada uma com `brief`, `image`, `screenFile` e `components` (todos os caminhos absolutos) (`kind`: `build` com `widgetFile`, `class`, `dependsOn`; `sketch`/`local` com `widget` e `import`; `build` ganha `existing` quando uma classe de mesmo nome já existe no app) |
 | `check <arquivo.dart>…` | marcadores que sobraram (`guided`, `gap`, `sketch`, `local` reprovam; `placeholder`, `inferred` e `TODO(f2d)` só contam) + `dart analyze`; sai com 1 se reprovar. Mais `hints`, que **não reprovam**: valor solto com o token do mesmo valor (`EdgeInsets.all(12)` → `DsSpacing.md`), widget a montar que sumiu, parâmetro da API proposta ausente, texto do Figma ausente (o `resolve` grava em cada tarefa o `check.json` com o que esperar). `// f2d:inferred` na linha cala a dica de valor solto |
 | `review --screen <tela>` | revisão visual, depois do `check`. Sem captura: põe o `figma_connect` nas dev_dependencies e devolve `capture: false` com `testFile` e o modelo do teste (`figmaCapture`, [FIGMA_CONNECT §10.1](../docs/FIGMA_CONNECT.md#101-captura-para-a-revisão-visual-figmacapture)). Com captura: grava `review/` na tarefa com `screen.png` (Figma \| Flutter), um par por seção (pela caixa do Figma), `facts.json` (texto ausente, fora de ordem, só no Flutter, cortado, overflow; nada em pixel) e o `REVIEW.md` com o critério (importa / talvez / ignorar) e a estrutura de cada seção como base. Não dá veredito: quem revisa é o subagente `figma-visual-reviewer` |
-| `library [<zip>…]` | grava o retrato do DS (`figma_library.json`: key e nome de cada componente) no pacote de mapeamentos, a partir de exports do plugin em modo biblioteca; uma página por export, a mesma página de novo substitui. Sem zip: o `figma2dart-library-*.zip` mais novo |
+| `library [<zip>…]` | grava o retrato do DS (`figma_library.json`: key e nome de cada componente e os ícones, por página; nomes dos tokens e estilos de texto, por arquivo) no pacote de mapeamentos, a partir de exports do plugin em modo biblioteca; uma página por export, a mesma página de novo substitui. Sem zip: o `figma2dart-library-*.zip` mais novo |
 | `link <key> <arquivo.dart>[#Classe] [--name <nome>]` | liga um componente do Figma (key inteira, 40 caracteres: a do `components[].key` do `resolve`) a um widget do app que já existe: escreve o `@FigmaLocal` em `figma/connect/` do pacote do widget e põe o `figma_connect` nas dev_dependencies, se faltar. O widget tem que estar no pacote da tela ou numa dependência direta dele (é onde o `resolve` procura) |
-| `init [--force]` | app só: config, `.gitignore`, agente e skills (não sobrescreve sem `--force`) |
+| `init` | app só: config e `.gitignore` (não sobrescreve o config); agentes e skills vêm do plugin |
 
 Sem `<zip>`, usa o `figma2dart-*.zip` mais novo da pasta de exports. Opções de `resolve`: `--state`, `--out`,
 `--mappings` (passam por cima do que a CLI descobre).
 
-`figma2dart.yaml` (tudo opcional; caminhos relativos ao arquivo, menos `screens`, relativo ao pacote):
+`figma_to_dart.yaml` (tudo opcional; caminhos relativos ao arquivo, menos `screens`, relativo ao pacote):
 
 ```yaml
 mappings: ../design_system/carteira_ds_figma   # senão: veja Monorepo
@@ -94,7 +86,7 @@ Saída:
 
 - `BRIEF.md` — ponto de entrada da LLM: código de cada instância, estrutura da tela (layout com tokens),
   navegação do protótipo, decisões (`f2d:guided`), regras e docs dos componentes, o que ficou fora do mapeamento.
-- `resolved.json` — o mesmo em JSON, para o MCP e testes.
+- `resolved.json` — o mesmo em JSON.
 - `components/<nome>/BRIEF.md` + `component.json` — **brief de construção** de cada componente fora do DS da tela
   (dependências primeiro): onde criar (`widgets/<nome>.dart` na pasta da tela), API proposta pelas props do Figma
   (mais um parâmetro por prop de instância exposta que muda entre os usos), estrutura com tokens (tamanhos,
@@ -130,7 +122,7 @@ DsInput(
 | `f.text('x')` | o texto do Figma, como literal Dart. Vale para `text`, `boolean`, `variant` e `icon`: a prop que não está no componente é procurada nas instâncias expostas dele (a base travada do `Button Icon`); em duas expostas, é lacuna pedindo `f.nested` |
 | `f.boolean('x')` | `true`/`false`; num ternário, só o ramo escolhido fica |
 | `f.variant('x', {...})` | o valor do mapa para a opção do Figma; opção sem entrada é erro |
-| `f.icon('x')` | `Enum.valor` pela convenção (`arrow-up-right` → `arrowUpRight`), conferido contra o enum |
+| `f.icon('x')` | o ícone do DS pela política: `byKey`, ou o nome em camelCase (`arrow-up-right` → `arrowUpRight`) conferido contra o enum ou as constantes da classe |
 | `f.nested('p').text('x')` | lê a instância exposta `p` |
 | `f.instance('p')` | a instância exposta `p`, resolvida pelo mapeamento dela |
 | `f.guided('parte', or: v)` | `/* f2d:guided Gn parte */ v` + entrada nas decisões |
@@ -139,8 +131,9 @@ DsInput(
 Mapeamento `@FigmaConnect.sketch` (um `typedef` para a classe do DS, sem função) não é avaliado: a instância vira
 `/* f2d:sketch Componente → Widget */` + placeholder, e a tarefa `components/<nome>/BRIEF.md` traz o norte, a **API
 do widget** lida do código do DS (construtores, parâmetros, tipos auxiliares e enums), os dados de cada instância no
-Figma, docs e exemplos. Mapeamentos `partial` também mostram a API do widget no brief da tela. Com export IR 1.3, cada instância a montar traz o conteúdo de dentro (textos e instâncias, com props) e um recorte do
-PNG da tela só com ela (`components/<nome>/<id>.png`, pela caixa da instância e a escala do PNG). `@FigmaLocal` (widget
+Figma, docs e exemplos. Mapeamentos `partial` também mostram a API do widget no brief da tela. Cada instância a
+montar traz o conteúdo de dentro (textos e instâncias, com props) e um recorte do PNG da tela só com ela
+(`components/<nome>/<id>.png`, pela caixa da instância e a escala do PNG). `@FigmaLocal` (widget
 do app que já existe) segue o mesmo caminho com o marcador `f2d:local`, o `import` do widget e sem docs do DS.
 
 ## Ícones e imagens
@@ -181,15 +174,15 @@ Usam os exports reais em `test/fixtures/` (Login do plugin e o fluxo do MCP) e o
 
 ## Limitações conhecidas
 
-- O código de cada instância não é formatado nem tira argumentos iguais ao padrão (`leftIcon: null`): fase 2.
+- O código de cada instância não é formatado nem tira argumentos iguais ao padrão (`leftIcon: null`).
 - "Do DS" é a key estar no retrato (`figma2dart library`); sem retrato, vale `remote` no IR, e componente de outra
   biblioteca vira `gap` por engano.
 - `existing` procura `class <Nome>` por texto no `lib/` do pacote e das dependências por path dele: nome diferente
   do Figma não é achado, e nome igual de outra coisa é falso positivo (o agente pergunta antes de ligar).
 - Do `FigmaPolicy`, a CLI lê `ignored` (e o prefixo `_`/`.`), os `devNotes` de cada tipo, o `IconTable`
-  (`values` e `byKey`) e o `TokenTable` (tokens já em Dart nos briefs; paint styles ainda pelo nome). `require`, `expectedCoverage` e `BriefDepth` ainda não: não há validação de cobertura.
-- O `@FigmaScreen` entra no brief como código ("Esqueleto da tela"); a montagem da tela com ele é da LLM (fase 2
-  gera).
+  (`values` ou `constants`, e `byKey`) e o `TokenTable` (tokens já em Dart nos briefs; paint styles pelo nome). A
+  cobertura declarada não é conferida: quem garante que toda prop importante é lida é o `mappings_test` do pacote.
+- O `@FigmaScreen` entra no brief como código ("Esqueleto da tela"); quem monta a tela com ele é a LLM.
 - `docs`/`examples` de uma parte (`f.guided(docs:, examples:)`) não são lidos: use a seção `## <parte>` no doc do
   componente. `Doc.link` sem `source` entra só com o `hint` (não baixa nem guarda em cache).
 - O analyzer leva ~6 s (13 mapeamentos) para carregar os mapeamentos a cada execução, e mais ~1,5 s por pacote com
@@ -199,6 +192,6 @@ Usam os exports reais em `test/fixtures/` (Login do plugin e o fluxo do MCP) e o
 - O `pub get` automático roda quando falta o `package_config.json` ou o `pubspec.yaml` é mais novo; depois dele a
   CLI atualiza a data do `package_config.json` (o pub não regrava sem mudança de dependência).
 - O comando instalado é um script `sh`: no Windows ainda não há equivalente.
-- O config do repo é achado pelo índice do git: um `figma2dart.yaml` novo só vale depois de `git add`.
+- O config do repo é achado pelo índice do git: um `figma_to_dart.yaml` novo só vale depois de `git add`.
 - `packages` marca `ds` só por dependência direta de um pacote do DS (as dependências por path do pacote de
   mapeamentos); quem usa o DS por um pacote intermediário sai `false`.

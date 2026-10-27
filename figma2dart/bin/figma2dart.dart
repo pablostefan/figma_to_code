@@ -21,14 +21,13 @@ Uso: figma2dart <comando> [opções] [--json]   (de dentro do pacote, ou --packa
   library [<export.zip>...]    grava o retrato do DS (exports do plugin em modo biblioteca) no pacote de mapeamentos
   link <key> <arquivo.dart>[#Classe] [--name <nome no Figma>]
                                liga um componente do Figma a um widget do app que já existe (@FigmaLocal)
-  init [--force]               figma2dart.yaml, .gitignore, agente e skills do Copilot''';
+  init                         figma_to_dart.yaml e .gitignore (agentes e skills: copilot_plugin/)''';
 
 Future<void> main(List<String> argv) async {
   final parser = ArgParser()
     ..addFlag('json', negatable: false, help: 'Saída em JSON (para o agente).')
-    ..addFlag('force', negatable: false, help: 'init: atualiza agente e skills (o config nunca é sobrescrito).')
     ..addOption('package', help: 'Pacote onde a tela vai (padrão: o pubspec.yaml mais próximo).')
-    ..addOption('mappings', help: 'Pacote com lib/connect/*.figma.dart (padrão: descoberto pelo app).')
+    ..addOption('mappings', help: 'Pacote de mapeamentos, com lib/**/*.figma.dart (padrão: descoberto pelo app).')
     ..addMultiOption('screen', help: 'Nome da tela ou do frame no export (repita para várias).', splitCommas: false)
     ..addOption('name', help: 'link: nome do componente no Figma (padrão: o da classe).')
     ..addOption('state', help: 'Estado da tela (padrão: o do frame, ou o primeiro).')
@@ -60,7 +59,7 @@ Future<void> main(List<String> argv) async {
       'review' when args.multiOption('screen').length == 1 => review(ws, args.multiOption('screen').single),
       'library' => library(ws, rest),
       'link' when rest.length == 2 => await link(ws, rest[0], rest[1], name: args.option('name')),
-      'init' => await init(ws, force: args.flag('force')),
+      'init' => init(ws),
       _ => throw const FormatException(''),
     };
     stdout.writeln(json ? const JsonEncoder.withIndent('  ').convert(result) : _human(command, result));
@@ -72,7 +71,7 @@ Future<void> main(List<String> argv) async {
   } on FileSystemException catch (e) {
     _fail(json, '${e.message}: ${e.path}', 1);
   } catch (e) {
-    // Pacote de mapeamentos sem lib/connect ou que não compila (ArgumentError/StateError de loadMappings).
+    // Pacote de mapeamentos sem lib/ ou que não compila (ArgumentError/StateError de loadMappings).
     if (e is! ArgumentError && e is! StateError) rethrow;
     _fail(json, '${e is ArgumentError ? e.message : e}', 1);
   }

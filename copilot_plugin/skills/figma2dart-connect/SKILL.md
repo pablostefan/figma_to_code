@@ -8,10 +8,10 @@ description: Escreve a anotação @FigmaConnect (*.figma.dart) de um componente 
 Entrada:
 - o `export.json` de um export de componentes do plugin, já extraído, com a pasta `images/` ao lado;
 - o nome do componente;
-- o pacote de mapeamentos (o que tem `lib/connect/`).
+- o pacote de mapeamentos (o que tem `lib/figma_policy.dart`).
 
 Referência da API: `docs/FIGMA_CONNECT.md` do repositório do figma2dart. O `figma_connect` do `pubspec.yaml` do
-pacote aponta para ele; o doc fica em `<figma_connect>/../docs/`. As anotações que já existem em `lib/connect/` são
+pacote aponta para ele; o doc fica em `<figma_connect>/../docs/`. As anotações que já existem em `lib/` (`*.figma.dart`) são
 o modelo: siga o estilo delas.
 
 ## 1. Ler o export
@@ -48,7 +48,9 @@ O export do plugin é a fonte da **key** e dos **nomes exatos das props**. A ano
 - Procure a classe no pacote do DS, que é dependência do pacote de mapeamentos:
   - pelo nome, com o mesmo prefixo das anotações que já existem (`Button` → `DsButton`);
   - pela `description` do Figma.
-- Leia todos os construtores (os nomeados também), os enums dos parâmetros e o doc da classe.
+- Leia todos os construtores (os nomeados e as factories também), os enums dos parâmetros e o doc da classe.
+  Construtores com o nome das opções de uma VARIANT (`primary`, `secondary`) indicam que a prop troca o construtor
+  (seção 3).
 - Se houver dois candidatos ou nenhum, **pergunte**; não adivinhe.
 - Se não houver widget no DS, não anote. Relate como "só no Figma" ou como falta no DS.
 
@@ -82,8 +84,28 @@ Monte esta tabela antes de escrever, com uma linha por prop do Figma:
     icon: f.icon('🔄 Icon'),               // da base exposta
   );
   ```
-- **Variant que troca o widget** (`type=icon` → `DsAvatar.icon`): uma função por caso, com a mesma `key` e
-  `when: {'type': 'icon'}`. As props que não valem naquele caso vão em `figmaNotes`.
+- **Prop que troca o construtor, a factory ou o widget** (o `✏️ Type` da base escolhe `AcmeIconButton.primary`,
+  `AcmeIconButton.secondary` ou outro widget). O usuário pode avisar ("o Button Icon troca de construtor pelo
+  `✏️ Type`"); sem o aviso, desconfie quando o widget tem construtores nomeados ou factories com o nome das opções
+  de uma VARIANT, ou quando uma opção é outro widget, e confirme com o usuário. Use `f.variant` **na raiz**, com o
+  widget inteiro em cada opção; a CLI troca só o ramo escolhido. Vale para prop do componente ou da base exposta:
+
+  ```dart
+  @FigmaConnect(key: '<key do Button Icon>', name: 'Button Icon')
+  Widget buttonIcon(FigmaProps f) => f.variant('✏️ Type', {
+    'Primary': AcmeIconButton.primary(notification: f.boolean('🔔 Notification')),
+    'Secondary': AcmeIconButton.secondary(notification: f.boolean('🔔 Notification')), // factory
+    'Ghost': const AcmeGhostButton(),                                               // outro widget
+  });
+  ```
+
+  - Todas as `options` da VARIANT entram, cada uma com o seu widget.
+  - Prop que só vale em parte dos ramos é lida só neles; a que não vale em nenhum vai em `figmaNotes`.
+  - Se for BOOLEAN: `f.boolean('x') ? A.foo(…) : B(…)`.
+- **Variant que troca o widget e muda muito entre os casos** (notas, cobertura ou `guide` próprios; `type=icon` →
+  `DsAvatar.icon`): uma função por caso, com a mesma `key` e `when: {'type': 'icon'}`. O `when` só vê as props do
+  próprio componente; se a prop for da base exposta, use o `f.variant` na raiz. As props que não valem naquele caso
+  vão em `figmaNotes`.
 - **Prop que o widget calcula sozinho** (o tom do Badge sai do `direction`): `FigmaNote.ignore` com o motivo.
 
 ## 4. Escolher a cobertura
@@ -94,12 +116,13 @@ Monte esta tabela antes de escrever, com uma linha por prop do Figma:
   - Bloco composto leva `kind: FigmaKind.section`.
 - **`sketch`**: o conteúdo são camadas, não props (template de tela). Use `@FigmaConnect.sketch(…, guide: …)` sobre
   um `typedef` para o widget, sem função.
-- O `figma_policy.dart` do pacote pode exigir mais por tipo. Template, por exemplo, pede `guide`, `docs` e um
-  `Example.code`.
+- Template e bloco composto pedem `guide`; docs e um `Example.code` ajudam a LLM onde ela mais erra.
 
 ## 5. Escrever
 
-1. **`lib/connect/<arquivo do widget>.figma.dart`** (`DsButton` → `ds_button.figma.dart`):
+1. **`lib/<pasta que espelha o DS>/<arquivo do widget>.figma.dart`**: o mesmo caminho do widget no DS, como as
+   anotações que já existem (`AcmeButton` em `acme/components/button/` → `lib/acme/components/button/acme_button.figma.dart`).
+   A CLI lê qualquer `*.figma.dart` de `lib/`. Sem padrão no pacote ainda, pergunte ao usuário:
    - imports do DS, do `figma_connect` e de `flutter/widgets.dart`;
    - doc de uma linha: ``/// Figma `Name` → [DsWidget]. <o que não é óbvio>``.
 2. **`docs/<arquivo>.md`**, só se houver `f.guided`, `partial`, `sketch` ou uma armadilha conhecida:
@@ -110,6 +133,8 @@ Monte esta tabela antes de escrever, com uma linha por prop do Figma:
    - em `defaults`, os valores padrão do Figma (o `default` de cada prop). Para ícone, use só o nome que está na
      `tree` (`'mail'`). Prop lida de uma exposta pelo nome entra em `defaults` como as outras, com o padrão dela
      (está em `componentRefs`). Com `f.nested`, a exposta é um mapa com as props dela;
+   - se o teste tem um mapa `icons` (ícones como constantes de uma classe, como no Acme), acrescente nele cada
+     ícone usado em `defaults`: `'home': acme.AcmeIcons.home`;
    - em `variantOptions`, todas as `options` de cada VARIANT;
    - `sketch` não entra (não tem função).
 

@@ -1424,6 +1424,10 @@
           "description": "Path inside the export zip (plugin only).",
           "type": "string"
         },
+        "key": {
+          "description": "Key of this variant's main component (the `mainComponentKey` of its instances). Absent in older exports.",
+          "type": "string"
+        },
         "name": {
           "type": "string"
         },

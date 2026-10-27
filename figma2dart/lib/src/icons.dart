@@ -13,21 +13,27 @@ String iconCode(Object? value, InterfaceElement type, {Map<String, String> byKey
   if (value case {'mainComponentKey': final String key} when byKey[key] != null && exists(byKey[key]!)) {
     return '${type.name}.${byKey[key]}';
   }
-  // Set com variant `name` (pode ter outras, como `size`), set de uma variant só, ou um componente por ícone.
-  final figmaName = switch (value) {
-    String name => name,
-    {'variant': {'name': String name}} => name,
-    {'variant': Map<String, Object?> variant} when variant.length == 1 => '${variant.values.single}',
-    {'componentName': String component} => component.split('/').last.trim(),
-    _ => null,
-  };
-  final camel = figmaName?.replaceAllMapped(RegExp('-(.)'), (x) => x[1]!.toUpperCase());
+  final figmaName = figmaIconName(value);
+  final camel = figmaName == null ? null : iconCamel(figmaName);
   if (camel != null && exists(camel)) return '${type.name}.$camel';
   final why = figmaName == null
       ? 'ícone do Figma sem nome legível: $value'
       : 'ícone "$figmaName" do Figma não existe em ${type.name}';
   return '/* TODO(f2d): ${why.replaceAll('*/', '* /')} */ ${type.name}.${constants.first.name}';
 }
+
+/// O nome do ícone no Figma: a variant `name` do set (pode ter outras, como `size`), a única variant do set, ou o
+/// nome do componente (um componente por ícone). Null quando não dá para saber.
+String? figmaIconName(Object? value) => switch (value) {
+  String name => name,
+  {'variant': {'name': String name}} => name,
+  {'variant': Map<String, Object?> variant} when variant.length == 1 => '${variant.values.single}',
+  {'componentName': String component} => component.split('/').last.trim(),
+  _ => null,
+};
+
+/// O nome do Figma em camelCase, como o ícone fica no DS (`arrow-up-right` → `arrowUpRight`).
+String iconCamel(String name) => name.replaceAllMapped(RegExp('-(.)'), (x) => x[1]!.toUpperCase());
 
 /// Os ícones de [type]: as constantes do enum, ou as constantes estáticas públicas da classe com tipo de fora do SDK
 /// (`AcmeIconData`; uma `static const String` auxiliar não é ícone).

@@ -17,15 +17,21 @@ class Tokens {
   final Map<String, TokenClass> scopes;
   final TokenClass? textStyles;
 
-  /// Variável `Coleção/nome` (`Spacing/md`, `MarcaA/Colors/Surface/primary`) → código; null sem correspondência. Pela
-  /// coleção; senão, pelo caminho mais longo em [scopes].
-  String? variable(String key) {
+  /// Variável `Coleção/nome` (`Spacing/md`, `MarcaA/Colors/Surface/primary`) → código; null sem correspondência.
+  String? variable(String key) => switch (source(key)) {
+    (final tokenClass, final name) => tokenClass.code(name),
+    null => null,
+  };
+
+  /// A classe onde a variável cairia e o nome dela ali (`md`, `primary`): pela coleção; senão, pelo caminho mais
+  /// longo em [scopes]. Null: nenhuma classe na tabela.
+  (TokenClass, String)? source(String key) {
     final slash = key.indexOf('/');
     if (slash < 0) return null;
     final name = key.substring(slash + 1);
-    if (collections[key.substring(0, slash)] case final collection?) return collection.code(name);
+    if (collections[key.substring(0, slash)] case final collection?) return (collection, name);
     for (var end = name.lastIndexOf('/'); end > 0; end = name.lastIndexOf('/', end - 1)) {
-      if (scopes[name.substring(0, end)] case final scope?) return scope.code(name.substring(end + 1));
+      if (scopes[name.substring(0, end)] case final scope?) return (scope, name.substring(end + 1));
     }
     return null;
   }
@@ -69,10 +75,10 @@ class TokenClass {
 
   /// Por `names` ou pelo doc do membro; sem eles, pelo nome em camelCase (`text/primary` → `textPrimary`). Membro
   /// que não existe na classe (erro de digitação em `names`) não vira código.
-  String? code(String name) => switch (byFigma[name] ?? identifier(name)) {
-    final member when members.contains(member) => '$prefix.$member',
-    _ => null,
-  };
+  String? code(String name) => members.contains(member(name)) ? '$prefix.${member(name)}' : null;
+
+  /// O membro esperado para o nome do Figma, exista ou não.
+  String member(String name) => byFigma[name] ?? identifier(name);
 
   static TokenClass? read(DartObject? source) {
     final element = source?.getField('type')?.toTypeValue()?.element;

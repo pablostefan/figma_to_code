@@ -87,7 +87,7 @@ class Mapping {
   String get functionName => _name(declaration);
 }
 
-/// Todos os mapeamentos de um pacote (`lib/connect/**/*.figma.dart`), mais os `@FigmaLocal` do app.
+/// Todos os mapeamentos de um pacote (`lib/**/*.figma.dart`), mais os `@FigmaLocal` do app.
 class MappingSet {
   MappingSet(
     this.components, {
@@ -200,17 +200,18 @@ class Policy {
 /// próprio pacote.
 Future<MappingSet> loadMappings(String packageDir, {String? packageConfig}) async {
   final root = Directory(packageDir).resolveSymbolicLinksSync();
-  final connect = Directory('$root/lib/connect');
-  if (!connect.existsSync()) throw ArgumentError('$root não tem lib/connect/');
+  // As anotações ficam em qualquer pasta de `lib/` (`lib/acme/components/button/`, `lib/templates/`, `lib/connect/`).
+  final lib = Directory('$root/lib');
+  if (!lib.existsSync()) throw ArgumentError('$root não tem lib/');
   final files =
-      connect
+      lib
           .listSync(recursive: true)
           .whereType<File>()
           .map((f) => f.path)
           .where((p) => p.endsWith('.figma.dart'))
           .toList()
         ..sort();
-  // A política fica em `lib/figma_policy.dart` (ARCHITECTURE §3); é lida antes, porque acrescenta regras aos mapeamentos.
+  // A política fica em `lib/figma_policy.dart` (docs/ARQUITETURA.md §3); é lida antes, porque acrescenta regras aos mapeamentos.
   if (File('$root/lib/figma_policy.dart').existsSync()) files.insert(0, '$root/lib/figma_policy.dart');
 
   final units = await _analyze(root, files, packageConfig);
@@ -297,7 +298,7 @@ Future<({List<Mapping> locals, List<String> warnings})> loadLocalMappings(
               warnings.add(e.message);
             }
           case 'FigmaConnect' || 'FigmaScreen':
-            warnings.add('${result.path}: mapeamento do DS fica no pacote de mapeamentos (lib/connect/), não no app.');
+            warnings.add('${result.path}: mapeamento do DS fica no pacote de mapeamentos (lib/), não no app.');
         }
       }
     }

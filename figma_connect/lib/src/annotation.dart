@@ -1,6 +1,6 @@
 import 'guidance.dart';
 
-/// Tipo do componente: decide geração, validação e profundidade no brief (ver `FigmaPolicy`).
+/// Tipo do componente: escolhe as `devNotes` do tipo na política (`FigmaPolicy.kinds`).
 enum FigmaKind {
   /// Widget do DS (Button, Input, Badge).
   component,
@@ -28,50 +28,9 @@ enum Coverage {
   sketch,
 }
 
-/// Ciclo de vida do componente.
-sealed class Status {
-  const Status._();
-
-  /// Componente estável.
-  static const Status stable = StableStatus();
-
-  /// API pode mudar.
-  const factory Status.experimental({String? hint}) = ExperimentalStatus;
-
-  /// Não usar em código novo; [replacement] é o substituto.
-  const factory Status.deprecated({required String replacement, String? hint}) = DeprecatedStatus;
-}
-
-/// Ver [Status.stable].
-final class StableStatus extends Status {
-  /// Ver [Status.stable].
-  const StableStatus() : super._();
-}
-
-/// Ver [Status.experimental].
-final class ExperimentalStatus extends Status {
-  /// Ver [Status.experimental].
-  const ExperimentalStatus({this.hint}) : super._();
-
-  /// Uma linha de contexto.
-  final String? hint;
-}
-
-/// Ver [Status.deprecated].
-final class DeprecatedStatus extends Status {
-  /// Ver [Status.deprecated].
-  const DeprecatedStatus({required this.replacement, this.hint}) : super._();
-
-  /// Nome do componente que substitui este.
-  final String replacement;
-
-  /// Uma linha de contexto.
-  final String? hint;
-}
-
 /// Liga um componente do Figma a uma função que monta o widget Dart correspondente.
 ///
-/// A função é um template: o gerador troca cada `f.*` pelos valores da instância no Figma.
+/// A função é um template: a CLI troca cada `f.*` pelos valores da instância no Figma.
 /// Referência completa: `docs/FIGMA_CONNECT.md`.
 class FigmaConnect {
   /// Ver `docs/FIGMA_CONNECT.md`, seção 3.
@@ -80,9 +39,6 @@ class FigmaConnect {
     required this.name,
     this.kind = FigmaKind.component,
     this.when = const {},
-    this.tags = const {},
-    this.owner,
-    this.status = Status.stable,
     this.coverage = Coverage.complete,
     this.guide,
     this.figmaNotes = const {},
@@ -100,9 +56,6 @@ class FigmaConnect {
     required String this.guide,
     this.kind = FigmaKind.component,
     this.when = const {},
-    this.tags = const {},
-    this.owner,
-    this.status = Status.stable,
     this.figmaNotes = const {},
     this.devNotes = const [],
     this.docs = const [],
@@ -112,7 +65,7 @@ class FigmaConnect {
   /// Key do component set (ou do componente sem variants), ou a key exata de uma variant.
   final String key;
 
-  /// Nome no Figma, para humanos e para o drift.
+  /// Nome no Figma, para humanos (aparece no brief).
   final String name;
 
   /// Tipo do componente.
@@ -120,15 +73,6 @@ class FigmaConnect {
 
   /// Valores de variant que restringem esta função (caso 1 do Figma → N widgets).
   final Map<String, String> when;
-
-  /// Domínio (`form`, `list`…), para selecionar regras de projeto.
-  final Set<String> tags;
-
-  /// Time responsável.
-  final String? owner;
-
-  /// Ciclo de vida.
-  final Status status;
 
   /// Quanto a função resolve sem julgamento.
   final Coverage coverage;

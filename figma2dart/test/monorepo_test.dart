@@ -36,11 +36,11 @@ final base = {
   '$ops/acme_figma/pubspec.yaml':
       'name: acme_figma\ndependencies:\n  acme:\n    path: ../acme\n  figma_connect:\n    path: ../figma2dart/figma_connect\n',
   '$ops/acme_figma/lib/figma_policy.dart': '',
-  '$ops/figma2dart/figma2dart.yaml': 'mappings: ../acme_figma\nscreens: lib/figma\n',
+  '$ops/figma2dart/figma_to_dart.yaml': 'mappings: ../acme_figma\nscreens: lib/figma\n',
   'libraries/pix/pix_ui/pubspec.yaml':
       'name: pix_ui\ndependencies:\n  acme:\n    path: ../../design_ops/packages/acme\n',
   'libraries/pix/pix_ui/lib/a/a.dart': '',
-  'libraries/pix/pix_ui/figma2dart.yaml': 'screens: lib/telas\n',
+  'libraries/pix/pix_ui/figma_to_dart.yaml': 'screens: lib/telas\n',
   'libraries/pix/pix_ui/example/pubspec.yaml': 'name: pix_ui_example\n',
   'libraries/pix/pix_core/pubspec.yaml': 'name: pix_core\n',
 };
@@ -51,7 +51,7 @@ void main() {
     final ws = Workspace.find('${repo.path}/libraries/pix/pix_ui/lib/a');
     expect(ws.app, '${repo.path}/libraries/pix/pix_ui');
     expect(ws.repo, repo.path);
-    expect(ws.configs.keys, ['${repo.path}/$ops/figma2dart/figma2dart.yaml', '${ws.app}/figma2dart.yaml']);
+    expect(ws.configs.keys, ['${repo.path}/$ops/figma2dart/figma_to_dart.yaml', '${ws.app}/figma_to_dart.yaml']);
     expect(ws.screens, 'lib/telas');
     final m = ws.mappings()!;
     expect((m.path, m.via), ('${repo.path}/$ops/acme_figma', 'config'));
@@ -75,13 +75,24 @@ void main() {
   });
 
   test('sem `mappings:`, o Acme é o único pacote com lib/figma_policy.dart', () {
-    final repo = monorepo({...base, '$ops/figma2dart/figma2dart.yaml': 'screens: lib/figma\n'});
+    final repo = monorepo({...base, '$ops/figma2dart/figma_to_dart.yaml': 'screens: lib/figma\n'});
     final m = Workspace.find('${repo.path}/libraries/pix/pix_ui').mappings()!;
     expect((m.path, m.via), ('${repo.path}/$ops/acme_figma', 'repositório'));
   });
 
+  test('config com o nome antigo (figma2dart.yaml) não é lido; o doctor pede para renomear', () {
+    final repo = monorepo({
+      for (final MapEntry(:key, :value) in base.entries)
+        if (!key.endsWith('figma2dart/figma_to_dart.yaml')) key: value,
+      '$ops/figma2dart/figma2dart.yaml': 'mappings: ../acme_figma\n',
+    });
+    final ws = Workspace.find('${repo.path}/libraries/pix/pix_core');
+    expect(ws.configs, isEmpty);
+    expect(ws.legacyConfigs, ['${repo.path}/$ops/figma2dart/figma2dart.yaml']);
+  });
+
   test('dois configs com `mappings:` é erro', () {
-    final repo = monorepo({...base, 'libraries/pix/pix_ui/figma2dart.yaml': 'mappings: ../outro\n'});
+    final repo = monorepo({...base, 'libraries/pix/pix_ui/figma_to_dart.yaml': 'mappings: ../outro\n'});
     expect(() => Workspace.find('${repo.path}/libraries/pix/pix_ui'), throwsA(isA<ResolveError>()));
   });
 

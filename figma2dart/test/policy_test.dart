@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:figma2dart/src/api.dart';
 import 'package:figma2dart/src/brief.dart';
 import 'package:figma2dart/src/component_brief.dart';
+import 'package:figma2dart/src/coverage.dart';
 import 'package:figma2dart/src/mappings.dart';
 import 'package:figma2dart/src/resolve.dart';
 import 'package:test/test.dart';
@@ -198,6 +199,60 @@ void main() {
     expect(tokens.variable('MarcaA/Colors/Content/03'), isNull, reason: 'names aponta para um membro que não existe');
     expect(tokens.variable('MarcaA/Colors/Other/primary'), isNull);
     expect(tokens.variable('Spacing/md'), 'context.acmeSpacing.md', reason: 'a coleção vem antes dos caminhos');
+  });
+
+  test('cobertura da política: tokens, estilos e ícones sem Dart, agrupados com o que fazer', () {
+    final c = policyCoverage({
+      'files': {
+        'Acme': {
+          'tokens': [
+            'Spacing/md', 'MarcaA/Colors/Surface/primary', 'MarcaB/Colors/Surface/Brand/primary', //
+            'MarcaA/Colors/Feedback/Success/01', 'MarcaA/Colors/Feedback/Success/02', 'MarcaA/Colors/Content/99',
+          ],
+          'textStyles': ['body/sm', 'title/lg'],
+        },
+      },
+      'pages': {
+        'Acme / Icons': {
+          'icons': {'k1': 'icon-1', 'variant7': 'outro-nome', 'k9': 'sem-par'},
+        },
+      },
+    }, maps.policy);
+    final tokens = c['tokens']! as Json;
+    expect((tokens['total'], tokens['withDart']), (6, 3));
+    final [noClass, noMember] = (tokens['missing']! as List).cast<Json>();
+    expect(noClass['group'], 'MarcaA/Colors/Feedback/Success');
+    expect(noClass['count'], 2);
+    expect(noClass['fix'], contains('scopes'));
+    expect(noMember['group'], 'context.acme.content');
+    expect(noMember['examples'], ['MarcaA/Colors/Content/99 → x99']);
+    final styles = c['textStyles']! as Json;
+    expect(styles['withDart'], 1);
+    expect(((styles['missing']! as List).single as Json)['examples'], ['title/lg → titleLg']);
+    final icons = c['icons']! as Json;
+    expect((icons['total'], icons['withDart']), (3, 2), reason: 'icon-1 pelo camelCase, variant7 pelo byKey');
+    expect((icons['missing']! as List).single, {'name': 'sem-par', 'key': 'k9', 'expected': 'semPar'});
+  });
+
+  test('ícones do retrato: página de ícones ou set chamado Icon; variant name, variant única ou o componente', () {
+    final page = libraryIcons('🧩 Icons', [
+      {'key': 'a', 'name': 'Icons/arrow-up', 'variants': <Object>[]},
+      {
+        'key': 'set',
+        'name': 'Glyph',
+        'variants': [
+          {'id': '1:1', 'key': 'v1', 'props': {'name': 'bell', 'size': '24'}},
+          {'id': '1:2', 'props': {'name': 'home', 'size': '24'}},
+        ],
+      },
+    ]);
+    expect(page, {'a': 'arrow-up', 'v1': 'bell', '1:2': 'home'});
+    expect(libraryIcons('Components', [{'key': 'b', 'name': 'Button Icon', 'variants': <Object>[]}]), isEmpty);
+    // Página de um componente com "Icon" no nome não é página de ícones (o Acme tem uma por componente).
+    for (final page in ['🔘 Button Icon', 'Icon Button']) {
+      expect(libraryIcons(page, [{'key': 'b', 'name': 'Button Icon', 'variants': <Object>[]}]), isEmpty, reason: page);
+    }
+    expect(libraryIcons('Components', [{'key': 'i', 'name': 'Icon', 'variants': [{'id': '2:1', 'key': 'm', 'props': {'name': 'x'}}]}]), {'m': 'x'});
   });
 
   test('enum grande entra cortado na API, e o ícone do sketch chega resolvido', () {

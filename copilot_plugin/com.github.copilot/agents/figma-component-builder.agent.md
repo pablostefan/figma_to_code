@@ -9,7 +9,7 @@ Você constrói **um** componente Flutter que existe no Figma mas não no Design
 do `BRIEF.md` do componente, o arquivo a criar (`widgetFile`), o nome da classe, a `key` e o `name` do componente no
 Figma e o pacote.
 
-Siga a skill [figma2dart-component](../../.agents/skills/figma2dart-component/SKILL.md).
+Siga a skill [figma2dart-component](../../skills/figma2dart-component/SKILL.md).
 
 Termine com um resumo curto para o agente que te chamou:
 

@@ -3,20 +3,18 @@
 Como ligar um componente do Figma a um widget Dart, e como orientar a LLM quando essa ligação não é
 determinística. Para quem escreve e revisa os mapeamentos (time do DS).
 
-A arquitetura geral está em [ARCHITECTURE.md](ARCHITECTURE.md): o mapeamento é a seção 7 e a geração assistida por
-LLM é a seção 10. Este documento é a referência completa da API.
-
-> **Status:** os tipos da API estão no pacote [`figma_connect/`](../figma_connect/). O gerador, o brief e a validação
-> que os consomem ainda não existem (roadmap, passos 3 e 4). Os nomes do DS real nos exemplos (`AcmeListPage`,
-> `AcmeFilterChip`…) são ilustrativos.
+Os tipos estão no pacote [`figma_connect/`](../figma_connect/); como a CLI usa as anotações para resolver uma tela,
+em [ARQUITETURA.md §4](ARQUITETURA.md#4-como-uma-tela-é-resolvida). Nos exemplos, os nomes do Acme (`AcmeListPage`,
+`AcmeFilterChip`…) são ilustrativos.
 
 ---
 
 ## 1. Ideia geral
 
-- **Um arquivo `*.figma.dart` por componente**, no pacote `carteira_ds_figma`. **O widget do DS não é alterado.**
-- **A função anotada é um template:** o gerador avalia a função trocando cada `f.*` pelos valores que a instância
-  usa no Figma, e escreve o código resultante na tela.
+- **Um arquivo `*.figma.dart` por componente**, no pacote de mapeamentos (`acme_figma`). **O widget do DS não é
+  alterado.**
+- **A função anotada é um template:** a CLI lê a função e troca cada `f.*` pelos valores que a instância usa no
+  Figma; o código resultante vai para o brief da tela.
 - **O que é determinístico, a anotação resolve.** O que não é, ela orienta: deixa um **norte** (`guide`,
   `f.guided`, notas, docs e exemplos) e a LLM implementa, marcando o que decidiu.
 - **A anotação é o índice do componente.** Norte, docs, exemplos e regras ficam num lugar só; a CLI junta no brief
@@ -25,15 +23,16 @@ LLM é a seção 10. Este documento é a referência completa da API.
 Onde ficam os arquivos:
 
 ```
-design_system/
-  carteira_ds_figma/
-    lib/connect/*.figma.dart     ← as anotações
-    lib/figma_policy.dart        ← regras por tipo, tabela de ícones, componentes ignorados
-    docs/                        ← docs opcionais por componente
-    rules/                       ← regras de projeto (valem para a tela ou para vários componentes)
-  carteira_ds_examples/          ← exemplos de implementação: compilam, sem regra de negócio
-  carteira_lints/                ← regras obrigatórias como lint
+acme_figma/
+  lib/<pasta do DS>/<widget>.figma.dart   ← as anotações, em qualquer pasta de lib/ (espelhando o DS)
+  lib/figma_policy.dart                   ← tokens, ícones, ignorados, regras por tipo
+  docs/<widget>.md                        ← docs opcionais por componente
+  test/mappings_test.dart                 ← cada anotação com os valores padrão e as opções do Figma
+  figma_library.json                      ← retrato do DS no Figma
 ```
+
+Exemplos de implementação (`Example.code`) ficam num pacote à parte que compila, sem regra de negócio (no POC,
+`carteira_ds_examples`).
 
 ---
 
@@ -42,7 +41,7 @@ design_system/
 **Componente simples e totalmente coberto** (a maioria): só `key`, `name` e o corpo.
 
 ```dart
-// carteira_ds_figma/lib/connect/ds_badge.figma.dart
+// carteira_ds_figma/lib/connect/ds_badge.figma.dart (POC)
 @FigmaConnect(key: 'b3e1…', name: 'Badge')
 Widget badge(FigmaProps f) => DsBadge(
   label: f.text('label'),
@@ -62,9 +61,6 @@ Widget badge(FigmaProps f) => DsBadge(
   key: '9f2c…',
   name: 'Template / Lista com filtro',
   kind: FigmaKind.template,
-  tags: {'list', 'filter'},
-  owner: 'time-ds-core',
-  status: Status.stable,
   coverage: Coverage.partial,
   guide: 'Lista paginada. Filtros, células e refresh dependem da feature.',
   figmaNotes: {
@@ -123,9 +119,6 @@ class FigmaConnect {
     required String name,
     FigmaKind kind = FigmaKind.component,
     Map<String, String> when = const {},
-    Set<String> tags = const {},
-    String? owner,
-    Status status = Status.stable,
     Coverage coverage = Coverage.complete,
     String? guide,
     Map<String, FigmaNote> figmaNotes = const {},
@@ -139,12 +132,9 @@ class FigmaConnect {
 | Campo | Para quê | Padrão |
 |---|---|---|
 | `key` | identidade: key do component set (ou do componente, sem variants). Ver 3.1 | obrigatório |
-| `name` | nome no Figma, para humanos e para o drift ("mesma key, nome diferente") | obrigatório |
-| `kind` | tipo do componente; decide geração, validação e brief (3.2) | `component` |
+| `name` | nome no Figma, para humanos (aparece no brief) | obrigatório |
+| `kind` | tipo do componente; escolhe as `devNotes` do tipo na política (3.2) | `component` |
 | `when` | caso 1 do Figma → N widgets (3.3) | — |
-| `tags` | domínio (`form`, `list`, `navigation`…), para selecionar regras de projeto | — |
-| `owner` | time responsável: aparece no brief e recebe os erros de CI | — |
-| `status` | `stable`, `experimental` ou `deprecated` (3.4) | `stable` |
 | `coverage` | `complete` ou `partial` (seção 5); `sketch` só pelo construtor `FigmaConnect.sketch` | `complete` |
 | `guide` | uma ou duas linhas: o que é o componente e o que falta cobrir | — |
 | `figmaNotes` | como ler props do Figma que não viram parâmetro (4.3) | — |
@@ -159,8 +149,8 @@ Toda instância no IR traz duas keys:
 - **`componentKey`:** do component set (ou do componente, se não tem variants).
 - **`mainComponentKey`:** do componente principal exato, ou seja, a variant usada.
 
-O gerador procura o mapeamento primeiro pela `mainComponentKey` e, se não achar, pela `componentKey`. Assim dá para
-mapear o componente inteiro ou uma variant específica. Pelo MCP nativo, que não tem keys, a busca é pelo nome.
+A CLI procura o mapeamento primeiro pela `mainComponentKey` e, se não achar, pela `componentKey`. Assim dá para
+mapear o componente inteiro ou uma variant específica.
 
 ### 3.2 `kind`: o tipo do componente
 
@@ -175,16 +165,8 @@ enum FigmaKind {
 
 | | `component` | `section` | `template` | `icon` |
 |---|---|---|---|---|
-| **Geração** | normal | normal | vira a raiz da tela; o `@FigmaScreen` não acrescenta outro scaffold | pela tabela de ícones (7.2) |
-| **Cobertura esperada** | `complete` (`partial` dá aviso) | qualquer | qualquer | sempre `complete` |
-| **Obrigatório** | — | `guide`, se `partial` | `guide`, `docs` e ao menos 1 `Example.code` | — |
-| **No brief** | só as lacunas | lacunas e exemplos | `guide`, docs e exemplos inteiros | nunca |
-
-A tabela mostra a política recomendada (exemplo da seção 7). As regras só valem se estiverem no `FigmaPolicy`: sem
-`KindPolicy` para um tipo, nada é exigido dele.
-
-> **Em aberto:** se os blocos compostos do DS já forem componentes comuns, `section` pode sair e ficam só
-> `component`, `template` e `icon`.
+O `kind` hoje decide quais `devNotes` do tipo (`KindPolicy`, seção 7) entram no brief. Os ícones são resolvidos pela
+tabela de ícones (7.2) em qualquer `f.icon`, seja qual for o `kind`.
 
 ### 3.3 `when`: nomes que não batem 1:1
 
@@ -192,6 +174,7 @@ A tabela mostra a política recomendada (exemplo da seção 7). As regras só va
 |---|---|---|
 | Nome diferente, 1:1 | `Btn` → `DsButton` | `@FigmaConnect(key: …, name: 'Btn')` |
 | 1 do Figma → N widgets | `Button type=icon-only` → `DsIconButton` | duas funções com a mesma `key`, cada uma com `when: {'type': 'icon-only'}` |
+| Prop escolhe construtor nomeado, factory ou outro widget (também prop da base exposta) | `✏️ Type` → `AcmeIconButton.primary` / `.secondary` / `AcmeGhostButton` | uma função com `f.variant` na raiz, o widget inteiro em cada opção: `f.variant('✏️ Type', {'Primary': AcmeIconButton.primary(…), …})`. O `when` só vê as props do próprio componente |
 | N do Figma → 1 widget | `Card/Small` + `Card/Large` → `DsCard(size:)` | uma função por componente (cada um tem a sua key); o corpo fixa o valor: `DsCard(size: DsCardSize.small)` |
 | Base travada exposta (um componente por tamanho, cada um com a sua key) | `Button Icon` (`👉 Size`) expõe `.Icon Button / Large`, `/ Medium` e `/ Small` | **uma** função, na key do público: lê o `👉 Size` dele e as props da base pelo nome (4.1). As bases não ganham anotação |
 | Só existe no Figma | `_Base/Shape`, `.Nested / …` | prefixo `_` ou `.` = ignorado (se não tiver anotação própria); outros casos em `FigmaPolicy.ignored` |
@@ -218,24 +201,6 @@ Widget buttonIcon(FigmaProps f) => AcmeIconButton(
 );
 ```
 
-### 3.4 `status`
-
-```dart
-sealed class Status {
-  static const Status stable = StableStatus();
-  const factory Status.experimental({String? hint}) = ExperimentalStatus;
-  const factory Status.deprecated({required String replacement, String? hint}) = DeprecatedStatus;
-}
-```
-
-```dart
-status: Status.deprecated(replacement: 'Template / Lista v2', hint: 'Remover até a versão 4.0'),
-```
-
-- **`deprecated`:** o gerador continua gerando (a tela usa aquilo no Figma), mas marca `f2d:inferred` e mostra o
-  substituto. No brief: "não usar em código novo; preferir X". Exemplo que usa componente depreciado dá aviso.
-- **`experimental`:** entra no brief como "API pode mudar".
-
 ---
 
 ## 4. Orientar a LLM
@@ -247,10 +212,10 @@ status: Status.deprecated(replacement: 'Template / Lista v2', hint: 'Remover at�
 | `text(name)` | TEXT | `String` |
 | `boolean(name)` | BOOLEAN | `bool` |
 | `variant(name, map)` | VARIANT | valor do `map` |
-| `icon(name)` | INSTANCE_SWAP de ícone | `DsIconName`, pela tabela de ícones (7.2) |
+| `icon(name)` | INSTANCE_SWAP de ícone | o ícone do DS (enum ou constante), pela tabela de ícones (7.2) |
 | `instance(name)` | INSTANCE_SWAP / instância exposta | `Widget`, resolvido pelo mapeamento dela |
 | `nested(path)` | instância exposta sem mapeamento próprio (ex.: `.Nested / Global Switcher/1. Flag`) | `FigmaProps` dela (`f.nested('1. Flag').boolean('Disabled')`) |
-| `slot(part)` | área livre do template | `Widget`, gerado recursivamente a partir da árvore do IR |
+| `slot(part)` | área livre do template | lacuna `f2d:gap`: a LLM monta a área pela estrutura do brief |
 | `guided(part, …)` | nenhuma: parte que exige julgamento | o valor `or` (4.2) |
 
 Os nomes de prop vêm sem o sufixo `#id` do Figma (`label`, não `label#4:0`), e com o resto exato, inclusive emoji
@@ -276,16 +241,14 @@ T guided<T>(
 |---|---|
 | `part` | nome da parte; é o mesmo nome da seção no doc (`## filters`) |
 | `guide` | o norte, em uma ou duas linhas |
-| `or` | valor provisório que **compila**; é o que o gerador escreve |
-| `docs`, `examples` | doc e exemplo só desta parte; entram no brief só se a parte for lacuna na tela |
+| `or` | valor provisório que **compila**; é o que a CLI escreve no código |
+| `docs`, `examples` | doc e exemplo só desta parte. A CLI ainda não lê: use a seção `## <parte>` no doc do componente |
 
-O gerador escreve o valor `or` e, acima dele, o marcador com o norte e os valores do Figma. A orientação fica na
-linha que precisa mudar:
+A CLI escreve o valor `or` com o marcador, e a decisão vai para a seção "Decisões" do brief, com o norte e os valores
+do Figma daquela instância:
 
 ```dart
-// f2d:guided G2 filters — Cada Flag exposta vira AcmeFilterChip; Disabled → enabled: false.
-//   Figma: 1. Flag {Rounded: true, Disabled: false, Currency: BRL}, 2. Flag {…, Currency: Global}
-filters: const [],
+filters: /* f2d:guided G2 filters */ const [],
 ```
 
 ### 4.3 `figmaNotes`: props do Figma sem parâmetro no código
@@ -304,7 +267,7 @@ sealed class FigmaNote {
 |---|---|---|
 | `ignore(reason)` | prop só visual, sem efeito no código | não reporta a prop como lacuna |
 | `derive(guide)` | o efeito existe, mas vem de outra coisa (ex.: `state=empty` → `items: []`) | vira norte no brief |
-| `map(values, hint:)` | correspondência conhecida, mas que ainda não cabe no corpo da função | entra no brief como tabela; é candidata a virar código |
+| `map(values, hint:)` | correspondência conhecida, mas que ainda não cabe no corpo da função | entra no brief como `Global → null, BRL → Currency.brl`; é candidata a virar código |
 
 ```dart
 figmaNotes: {
@@ -340,8 +303,8 @@ devNotes: [
 
 Onde **não** colocar uma regra:
 
-- **Fala da tela ou de vários componentes** ("toda tela de feature usa AcmeContext"): regra de projeto em `rules/`,
-  ou `devNotes` do **tipo** na política (seção 7). Senão ela é copiada em 12 templates.
+- **Fala de vários componentes** ("todo template fica dentro de AcmeContext"): `devNotes` do **tipo** na política
+  (seção 7). Senão ela é copiada em 12 templates. O que vale para toda tela vai no `@FigmaScreen` (seção 8).
 - **Precisa de explicação longa ou exemplo:** vai no doc; a `devNote` guarda só a frase.
 
 ---
@@ -373,31 +336,27 @@ typedef StatementTemplate = DsStatementTemplate;
   não passa com ele) e ganha uma tarefa própria, `components/<nome>/BRIEF.md`, com: o norte; a **API do widget**,
   lida do código do DS (construtores, parâmetros com tipo, obrigatório, padrão e doc, e os tipos auxiliares como
   `DsStatementDay` e enums); os **dados de cada instância** no Figma (props, instâncias expostas, overrides com
-  valores); docs e exemplos. A LLM monta o widget no lugar do placeholder e marca com `f2d:inferred` o que decidiu.
-  Desde o IR 1.3 o brief de cada instância traz também o **conteúdo de dentro** (textos e instâncias visíveis, com
-  caminho e props: os dias e as linhas do Extrato) e o **recorte do PNG** da tela só com aquela instância. Export
-  anterior (IR 1.2) tem só o que é exposto ou sobrescrito, e o PNG da tela inteira.
+  valores, o conteúdo de dentro e o recorte do PNG); docs e exemplos. A LLM monta o widget no lugar do placeholder e
+  marca com `f2d:inferred` o que decidiu.
 
 Casos reais no Carteira DS (`design_system/carteira_ds_figma`): `TransactionList` é `partial` (título e ação do
 Figma, linhas em `f.guided`) e `Template / Extrato` é `sketch`.
 
-A cobertura declarada é **conferida** pela CLI. Ela compara o que cada instância usa no IR com o que a anotação lê:
+Na tela, cada caso vira:
 
-| Item da instância no IR | Coberto quando | Se não for coberto |
-|---|---|---|
-| Prop (TEXT, BOOLEAN, VARIANT, SWAP) | a função lê com `f.text`, `f.boolean`… ou há `FigmaNote` | lacuna `f2d:gap`, sem norte |
-| Instância exposta | a função usa `f.instance` ou `f.nested` | idem |
-| Override fora da API do componente | nunca: a anotação não lê overrides | lacuna, com os valores do override |
-| `f.guided` | nunca: é proposital | lacuna `f2d:guided`, com o norte |
+| Item da instância no IR | Vira |
+|---|---|
+| Prop lida pela função (`f.text`, `f.boolean`…) | o valor do Figma no código |
+| `f.guided` | o valor `or` com `f2d:guided` e o norte no brief |
+| Prop que a função não lê | nada: a CLI não confere a cobertura declarada. Quem garante que toda prop importante é lida é o `mappings_test` do pacote (seção 10) |
+| Override fora da API do componente | não entra no código; os valores aparecem no brief |
 
 Componente **do DS** sem nenhuma anotação: a instância inteira vira lacuna `f2d:gap` ("componente sem
 mapeamento"). Componente **fora do DS** não é lacuna: vira `f2d:placeholder` com brief de construção, ou, se o
-widget já existe no app, `f2d:local` (seção 5.1).
+widget já existe no app, `f2d:local` (5.1).
 
-**Do DS ou fora dele** se decide pelo **retrato da biblioteca**: `figma_library.json` no pacote de mapeamentos, com
-a key e o nome de cada componente do DS. Ele sai dos exports do plugin em **modo biblioteca** (uma página do arquivo
-do DS por export, sem seleção): `figma2dart library <zip>…` grava ou atualiza (exportar a mesma página de novo
-substitui a anterior). Sem retrato, vale a regra antiga: componente remoto (de qualquer biblioteca) é do DS.
+**Do DS ou fora dele** se decide pelo **retrato da biblioteca** (`figma_library.json` no pacote de mapeamentos,
+gravado por `figma2dart library`). Sem retrato, componente remoto (de qualquer biblioteca) é do DS.
 
 ### 5.1 Componente do app que já existe: `@FigmaLocal`
 
@@ -445,20 +404,18 @@ sealed class Doc {
 
 | Campo | Para quê |
 |---|---|
-| `path` | arquivo no repositório do DS, relativo à raiz dele; a CLI lê direto |
+| `path` | arquivo no repositório, relativo à raiz dele; a CLI lê direto |
 | `url` | doc online (site, Confluence…) |
 | `section` | o trecho que interessa, com o mesmo nome da parte (`filters`) |
-| `source` | só no `link`: arquivo de origem daquele link, para a CLI ler sem rede |
+| `source` | só no `link`: arquivo local com o mesmo conteúdo, para a CLI ler |
 | `hint` | uma linha: **o que tem no doc e quando ele importa** |
 
-- **Convenção:** sem `docs`, a CLI procura `carteira_ds_figma/docs/<arquivo>.md` com o nome do `*.figma.dart`.
-- **Conteúdo, não link:** a LLM recebe o trecho do doc dentro do brief, não "veja este link". Um `Doc.link` sem
-  `source` é baixado no `brief` e guardado em `.figma2dart/cache/`; se a CLI não tiver acesso, entra só o `hint`.
-- **Por que o `hint`:** resolve o caso em que o conteúdo não chega à LLM (sem acesso, doc grande, seção fora do
-  recorte). Ela sabe o que existe e se precisa abrir. Também ajuda a CLI a deixar de fora docs que não se aplicam
-  à tela.
-- **Doc online exige cuidado** com versão (o app pode usar uma versão mais antiga do DS), com âncoras estáveis e com
-  login (SSO exige token na CLI). Preferir docs gerados a partir de markdown no repositório, com `source`.
+- **Convenção:** sem `docs`, a CLI procura `docs/<arquivo>.md` no pacote de mapeamentos, com o nome do `*.figma.dart`.
+- **Conteúdo, não link:** a LLM recebe o trecho do doc dentro do brief. A CLI não acessa a rede: um `Doc.link` sem
+  `source` entra só com o endereço e o `hint`.
+- **Por que o `hint`:** quando o conteúdo não chega à LLM (link sem `source`, doc grande, seção fora do recorte),
+  ela sabe o que existe e se precisa abrir.
+- Seção pedida que não existe no arquivo aparece no brief com o aviso.
 
 Organização do doc, pelas mesmas partes da anotação:
 
@@ -525,7 +482,6 @@ Todo `path` é relativo à raiz do repositório: o do DS, ou o `repo` do `Exampl
 
 - **Seleção no brief:** no máximo 1 `code` e 1 `usage` por componente; exemplos de uma parte só se ela for lacuna.
   Exemplo acima de ~60 linhas, ou que não coube, entra só como uma linha com o `hint` e o caminho.
-- **Golden opcional:** cada `Example.code` pode virar golden test; o exemplo também vira teste visual do DS.
 
 ---
 
@@ -538,16 +494,11 @@ Regras que valem para todos os componentes de um tipo, num lugar só:
 const figmaPolicy = FigmaPolicy(
   kinds: {
     FigmaKind.template: KindPolicy(
-      require: {Field.guide, Field.docs, Field.exampleCode},
-      brief: BriefDepth.full,
       devNotes: [
         DevNote.must('Template é a raiz da tela: não envolver em AcmeScaffold.', lint: 'acme_single_scaffold'),
         DevNote.must('Sempre dentro de AcmeContext com `feature` definido.'),
       ],
     ),
-    FigmaKind.section: KindPolicy(brief: BriefDepth.gapsAndExamples),
-    FigmaKind.component: KindPolicy(expectedCoverage: Coverage.complete, brief: BriefDepth.gaps),
-    FigmaKind.icon: KindPolicy(expectedCoverage: Coverage.complete, brief: BriefDepth.none),
   },
   icons: IconTable(values: DsIconName.values, byKey: {/* mainComponentKey: DsIconName.x */}),
   ignored: {'4a7e…': 'Anotação de handoff do designer, sem código'},
@@ -556,26 +507,14 @@ const figmaPolicy = FigmaPolicy(
 
 | Campo | Para quê |
 |---|---|
-| `kinds` | por tipo: campos obrigatórios (`require`), cobertura esperada, profundidade no brief e `devNotes` comuns |
+| `kinds` | por tipo: `devNotes` comuns, que entram no brief uma vez |
 | `icons` | tabela de ícones (7.2) |
 | `ignored` | componentes só do Figma que não seguem o prefixo `_`/`.`, com o motivo |
 
 ### 7.1 Como as regras se combinam
 
-- **`devNotes` do tipo** valem para todos os componentes daquele tipo e entram no brief **uma vez**.
-- **Regras de projeto** (`rules/*.md`) podem filtrar por tipo e por tag:
-
-  ```markdown
-  ---
-  id: forms.validation
-  applies_when: { tags: [form] }      # ou { kind: template }, { uses: [Input] }, { has: flow }, always
-  enforced_by: none                   # ou lint:<id>
-  ---
-  Validação usa AcmeForm + AcmeValidators, nunca TextFormField.validator direto.
-  ```
-
-- **Ordem no brief:** regras do tipo → `devNotes` do componente → regras de projeto selecionadas. Uma regra
-  repetida aparece uma vez.
+**`devNotes` do tipo** valem para todos os componentes daquele tipo e entram no brief uma vez, antes das `devNotes`
+do componente.
 
 ### 7.2 Ícones
 
@@ -601,8 +540,7 @@ A resolução de cada ícone, em `f.icon` e em INSTANCE_SWAP:
 
 1. pela `mainComponentKey` na `IconTable.byKey` (todos os ícones de um set compartilham a `componentKey`; é a
    `mainComponentKey` que diz qual é);
-2. pela convenção de nomes (`arrow-up-right` → `DsIconName.arrowUpRight`), com as exceções de
-   `figma_specs/naming.yaml`;
+2. pela convenção de nomes (`arrow-up-right` → `DsIconName.arrowUpRight`);
 3. sem correspondência: o primeiro valor (do enum ou da classe) com `/* TODO(f2d): ícone "x" do Figma não existe em DsIconName */`.
    O componente continua na tela; o dev troca o ícone (o `check` lista o TODO e não reprova).
 
@@ -659,14 +597,16 @@ tokens: TokenTable(
   brief avisa que o código precisa de `BuildContext` e não pode ser `const`.
 - **Sem correspondência:** o brief mantém o nome do Figma com o valor (`Spacing/huge (sem Dart, 48)`), e a LLM usa o
   mais próximo com `f2d:inferred`.
-- Estilos de cor do Figma (paint styles) ainda saem pelo nome do estilo.
+- Estilos de cor do Figma (paint styles) saem pelo nome do estilo.
+- **Conferir:** `figma2dart doctor --json` mostra em `policy` os tokens, estilos de texto e ícones do retrato sem
+  código Dart, agrupados com o que fazer.
 
 ---
 
 ## 8. Mapeamento de tela: `@FigmaScreen`
 
 Para o que vale em toda tela e só existe no código (`AcmeContext`, `AcmeScaffold`). A função recebe um
-`FigmaScreenProps`. O `instance` recebe o **mapeamento** do componente, não o nome: o gerador acha pela key da
+`FigmaScreenProps`. O `instance` recebe o **mapeamento** do componente, não o nome: a CLI acha pela key da
 anotação dele, então renomear no Figma não quebra nada. Devolve `null` se a tela não tiver o componente:
 
 ```dart
@@ -680,76 +620,57 @@ Widget screen(FigmaScreenProps s) => AcmeContext(
 );
 ```
 
-- Tela montada a partir de um **template** (instância ou `detachedInfo` no IR): o template é a raiz e o
-  `@FigmaScreen` não acrescenta outro scaffold.
-- Configuração que depende da feature vira uma pergunta explícita no brief.
-- **Template desanexado:** sem instância nem props, a anotação não roda. A CLI usa o `detachedInfo` para achar o
-  template e entrega `guide`, notas, docs e exemplos inteiros dele, mais a árvore do IR.
+- O `@FigmaScreen` entra no brief como "Esqueleto da tela": a LLM monta a tela dentro dele.
+- **Template desanexado** (o designer desanexou a instância): sem instância nem props, a anotação não roda. O plugin
+  aponta no lint (`detached-instance`), e a tela sai como camadas.
 
 ---
 
 ## 9. Como cada campo chega à LLM
 
-O `BRIEF.md` que o `figma2dart resolve` escreve junta só o que vale para a tela:
+O `BRIEF.md` que o `figma2dart resolve` escreve junta só o que vale para a tela, na seção "Componentes desta tela":
 
 ````markdown
-## Componentes desta tela
-### Lista com filtro (template · parcial · time-ds-core)
-Lista paginada. Filtros, células e refresh dependem da feature.
+### Lista com filtro (partial)
+
+Norte: Lista paginada. Filtros, células e refresh dependem da feature.
 - [obrigatório · lint acme_single_scaffold] Template é a raiz da tela: não envolver em AcmeScaffold.
-- [obrigatório] Sempre dentro de AcmeContext com `feature` definido.
 - [recomendado] Mais de 3 filtros: usar AcmeFilterSheet em vez de chips.
 - Figma `state`: não existe no código; o vazio vem de items: [] + empty:
 
-Docs:
-- docs/templates/lista_com_filtro.md — Visão geral e erros comuns do template  ← conteúdo abaixo
-- https://ds.empresa/docs/paginacao — Ler se a lista vem da API  ← conteúdo abaixo (lido de docs/paginacao.md)
-
-Exemplo — Caso padrão: lista da API com filtros e refresh
-(carteira_ds_examples/lib/templates/lista_com_filtro.dart · ListaComFiltroBasica)
+API do widget:
 ```dart
-class ListaComFiltroBasica extends StatelessWidget { … }
+AcmeListPage({required String title, …})
 ```
 
-## Lacunas
-- G2 (guided) filters — Cada Flag exposta vira AcmeFilterChip… · Figma: 1. Flag {…} · doc: ## filters · exemplo: ListaComMuitosFiltros
+- Doc: acme_figma/docs/lista_com_filtro.md — Visão geral e erros comuns
+  (conteúdo das seções que valem para a tela)
+- Exemplo: ListaComFiltroBasica — Caso padrão (código extraído pelo símbolo)
 ````
 
 | Campo | Onde aparece |
 |---|---|
-| `kind`, `owner`, `status`, `coverage` | cabeçalho do componente |
-| `guide` | primeira linha do componente |
+| `coverage` | ao lado do nome, quando não é `complete` |
+| `guide` | "Norte", quando não é `complete` |
 | `devNotes` (tipo + componente) | lista de regras, uma vez por componente |
 | `figmaNotes` | `derive` e `map` como norte; `ignore` não aparece |
 | `docs` | conteúdo recortado + `hint`; só o `hint` se o conteúdo não chegou |
-| `examples` | código extraído pelo símbolo, dentro do limite |
-| `f.guided` | marcador no código + item em "Lacunas" |
+| `examples` | código extraído pelo símbolo, até ~60 linhas |
+| `f.guided` | marcador no código + item em "Decisões" |
 
-Componentes `complete` sem `devNotes` não aparecem: já estão resolvidos no rascunho.
+Componentes `complete` sem `devNotes`, `figmaNotes`, docs nem exemplos não aparecem: já estão resolvidos no código.
 
 ---
 
-## 10. Validação (CI e `figma2dart check`)
+## 10. Validação
 
-| Verificação | Severidade |
+| Onde | O que pega |
 |---|---|
-| `coverage: complete` com prop do Figma não lida e sem `FigmaNote` | erro |
-| `coverage: partial` sem `guide` ou sem nenhum `f.guided`/`figmaNotes` | erro |
-| Campo exigido pela política do `kind` ausente (ex.: template sem `Example.code`) | erro |
-| `component` com `coverage: partial` | aviso |
-| `Doc.path` ou `source` inexistente; `section` inexistente no doc | erro |
-| `Doc.link` sem `source` e sem `hint` | erro |
-| `f.guided('x')` com doc da parte sem seção `## x` | erro |
-| Seção do doc sobre uma prop que a função passou a cobrir | aviso (doc desatualizado) |
-| `Example`: arquivo ou símbolo inexistente, ou símbolo que não usa o widget anotado | erro |
-| `Example.code` que viola um `DevNote.must` com lint | erro |
-| `Example.usage` sem nenhum `Example.code` no componente | aviso |
-| Exemplo que usa componente `deprecated` | aviso |
-| `guide`, `hint` ou nota com mais de ~2 linhas | aviso (mover para o doc) |
-| Mesma `devNote` em vários componentes | sugestão: regra do tipo ou de projeto |
-| `DevNote.must` sem `lint` repetido em vários componentes | sugestão: virar lint |
-| Prop nova no Figma sem leitura, sem `FigmaNote` | erro (drift) |
-| Mesma key, nome diferente | info (drift) |
+| `flutter analyze` do pacote de mapeamentos | a anotação instancia o widget de verdade: parâmetro renomeado ou removido no DS não compila |
+| `test/mappings_test.dart` do pacote | cada anotação com os valores padrão do Figma e **todas** as opções de cada variant: opção sem mapeamento falha |
+| CLI, ao carregar os mapeamentos | anotação do DS que não compila (erro); duas anotações empatadas para a mesma instância (erro: diferencie com `when`); `FigmaConnect.sketch` que não anota um `typedef` (erro); `@FigmaLocal` fora de `figma/connect/` ou que não compila (fica de fora, com aviso) |
+| CLI, ao resolver a tela | valor sem correspondência (variant sem opção, prop que não existe, prop em duas expostas): só aquela instância vira `f2d:gap` com o motivo |
+| `figma2dart doctor` | política contra o retrato: tokens, estilos de texto e ícones sem código Dart |
 
 ### 10.1 Captura para a revisão visual: `figmaCapture`
 
@@ -795,8 +716,6 @@ A anotação começa com norte e fica mais determinística com o uso:
 1. Lacuna resolvida do mesmo jeito em várias telas → vira código na função (sai o `f.guided`).
 2. `FigmaNote.map` estável → vira `f.variant` na função.
 3. Erro que se repete no review → linha em "Erros comuns" no doc ou nova `devNote`.
-4. `DevNote.must` que se repete → lint em `carteira_lints`.
+4. `DevNote.must` que se repete e dá para verificar → vira lint, e a nota aponta o lint (`lint:`).
 
-O relatório do `check`, agregado por componente, mostra quais lacunas mais aparecem: é a lista de prioridades do
-time do DS. `figma2dart docs status` lista os componentes usados nos exports sem anotação ou sem norte, por
-frequência e por `owner`.
+As lacunas que mais aparecem nos briefs são a lista de prioridades do time do DS.

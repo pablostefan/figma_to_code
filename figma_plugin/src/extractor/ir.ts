@@ -121,6 +121,8 @@ export interface ComponentDef {
 
 export interface VariantDef {
   id: string;
+  /** Key of this variant's main component (the `mainComponentKey` of its instances). Absent in older exports. */
+  key?: string;
   name: string;
   /** Variant values, e.g. `{ "size": "md" }`. Empty for components without variants. */
   props: Record<string, string>;

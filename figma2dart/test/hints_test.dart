@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:figma2dart/src/commands.dart';
 import 'package:figma2dart/src/hints.dart';
 import 'package:figma2dart/src/resolve.dart';
+import 'package:figma2dart/src/tokens.dart';
 import 'package:figma2dart/src/workspace.dart';
 import 'package:test/test.dart';
 
@@ -14,15 +15,15 @@ import 'resolve_test.dart' show instanceNode, screenWith, statementKey;
 void main() {
   const tokens = {
     '12': [
-      {'code': 'DsSpacing.md', 'collection': 'Spacing'},
-      {'code': 'DsRadius.md', 'collection': 'Radius'},
+      {'code': 'DsSpacing.md', 'token': 'Spacing/md'},
+      {'code': 'DsRadius.md', 'token': 'Radius/md'},
     ],
     '24': [
-      {'code': 'DsSize.icon', 'collection': 'Size'},
+      {'code': 'DsSize.icon', 'token': 'Size/icon'},
     ],
     '#64748B': [
-      {'code': 'DsPrimitives.gray500', 'collection': 'Primitives'},
-      {'code': 'DsColors.textSecondary', 'collection': 'Color'},
+      {'code': 'DsPrimitives.gray500', 'token': 'Primitives/gray/500'},
+      {'code': 'DsColors.textSecondary', 'token': 'Color/text/secondary'},
     ],
   };
 
@@ -48,6 +49,25 @@ const SizedBox(width: 20),
         '6 `20` solto em `width: 20`: nenhum token usado nesta tela tem esse valor; procure no DS (`search`) ou explique '
             'com `f2d:inferred`',
       ],
+    );
+  });
+
+  test('coleção que é a marca (MarcaA/Spacing/md): a dica escolhe pelo caminho do token, não pela coleção', () {
+    final acme = tokenValues(
+      {
+        'MarcaA/Spacing/md': {'value': 12},
+        'MarcaA/Radius/md': {'value': 12},
+      },
+      Tokens(
+        scopes: {
+          'Spacing': TokenClass('context.acme.spacing', const {}, {'md'}, theme: true),
+          'Radius': TokenClass('context.acme.radius', const {}, {'md'}, theme: true),
+        },
+      ),
+    );
+    expect(
+      [for (final h in hintsFor('w.dart', 'padding: EdgeInsets.all(12),', tokens: acme)) h['message']],
+      ['`12` solto em `EdgeInsets.all(12)` → use `context.acme.spacing.md`'],
     );
   });
 

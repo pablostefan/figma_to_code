@@ -2,6 +2,14 @@
 
 ## Não lançado
 
+- **Removido** (a CLI nunca leu): `tags`, `owner` e `status` (`Status`) do `@FigmaConnect`; `require`,
+  `expectedCoverage` e `brief` do `KindPolicy`, com os enums `Field` e `BriefDepth`. O `KindPolicy` fica só com
+  `devNotes`. Quem usava: apagar esses argumentos.
+
+- Skill `figma2dart-policy`: o agente `figma-ds-mapper` monta o `lib/figma_policy.dart` (tokens, ícones, ignorados)
+  pelo retrato e pelo código do DS, e confere com o `figma2dart doctor`, que agora mostra a cobertura da política
+  (`policy`).
+
 - `TokenTable.scopes`: tokens pelo caminho depois da coleção (`Colors/Surface`), em qualquer coleção, para DS em
   que a coleção é a marca (`MarcaA/…`, `MarcaB/…`) e o tema escolhe qual. O caminho mais longo ganha. `TokenSource.names`
   (`{'02': 'two'}`): nome do Figma → membro, para classes que não dá para anotar no doc.

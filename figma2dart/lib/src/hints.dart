@@ -16,14 +16,15 @@ List<String> staticTexts(Json node) => [
   ],
 ];
 
-/// Valor do token no Figma → código Dart dele, com a coleção (para escolher entre `Spacing/md` e `Radius/md`, ambos
-/// 12). Cores em `#RRGGBB` (ou `#RRGGBBAA`), números sem `.0`.
+/// Valor do token no Figma → código Dart dele, com o nome completo do token (para escolher entre `Spacing/md` e
+/// `Radius/md`, ambos 12, também quando a coleção é a marca: `MarcaA/Spacing/md`). Cores em `#RRGGBB` (ou `#RRGGBBAA`),
+/// números sem `.0`.
 Map<String, List<Json>> tokenValues(Json irTokens, Tokens tokens) {
   final out = <String, List<Json>>{};
   for (final MapEntry(:key, value: token) in irTokens.entries.where((e) => e.value is Json)) {
     final code = tokens.variable(key);
     if (code == null) continue;
-    (out[_key((token as Json)['value'])] ??= []).add({'code': code, 'collection': key.split('/').first});
+    (out[_key((token as Json)['value'])] ??= []).add({'code': code, 'token': key});
   }
   return out;
 }
@@ -65,7 +66,7 @@ List<Json> hintsFor(String file, String source, {Json? expect, Map<String, List<
         final line = lineOf(groupStart + v.start);
         if (silenced(line)) continue;
         final found = tokens[_key(num.parse(v[0]!))] ?? const [];
-        final preferred = found.where((t) => prefer.any((p) => (t['collection'] as String).contains(p))).toList();
+        final preferred = found.where((t) => prefer.any((p) => (t['token'] as String).contains(p))).toList();
         if (onlyWithToken && preferred.isEmpty) continue; // `size: 12` não é `DsSpacing.md` só por valer 12
         add(line, 'value', '`${v[0]}` solto em `${shown(m[0]!)}`${_suggest(preferred.isEmpty ? found : preferred)}');
       }
@@ -109,7 +110,7 @@ String _suggest(List<Json>? tokens) => switch (tokens) {
   _ => ': nenhum token usado nesta tela tem esse valor; procure no DS (`search`) ou explique com `f2d:inferred`',
 };
 
-int _primitive(Json token) => (token['collection'] as String).toLowerCase().contains('primitive') ? 1 : 0;
+int _primitive(Json token) => (token['token'] as String).toLowerCase().contains('primitive') ? 1 : 0;
 
 final _color = RegExp(r'\bColor\(\s*0x([0-9A-Fa-f]{8})\s*\)');
 final _material = RegExp(r'\bColors\.\w+');

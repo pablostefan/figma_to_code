@@ -11,7 +11,7 @@ flowchart LR
   subgraph DS["Time do DS · uma vez, e quando o DS muda"]
     direction TB
     FDS["Arquivo do DS<br/>no Figma"] -->|"plugin: lote de componentes"| MAP["agente figma-ds-mapper"]
-    MAP --> CONN["pacote de mapeamentos<br/>lib/connect/*.figma.dart"]
+    MAP --> CONN["pacote de mapeamentos<br/>lib/**/*.figma.dart"]
   end
 
   subgraph TELA["Dev + agente · a cada tela"]
@@ -29,7 +29,8 @@ flowchart LR
 ```
 
 1. **O time do DS anota o DS uma vez.** Cada componente do Figma ganha um `*.figma.dart`, que diz qual widget ele
-   vira e como cada prop do Figma vira parâmetro. Um agente escreve isso a partir do export do plugin.
+   vira e como cada prop do Figma vira parâmetro; a política diz onde ficam os tokens e os ícones. Um agente escreve
+   isso a partir do export do plugin.
 2. **O designer (ou o dev) exporta** a tela ou o fluxo com o plugin: um `.zip` com o JSON da tela (o IR) e os PNGs.
 3. **A CLI resolve** a tela com os mapeamentos: o código de cada componente do DS já com os valores do Figma, o
    layout com tokens e o que falta decidir. Tudo num `BRIEF.md`.
@@ -42,9 +43,12 @@ Cada etapa, com entrada, saída e comandos: **[docs/COMO_FUNCIONA.md](docs/COMO_
 ```
 figma_to_code/
   figma_plugin/     plugin do Figma (TypeScript): exporta tela, fluxo, componente ou biblioteca no formato IR
-  figma_connect/    pacote Flutter: a anotação @FigmaConnect, a captura para a revisão e o agente que anota o DS
-  figma2dart/       CLI Dart: lê o export e os mapeamentos e escreve os briefs; agentes e skills de implementar telas
-  docs/             como funciona, referências, guias e planejamento
+  figma_connect/    pacote Flutter: a anotação @FigmaConnect e a captura para a revisão
+  figma2dart/       CLI Dart: lê o export e os mapeamentos e escreve os briefs
+  acme_figma/       anotações e política do Acme (pacote de mapeamentos do monorepo)
+  copilot_plugin/   plugin do Copilot (Agent Plugins 1.0): agentes e skills, instalado uma vez por máquina
+  figma_to_dart.yaml config: aponta para o acme_figma e define a pasta das telas
+  docs/             como funciona, arquitetura, referência das anotações e guias
 ```
 
 Fora deste repositório, no `design_system/` (exemplo do POC, o **Carteira DS**):
@@ -62,9 +66,11 @@ design_system/
 | Quero… | Leia |
 |---|---|
 | entender o fluxo inteiro | [docs/COMO_FUNCIONA.md](docs/COMO_FUNCIONA.md) |
+| entender como é montado por dentro | [docs/ARQUITETURA.md](docs/ARQUITETURA.md) |
 | implementar telas num app | [figma2dart/README.md](figma2dart/README.md) (instalar, `init`, comandos) |
+| instalar agentes e skills no Copilot | [copilot_plugin/README.md](copilot_plugin/README.md) |
 | exportar do Figma | [figma_plugin/README.md](figma_plugin/README.md) |
 | anotar os componentes do DS | [figma_connect/README.md](figma_connect/README.md) e [docs/FIGMA_CONNECT.md](docs/FIGMA_CONNECT.md) |
 | configurar o DS (tokens, ícones, retrato) | [docs/DESIGN_OPS.md](docs/DESIGN_OPS.md) |
-| levar para o monorepo | [docs/MIGRACAO_MONOREPO.md](docs/MIGRACAO_MONOREPO.md) |
+| instalar no monorepo | [docs/MONOREPO.md](docs/MONOREPO.md) |
 | achar qualquer outro doc | [docs/README.md](docs/README.md) |

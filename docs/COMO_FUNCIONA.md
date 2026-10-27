@@ -1,8 +1,8 @@
 # Como funciona
 
 O caminho completo de uma tela do Figma até o código Flutter, etapa por etapa: quem faz, o que entra, o que
-acontece e o que sai. Para o porquê das decisões, veja [ARCHITECTURE.md](ARCHITECTURE.md); para a API das
-anotações, [FIGMA_CONNECT.md](FIGMA_CONNECT.md).
+acontece e o que sai. Como é montado por dentro e por quê: [ARQUITETURA.md](ARQUITETURA.md); a API das
+anotações: [FIGMA_CONNECT.md](FIGMA_CONNECT.md).
 
 - [Visão geral](#visão-geral)
 - [A. Preparar o DS](#a-preparar-o-ds) (time do DS, uma vez e quando o DS muda)
@@ -21,21 +21,22 @@ Três papéis, três momentos:
 
 | Papel | Quando | Faz |
 |---|---|---|
-| **Time do DS** (design ops) | uma vez, e quando o DS muda | anota cada componente do DS (`*.figma.dart`), configura tokens e ícones, grava o retrato da biblioteca |
+| **Time do DS** (design ops) | uma vez, e quando o DS muda | grava o retrato da biblioteca, configura tokens e ícones, anota cada componente do DS (`*.figma.dart`) |
 | **Designer** (ou o dev) | a cada tela | exporta a tela ou o fluxo com o plugin |
 | **Dev + agente** | a cada tela | pede a tela ao agente, decide o que só ele sabe (construir ou não um componente) e revisa o resultado |
 
 ```mermaid
 flowchart TD
   subgraph A["A · Preparar o DS — time do DS"]
-    A1["A1 · Pacote de mapeamentos<br/>e figma_policy.dart"]
+    A1["A1 · Pacote de mapeamentos"]
     A2["A2 · Retrato da biblioteca<br/>plugin em modo Biblioteca + figma2dart library"]
-    A3["A3 · Anotar os componentes<br/>agente figma-ds-mapper + export do plugin"]
-    A1 --> A2 --> A3
+    A3["A3 · Política: tokens e ícones<br/>figma_policy.dart, conferida pelo doctor"]
+    A4["A4 · Anotar os componentes<br/>agente figma-ds-mapper + export do plugin"]
+    A1 --> A2 --> A3 --> A4
   end
 
   subgraph B["B · Preparar o app — uma vez"]
-    B1["setup · init · doctor"]
+    B1["plugin do Copilot · setup · doctor"]
   end
 
   subgraph C["C · Implementar telas — a cada tela"]
@@ -75,43 +76,55 @@ Nenhuma etapa bloqueia por estilo: o `check` reprova só o que ficou por fazer, 
 Feito pelo time do DS, no **pacote de mapeamentos** (no POC, `design_system/carteira_ds_figma`; no monorepo,
 `acme_figma`). Passo a passo de cada item: [DESIGN_OPS.md](DESIGN_OPS.md).
 
-### A1 · Pacote de mapeamentos e política
+### A1 · Pacote de mapeamentos
 
 | | |
 |---|---|
 | **Quem** | time do DS (ou o agente `figma-ds-mapper`, que cria o pacote se não existir) |
 | **Entrada** | o pacote do DS e o `figma_connect` |
-| **Saída** | `pubspec.yaml` (DS + `figma_connect`), `lib/connect/`, `lib/figma_policy.dart`, `test/mappings_test.dart` |
+| **Saída** | `pubspec.yaml` (DS + `figma_connect`), `lib/figma_policy.dart`, `test/mappings_test.dart` |
 
-O `figma_policy.dart` diz, para o DS inteiro:
-
-- **tokens**: cada coleção de variáveis do Figma → a classe Dart dos tokens (`Spacing` → `DsSpacing`), para o brief
-  já sair com `DsSpacing.md` em vez de `Spacing/md`;
-- **ícones**: onde estão os ícones do DS (um enum, ou uma classe com uma constante por ícone, como o `AcmeIcons`) e
-  as exceções por key;
-- **ignorados**: componentes que só existem no Figma (além do prefixo `_` ou `.`);
-- **regras por tipo** de componente (`component`, `section`, `template`, `icon`).
+No monorepo, o `acme_figma` já vem pronto ([MONOREPO.md](MONOREPO.md)).
 
 ### A2 · Retrato da biblioteca
 
 | | |
 |---|---|
 | **Quem** | time do DS |
-| **Entrada** | export do plugin em **modo biblioteca** (uma página do arquivo do DS, sem seleção) |
+| **Entrada** | um export do plugin em **modo biblioteca** por página do arquivo do DS (sem seleção), incluindo a de ícones |
 | **Comando** | `figma2dart library <zip>…` |
-| **Saída** | `figma_library.json` no pacote de mapeamentos: key e nome de cada componente do DS |
+| **Saída** | `figma_library.json` no pacote de mapeamentos: key e nome de cada componente e os ícones, por página; nomes dos tokens e dos estilos de texto |
 
-É também a lista de onde o agente da etapa A3 tira o que falta anotar. O retrato é o que separa "componente do DS sem anotação" (vira `gap`, fila de trabalho do time do DS) de
-"componente fora do DS" (vira placeholder e brief de construção). Sem retrato, vale a regra antiga: componente de
-qualquer biblioteca remota conta como do DS.
+O retrato separa "componente do DS sem anotação" (vira `gap`, fila de trabalho do time do DS) de "componente fora do
+DS" (vira placeholder e brief de construção); sem ele, componente de qualquer biblioteca remota conta como do DS. É
+também de onde sai o inventário do que falta anotar (A4) e contra o que o `doctor` confere a política (A3).
 
-### A3 · Anotar os componentes
+### A3 · Política: tokens e ícones
 
 | | |
 |---|---|
-| **Quem** | agente [`figma-ds-mapper`](../figma_connect/agent/agents/figma-ds-mapper.agent.md), com a skill [`figma2dart-connect`](../figma_connect/agent/skills/figma2dart-connect/SKILL.md) |
-| **Entrada** | o retrato (A2), um export do plugin em modo **Componente** por lote e o código dos widgets do DS. O MCP local do Figma é opcional, só para ver o componente |
-| **Saída** | por componente: `lib/connect/<widget>.figma.dart`, `docs/<widget>.md` (quando há parte guiada), linha no README do pacote e casos no `mappings_test.dart` |
+| **Quem** | agente `figma-ds-mapper`, com a skill [`figma2dart-policy`](../copilot_plugin/skills/figma2dart-policy/SKILL.md) |
+| **Entrada** | o retrato (A2) e o código do DS |
+| **Saída** | `lib/figma_policy.dart` |
+| **Confere** | `figma2dart doctor --json`: em `policy`, tokens, estilos de texto e ícones sem código Dart, agrupados com o que fazer |
+
+O `figma_policy.dart` diz, para o DS inteiro:
+
+- **tokens**: onde está cada token do Figma no código, pela coleção (`Spacing` → `DsSpacing`) ou, quando a coleção é
+  a marca (`MarcaA`, `MarcaB`), pelo caminho (`Colors/Surface` → `AcmeColorSchemeSurface`, pelo tema). O brief sai com
+  `context.acmeSpacing.md` em vez de `Spacing/md`;
+- **ícones**: onde estão os ícones do DS (um enum, ou uma classe com uma constante por ícone, como o `AcmeIcons`) e
+  as exceções por key;
+- **ignorados**: componentes que só existem no Figma (além do prefixo `_` ou `.`);
+- **regras por tipo** de componente (`component`, `section`, `template`, `icon`).
+
+### A4 · Anotar os componentes
+
+| | |
+|---|---|
+| **Quem** | agente [`figma-ds-mapper`](../copilot_plugin/com.github.copilot/agents/figma-ds-mapper.agent.md), com a skill [`figma2dart-connect`](../copilot_plugin/skills/figma2dart-connect/SKILL.md) |
+| **Entrada** | o retrato (A2), um export do plugin em modo **Componente** por lote (com as bases que o componente expõe) e o código dos widgets do DS. O MCP local do Figma é opcional, só para ver o componente |
+| **Saída** | por componente: `lib/<pasta do DS>/<widget>.figma.dart`, `docs/<widget>.md` (quando há parte guiada), linha no README do pacote e casos no `mappings_test.dart` |
 | **Confere** | `flutter analyze` e `flutter test` no pacote |
 
 ```mermaid
@@ -155,13 +168,14 @@ serve para isso: ele não dá a key e converte os nomes das props (`Show icon` v
 
 | Passo | Comando | Faz |
 |---|---|---|
-| Instalar | `<pasta da CLI>/tool/figma2dart setup` | põe o comando `figma2dart` no PATH (uma vez por máquina) |
-| Preparar o app | `figma2dart init` | cria o `figma2dart.yaml`, põe `.figma2dart/` no `.gitignore` e instala agentes e skills em `.github/agents/` e `.agents/skills/` |
+| Agentes e skills | plugin do Copilot ([copilot_plugin/](../copilot_plugin/README.md)) | uma vez por máquina; vale em todos os pacotes |
+| Instalar a CLI | `<pasta da CLI>/tool/figma2dart setup` | põe o comando `figma2dart` no PATH (uma vez por máquina) |
+| Preparar o app | `figma2dart init` | só num app fora do monorepo: cria o `figma_to_dart.yaml` e põe `.figma2dart/` no `.gitignore` |
 | Conferir | `figma2dart doctor` | mostra o que a CLI achou (pacote, mapeamentos, retrato, exports, pasta das telas) e o que falta, com a correção |
 
-O `figma2dart.yaml` é opcional; tudo o que falta a CLI descobre (pacote de mapeamentos pelas dependências, exports
-em `~/Downloads`). Num monorepo, um config versionado na pasta da CLI vale para todos os pacotes:
-[figma2dart/README.md#monorepo](../figma2dart/README.md#monorepo).
+O `figma_to_dart.yaml` é opcional; tudo o que falta a CLI descobre (pacote de mapeamentos pelas dependências, exports
+em `~/Downloads`). No monorepo, o config versionado da pasta da solução vale para todos os pacotes:
+[MONOREPO.md](MONOREPO.md).
 
 ---
 
@@ -209,7 +223,7 @@ estados da mesma tela. O botão **Verificar** mostra o lint (camada sem auto lay
 
 O **IR** é o contrato entre o Figma e a CLI: a árvore da tela com layout, tokens pelo nome, instâncias com key e
 props, a caixa de cada camada e o conteúdo das instâncias. O mesmo extrator roda pelo MCP (`use_figma`), sem
-imagens. Formato: [ARCHITECTURE.md §4](ARCHITECTURE.md#4-ir-v1--o-contrato).
+imagens. Formato: [ARQUITETURA.md §2](ARQUITETURA.md#2-o-ir-o-contrato-com-o-figma).
 
 ### C2 · Escolher o export e as telas
 
@@ -261,7 +275,7 @@ Para cada componente da tela que não está no DS (`"kind": "build"` no JSON), o
 | Escolha | O que acontece |
 |---|---|
 | **Já existe no app** (a CLI achou uma classe com o mesmo nome, `existing`, ou o dev indica o arquivo) | `figma2dart link <key> <arquivo>#<Classe>` escreve um `@FigmaLocal` em `figma/connect/` do pacote |
-| **Construir** | o subagente `figma-component-builder` cria o widget em `<telas>/widgets/` pelo brief de construção (skill [`figma2dart-component`](../figma2dart/agent/skills/figma2dart-component/SKILL.md)), com teste, `check` e, no fim, o `link` |
+| **Construir** | o subagente `figma-component-builder` cria o widget em `<telas>/widgets/` pelo brief de construção (skill [`figma2dart-component`](../copilot_plugin/skills/figma2dart-component/SKILL.md)), com teste, `check` e, no fim, o `link` |
 | **Manter placeholder** | fica um `Placeholder` do tamanho do Figma, pendência do dev |
 
 Depois de um `link`, o agente roda o `resolve` daquela tela de novo e o componente passa a `local` (montado como
@@ -271,7 +285,7 @@ widget do app). A decisão fica gravada no código, então nenhuma tela pergunta
 
 | | |
 |---|---|
-| **Quem** | agente `figma-to-flutter`, com a skill [`figma2dart-screen`](../figma2dart/agent/skills/figma2dart-screen/SKILL.md) |
+| **Quem** | agente `figma-to-flutter`, com a skill [`figma2dart-screen`](../copilot_plugin/skills/figma2dart-screen/SKILL.md) |
 | **Entrada** | o `BRIEF.md`, o PNG da tela e os componentes construídos |
 | **Saída** | o `screenFile` (padrão `lib/figma/<tela>_page.dart`) |
 
@@ -295,7 +309,7 @@ O agente corrige até `"ok": true`, em no máximo 3 rodadas. Cada dica ele corri
 
 | | |
 |---|---|
-| **Quem** | agente, com a skill [`figma2dart-review`](../figma2dart/agent/skills/figma2dart-review/SKILL.md), e o subagente `figma-visual-reviewer` (só lê) |
+| **Quem** | agente, com a skill [`figma2dart-review`](../copilot_plugin/skills/figma2dart-review/SKILL.md), e o subagente `figma-visual-reviewer` (só lê) |
 | **Comandos** | `figma2dart review --screen <tela>`, `flutter test <teste de captura>` |
 | **Saída** | `review/` na pasta da tarefa: `screen.png` (Figma \| Flutter), um par de imagens por seção, `facts.json` e `REVIEW.md` |
 
@@ -351,7 +365,7 @@ flowchart TD
 
 Componentes com nome começando em `_` ou `.` (anotações do designer, bases) sem anotação própria, e os `ignored` do
 `FigmaPolicy`, não entram na tela. Uma base exposta num componente público chega pela anotação do público, que lê as
-props dela pelo nome ([FIGMA_CONNECT §3.3](FIGMA_CONNECT.md#33-when-nomes-que-não-batem-11)). Tabela completa: [ARCHITECTURE.md §10.5](ARCHITECTURE.md#105-marcadores-no-código).
+props dela pelo nome ([FIGMA_CONNECT §3.3](FIGMA_CONNECT.md#33-when-nomes-que-não-batem-11)). Tabela completa: [ARQUITETURA.md §4.1](ARQUITETURA.md#41-classificação-de-cada-camada).
 
 ---
 
@@ -377,8 +391,7 @@ Comentários que a CLI escreve e o agente resolve. O `check` usa esses marcadore
 
 ```
 <pacote do app>/
-  figma2dart.yaml                     config (opcional)
-  .github/agents/  .agents/skills/    agentes e skills (figma2dart init)
+  figma_to_dart.yaml                     config (opcional)
   lib/figma/<tela>_page.dart          telas escritas pelo agente
   lib/figma/widgets/<componente>.dart componentes construídos
   figma/connect/<componente>.figma.dart  @FigmaLocal: componente do Figma → widget do app (figma2dart link)
@@ -403,12 +416,11 @@ Comentários que a CLI escreve e o agente resolve. O `check` usa esses marcadore
 
 ```
 <ds>_figma/
-  lib/connect/<widget>.figma.dart   uma anotação por componente do DS
+  lib/<pasta do DS>/<widget>.figma.dart   uma anotação por componente (acme/components/button/…, templates/…)
   lib/figma_policy.dart             tokens, ícones, ignorados, regras por tipo
   docs/<widget>.md                  doc para a LLM (quando há parte guiada)
   figma_library.json                retrato da biblioteca (figma2dart library)
   test/mappings_test.dart           cada anotação com todas as opções de variant
-  .github/agents/  .agents/skills/  agente figma-ds-mapper e skill figma2dart-connect
 ```
 
 ---
@@ -417,15 +429,16 @@ Comentários que a CLI escreve e o agente resolve. O `check` usa esses marcadore
 
 | Peça | Tipo | Onde está | Usado em |
 |---|---|---|---|
-| figma2dart Export | plugin do Figma | [figma_plugin/](../figma_plugin/) | C1, A2, A3 |
-| `figma2dart` | CLI Dart | [figma2dart/](../figma2dart/) | B, C2–C7, A2 |
+| figma2dart Export | plugin do Figma | [figma_plugin/](../figma_plugin/) | C1, A2, A4 |
+| `figma2dart` | CLI Dart | [figma2dart/](../figma2dart/) | B, C2–C7, A2, A3 |
 | `figma_connect` | pacote Flutter: anotações e `figmaCapture` | [figma_connect/](../figma_connect/) | A, C7 |
-| `figma-ds-mapper` | agente (time do DS) | [figma_connect/agent/agents/](../figma_connect/agent/agents/) | A1, A3 |
-| `figma2dart-connect` | skill: anotar um componente | [figma_connect/agent/skills/](../figma_connect/agent/skills/) | A3 |
-| `figma-to-flutter` | agente orquestrador (dev) | [figma2dart/agent/agents/](../figma2dart/agent/agents/) | C |
+| `figma-ds-mapper` | agente (time do DS) | [copilot_plugin/com.github.copilot/agents/](../copilot_plugin/com.github.copilot/agents/) | A1, A3, A4 |
+| `figma2dart-connect` | skill: anotar um componente | [copilot_plugin/skills/](../copilot_plugin/skills/) | A4 |
+| `figma2dart-policy` | skill: montar e conferir o `FigmaPolicy` | idem | A3 |
+| `figma-to-flutter` | agente orquestrador (dev) | [copilot_plugin/com.github.copilot/agents/](../copilot_plugin/com.github.copilot/agents/) | C |
 | `figma-component-builder` | subagente: constrói um componente | idem | C4 |
 | `figma-visual-reviewer` | subagente: revisa a tela, não edita | idem | C7 |
-| `figma2dart-setup` | skill: resolver o que o `doctor` aponta | [figma2dart/agent/skills/](../figma2dart/agent/skills/) | B, C |
+| `figma2dart-setup` | skill: resolver o que o `doctor` aponta | [copilot_plugin/skills/](../copilot_plugin/skills/) | B, C |
 | `figma2dart-screen` | skill: escrever a tela pelo brief | idem | C5 |
 | `figma2dart-component` | skill: construir um componente | idem | C4 |
 | `figma2dart-review` | skill: captura, review e correções | idem | C7 |
