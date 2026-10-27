@@ -14,6 +14,23 @@ void main() {
     expect(manifest['name'], matches(RegExp(r'^[a-z0-9](?:[a-z0-9.-]{0,62}[a-z0-9])?$')));
   });
 
+  test('lsp: servidor dart com comando e extensões', () {
+    final lsp = jsonDecode(File('$root/com.github.copilot/lsp.json').readAsStringSync()) as Map<String, Object?>;
+    final dart = (lsp['lspServers'] as Map<String, Object?>)['dart'] as Map<String, Object?>;
+    expect(dart['command'], 'dart');
+    expect(dart['fileExtensions'], {'.dart': 'dart'});
+  });
+
+  test('hooks: versão 1 e scripts que existem no plugin', () {
+    final file = File('$root/com.github.copilot/hooks/hooks.json');
+    final config = jsonDecode(file.readAsStringSync()) as Map<String, Object?>;
+    expect(config['version'], 1);
+    for (final hook in (config['hooks'] as Map<String, Object?>).values.expand((e) => e as List)) {
+      final script = RegExp(r'\$\{PLUGIN_ROOT\}/([^"\s]+)').firstMatch((hook as Map)['bash'] as String)![1];
+      expect(File('$root/$script').existsSync(), isTrue, reason: script);
+    }
+  });
+
   test('skills: uma pasta por skill, com o name do frontmatter igual ao nome da pasta', () {
     final skills = Directory('$root/skills').listSync().whereType<Directory>().toList();
     expect(skills, isNotEmpty);

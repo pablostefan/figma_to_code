@@ -51,6 +51,8 @@ O export do plugin é a fonte da **key** e dos **nomes exatos das props**. A ano
 - Leia todos os construtores (os nomeados e as factories também), os enums dos parâmetros e o doc da classe.
   Construtores com o nome das opções de uma VARIANT (`primary`, `secondary`) indicam que a prop troca o construtor
   (seção 3).
+- Com o LSP do Dart (Copilot CLI), os símbolos do arquivo e o hover na classe dão os construtores com assinatura e doc
+  sem ler o arquivo inteiro; sem ele, leia o arquivo.
 - Se houver dois candidatos ou nenhum, **pergunte**; não adivinhe.
 - Se não houver widget no DS, não anote. Relate como "só no Figma" ou como falta no DS.
 

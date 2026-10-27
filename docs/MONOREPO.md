@@ -44,7 +44,8 @@ existe para ela. A pasta já ignora `.dart_tool/`, `build/`, `node_modules/` e `
    Grava o comando `figma2dart` em `~/.pub-cache/bin` (que precisa estar no `PATH`). O comando sempre roda a CLI do
    repositório de onde é chamado, então um `git pull` já a atualiza.
 2. **O plugin do Copilot:** [copilot_plugin/README.md](../copilot_plugin/README.md). No VS Code, `chat.pluginLocations`
-   apontando para `copilot_plugin/` no clone; na Copilot CLI, `copilot plugin install <pasta>`.
+   apontando para `copilot_plugin/` no clone; na Copilot CLI, `copilot plugin install <pasta>`. Na CLI, o plugin
+   também liga o LSP do Dart ([copilot_plugin/README.md](../copilot_plugin/README.md#lsp-do-dart-copilot-cli)).
 3. **O plugin do Figma** (quem exporta): [figma_plugin/README.md](../figma_plugin/README.md).
 
 O opencode não lê o `com.github.copilot/` do plugin: nele, os agentes ficam em `~/.config/opencode/agents/*.md`, e as

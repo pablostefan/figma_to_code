@@ -1,0 +1,15 @@
+{
+  "lspServers": {
+    "dart": {
+      "command": "dart",
+      "args": ["language-server", "--protocol=lsp", "--client-id=copilot-cli"],
+      "fileExtensions": { ".dart": "dart" },
+      "initializationOptions": {
+        "onlyAnalyzeProjectsWithOpenFiles": true,
+        "outline": false,
+        "flutterOutline": false,
+        "closingLabels": false
+      }
+    }
+  }
+}

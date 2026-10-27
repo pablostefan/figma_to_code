@@ -69,7 +69,8 @@ texto) e as páginas de ícones.
 
      `context.acme.designTokens.colorScheme.surface.primary` dá o `via` `context.acme.designTokens.colorScheme.surface`.
    - **A classe:** o tipo que esse `via` devolve. Siga os getters a partir da extensão em `BuildContext`
-     (`grep -rn "extension .* on BuildContext" <DS>/lib`) até a classe com um membro por token.
+     (`grep -rn "extension .* on BuildContext" <DS>/lib`) até a classe com um membro por token. Com o LSP do Dart
+     (Copilot CLI), o hover em cada parte do `via` dá o tipo, e os símbolos do arquivo listam os membros da classe.
    - **Constantes estáticas** (sem tema): sem `via`; o código fica `DsSpacing.md`.
    - Confira que os membros batem com o último nível do nome do Figma em camelCase (`On Brand` → `onBrand`).
 4. **Nomes que não batem** (`02` → `two`): `names: {'02': 'two'}` no `TokenSource`. Não mude a classe do DS. Ponha
